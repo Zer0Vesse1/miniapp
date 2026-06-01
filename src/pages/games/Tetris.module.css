@@ -1,0 +1,129 @@
+.container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.back {
+  display: inline-block;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.header h1 {
+  font-size: 2rem;
+}
+
+.info {
+  display: flex;
+  gap: 16px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.gameArea {
+  display: flex;
+  gap: 16px;
+}
+
+.canvasWrap {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.canvas {
+  display: block;
+  border-radius: 8px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.overlayText {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.previewBox {
+  background: var(--color-surface);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.previewBox h3 {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.previewCanvas {
+  display: block;
+  border-radius: 4px;
+}
+
+.controls {
+  background: var(--color-surface);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.controlTitle {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.controlList {
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.15s;
+}
+
+.btn:hover {
+  border-color: var(--color-accent);
+}

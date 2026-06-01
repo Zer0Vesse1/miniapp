@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "stardew-beginner",
+    "title": "新手四季开荒",
+    "game": "星露谷物语",
+    "tags": ["新手", "种田", "四季", "赚钱"],
+    "created": "2026-05-31"
+  },
+  {
+    "slug": "cs2",
+    "title": "CS2",
+    "game": "CS2",
+    "tags": ["FPS", "竞技"],
+    "created": "2026-05-31"
+  }
+]

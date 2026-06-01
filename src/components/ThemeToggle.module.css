@@ -1,0 +1,26 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+
+.toggle:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.icon {
+  font-size: 1rem;
+}
+
+.label {
+  font-size: 0.85rem;
+}

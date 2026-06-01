@@ -1,0 +1,146 @@
+.renderer {
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.renderer p {
+  margin-bottom: 16px;
+}
+
+.h1 {
+  font-size: 1.8rem;
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.h2 {
+  font-size: 1.4rem;
+  margin: 28px 0 12px;
+  color: var(--color-accent);
+}
+
+.h3 {
+  font-size: 1.1rem;
+  margin: 20px 0 8px;
+}
+
+.renderer ul,
+.renderer ol {
+  margin: 0 0 16px 20px;
+}
+
+.renderer li {
+  margin-bottom: 4px;
+}
+
+.renderer strong {
+  color: var(--color-warning);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  background: var(--color-surface);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.codeBlock {
+  background: var(--color-code-bg);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.inlineCode {
+  background: var(--color-surface);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.tipBlock {
+  background: rgba(56, 189, 248, 0.1);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.mermaidPlaceholder {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+}
+
+.timeline {
+  margin-bottom: 24px;
+  padding-left: 8px;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 16px;
+  position: relative;
+}
+
+.timelineItem:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.timelineMarker {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.timelineContent {
+  padding-top: 3px;
+}
