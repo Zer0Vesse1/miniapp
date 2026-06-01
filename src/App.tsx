@@ -5,6 +5,7 @@ import GameList from './pages/games/GameList';
 import Game2048 from './pages/games/Game2048';
 import Snake from './pages/games/Snake';
 import Tetris from './pages/games/Tetris';
+import Minesweeper from './pages/games/Minesweeper';
 import GuideList from './pages/guides/GuideList';
 import GameGuides from './pages/guides/GameGuides';
 import GuideDetail from './pages/guides/GuideDetail';
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/games/2048" element={<Game2048 />} />
         <Route path="/games/snake" element={<Snake />} />
         <Route path="/games/tetris" element={<Tetris />} />
+        <Route path="/games/minesweeper" element={<Minesweeper />} />
         <Route path="/guides" element={<GuideList />} />
         <Route path="/guides/game/:gameName" element={<GameGuides />} />
         <Route path="/guides/:slug" element={<GuideDetail />} />

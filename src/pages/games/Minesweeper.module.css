@@ -1,0 +1,276 @@
+/* ===== Layout ===== */
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.back {
+  display: inline-block;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+/* ===== Header ===== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.header h1 {
+  font-size: 2rem;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mineCount {
+  color: var(--color-danger);
+}
+
+.timer {
+  color: var(--color-accent);
+}
+
+/* ===== Toolbar ===== */
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.difficultyGroup {
+  display: flex;
+  gap: 6px;
+}
+
+.diffBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.diffBtn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.diffActive {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+.diffActive:hover {
+  color: var(--color-on-accent);
+}
+
+.restartBtn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.restartBtn:hover {
+  border-color: var(--color-accent);
+}
+
+/* ===== Board ===== */
+
+.boardWrap {
+  position: relative;
+  display: inline-block;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.board {
+  display: inline-grid;
+  gap: 1px;
+  background: var(--color-border);
+  border: 3px solid var(--color-border);
+  border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ===== Cell base ===== */
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.05s;
+}
+
+/* ===== Hidden cell ===== */
+
+.hidden {
+  background: var(--color-surface);
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.hidden:hover {
+  background: var(--color-border);
+}
+
+.hidden:active:not(.flagged) {
+  box-shadow:
+    inset 1px 1px 0 rgba(0, 0, 0, 0.15);
+  background: var(--color-bg);
+}
+
+.flagged {
+  background: var(--color-surface);
+}
+
+.flagged:hover {
+  background: var(--color-border);
+}
+
+/* ===== Revealed cell ===== */
+
+.revealed {
+  background: var(--color-bg);
+  cursor: default;
+}
+
+/* ===== Mines ===== */
+
+.mineHit {
+  background: #dc2626 !important;
+}
+
+.mineShow {
+  background: var(--color-bg);
+}
+
+.wrongFlag {
+  background: var(--color-surface);
+}
+
+/* ===== Number colors (classic Minesweeper) ===== */
+
+.num1 { color: #0000ff; }
+.num2 { color: #008000; }
+.num3 { color: #ff0000; }
+.num4 { color: #000080; }
+.num5 { color: #800000; }
+.num6 { color: #008080; }
+.num7 { color: #000000; }
+.num8 { color: #808080; }
+
+/* Adjust dark colors for dark theme visibility */
+:global([data-theme="dark"]) .num4 { color: #818cf8; }
+:global([data-theme="dark"]) .num7 { color: #e2e8f0; }
+
+/* ===== Overlay ===== */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.overlayText {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.overlayIcon {
+  font-size: 3rem;
+}
+
+.overlayTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.winDetail {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.winActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ===== Button ===== */
+
+.btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.btn:hover {
+  border-color: var(--color-accent);
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 920px) {
+  .container {
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .boardWrap {
+    overflow-x: auto;
+    display: block;
+    -webkit-overflow-scrolling: touch;
+  }
+}

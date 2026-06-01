@@ -20,6 +20,12 @@ const games = [
     desc: '吃掉食物，越长越难',
     icon: '🐍',
   },
+  {
+    slug: 'minesweeper',
+    title: '扫雷',
+    desc: '经典扫雷，挑战逻辑推理',
+    icon: '💣',
+  },
 ];
 
 export default function GameList() {
