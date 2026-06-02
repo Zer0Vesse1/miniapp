@@ -9,3 +9,17 @@
   padding: 32px 40px;
   max-width: 960px;
 }
+
+@media (max-width: 768px) {
+  .content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 16px 14px;
+    padding-bottom: 72px;
+    max-width: 100%;
+  }
+}

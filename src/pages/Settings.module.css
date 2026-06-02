@@ -79,3 +79,22 @@
   font-size: 0.85rem;
   color: var(--color-text-muted);
 }
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding-top: 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .row {
+    padding: 14px 16px;
+  }
+
+  .infoRow {
+    padding: 10px 16px;
+  }
+}

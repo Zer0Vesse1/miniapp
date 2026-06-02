@@ -32,6 +32,25 @@
   transform: translateY(-2px);
 }
 
+@media (max-width: 480px) {
+  .wrapper {
+    padding-top: 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    padding: 18px 16px;
+  }
+}
+
 .icon {
   font-size: 2rem;
   display: block;

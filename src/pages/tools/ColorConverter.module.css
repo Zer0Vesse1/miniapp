@@ -131,3 +131,22 @@
   font-size: 0.85rem;
   margin-top: 8px;
 }
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding-top: 8px;
+  }
+
+  .section {
+    padding: 16px 14px;
+  }
+
+  .hexInput {
+    width: 120px;
+  }
+
+  .input {
+    width: 52px;
+  }
+}

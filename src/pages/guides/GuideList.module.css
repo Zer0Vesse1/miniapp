@@ -96,6 +96,32 @@
   transition: border-color 0.15s, transform 0.15s;
 }
 
+@media (max-width: 480px) {
+  .wrapper {
+    padding-top: 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .gameCard {
+    padding: 16px 18px;
+  }
+
+  .gameCardTitle {
+    font-size: 1rem;
+  }
+
+  .card {
+    padding: 14px 16px;
+  }
+
+  .cardHeader h2 {
+    font-size: 1rem;
+  }
+}
+
 .gameCard:hover {
   border-color: var(--color-accent);
   transform: translateX(4px);

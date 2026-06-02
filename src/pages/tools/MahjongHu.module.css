@@ -513,3 +513,50 @@
   margin-right: 4px;
   vertical-align: middle;
 }
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding-top: 8px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .tileIcon {
+    font-size: 28px;
+  }
+
+  .gearBtn {
+    top: 12px;
+    font-size: 22px;
+    padding: 4px;
+  }
+
+  .playersRow {
+    gap: 4px;
+  }
+
+  .huInput {
+    padding: 10px 2px;
+    font-size: 17px;
+  }
+
+  .playerLabel {
+    font-size: 14px;
+  }
+
+  .historyTable {
+    font-size: 11px;
+  }
+
+  .historyTable th,
+  .historyTable td {
+    padding: 6px 2px;
+  }
+
+  .amount {
+    font-size: 17px;
+  }
+}

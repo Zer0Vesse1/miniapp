@@ -274,3 +274,32 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding-top: 8px;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  .toolbar {
+    gap: 6px;
+  }
+
+  .diffBtn,
+  .restartBtn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 40px;
+  }
+
+  .overlayTitle {
+    font-size: 1.4rem;
+  }
+
+  .winDetail {
+    font-size: 0.95rem;
+  }
+}

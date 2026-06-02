@@ -74,6 +74,15 @@ a:hover {
 button {
   cursor: pointer;
   font-family: inherit;
+  touch-action: manipulation;
+}
+
+input, select, textarea {
+  touch-action: manipulation;
+}
+
+a, button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ===== Font size ===== */
@@ -101,5 +110,17 @@ button {
 @media (max-width: 480px) {
   :root {
     --sidebar-width: 0px;
+  }
+
+  html {
+    font-size: 15px;
+  }
+}
+
+/* ===== Touch device hover fix ===== */
+
+@media (hover: none) {
+  a:hover {
+    color: var(--color-accent);
   }
 }

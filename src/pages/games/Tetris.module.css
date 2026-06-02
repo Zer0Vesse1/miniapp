@@ -127,3 +127,38 @@
 .btn:hover {
   border-color: var(--color-accent);
 }
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding-top: 8px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .gameArea {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .previewBox {
+    padding: 8px 12px;
+  }
+
+  .controls {
+    display: none;
+  }
+
+  .overlayText {
+    font-size: 1.4rem;
+  }
+}

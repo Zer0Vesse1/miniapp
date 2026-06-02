@@ -26,7 +26,7 @@ export default function Sidebar() {
           }
         >
           <span className={styles.icon}>{homeItem.icon}</span>
-          <span>{homeItem.label}</span>
+          <span className={styles.label}>{homeItem.label}</span>
         </NavLink>
         <div className={styles.divider} />
         {moduleItems.map((item) => (
@@ -38,7 +38,7 @@ export default function Sidebar() {
             }
           >
             <span className={styles.icon}>{item.icon}</span>
-            <span>{item.label}</span>
+            <span className={styles.label}>{item.label}</span>
           </NavLink>
         ))}
       </nav>
@@ -53,7 +53,7 @@ export default function Sidebar() {
             }
           >
             <span className={styles.icon}>{item.icon}</span>
-            <span>{item.label}</span>
+            <span className={styles.label}>{item.label}</span>
           </NavLink>
         ))}
       </nav>

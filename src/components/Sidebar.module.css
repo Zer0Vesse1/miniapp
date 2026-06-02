@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   z-index: 100;
+  overflow: hidden;
 }
 
 .brand {
@@ -18,6 +19,7 @@
   color: var(--color-accent);
   letter-spacing: 1px;
   border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
 }
 
 .nav {
@@ -36,6 +38,8 @@
   color: var(--color-text-muted);
   font-size: 0.95rem;
   transition: all 0.15s ease;
+  white-space: nowrap;
+  min-height: 44px;
 }
 
 .navItem:hover {
@@ -50,6 +54,7 @@
 
 .icon {
   font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .divider {
@@ -76,4 +81,123 @@
   font-size: 0.75rem;
   color: var(--color-text-muted);
   opacity: 0.5;
+}
+
+/* ===== ≤768px: icon-only sidebar ===== */
+
+@media (max-width: 768px) {
+  .brand {
+    padding: 16px 12px;
+    font-size: 1.1rem;
+    text-align: center;
+    letter-spacing: 0;
+  }
+
+  .nav {
+    padding: 12px 4px;
+  }
+
+  .navItem {
+    justify-content: center;
+    padding: 12px 0;
+    gap: 0;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .icon {
+    font-size: 1.3rem;
+  }
+
+  .divider {
+    margin: 6px 4px;
+  }
+
+  .bottom {
+    padding: 8px 4px;
+  }
+
+  .credit {
+    display: none;
+  }
+}
+
+/* ===== ≤480px: bottom tab bar ===== */
+
+@media (max-width: 480px) {
+  .sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 56px;
+    flex-direction: row;
+    align-items: center;
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    z-index: 100;
+    overflow: visible;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .nav {
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+    gap: 0;
+  }
+
+  .navItem {
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 0;
+    font-size: 0.65rem;
+    border-radius: 6px;
+    min-width: 48px;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .label {
+    display: block;
+  }
+
+  .icon {
+    font-size: 1.15rem;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .bottom {
+    border-top: none;
+    border-left: 1px solid var(--color-border);
+    padding: 0 4px;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .bottom .navItem {
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  .credit {
+    display: none;
+  }
 }
