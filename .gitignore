@@ -3,3 +3,6 @@ dist
 .DS_Store
 *.local
 *.local.json
+.claude
+Plan
+*.tsbuildinfo

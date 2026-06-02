@@ -69,3 +69,11 @@
   flex-direction: column;
   gap: 4px;
 }
+
+.credit {
+  padding: 8px 12px 12px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  opacity: 0.5;
+}

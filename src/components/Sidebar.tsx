@@ -57,6 +57,7 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+      <div className={styles.credit}>© Vessel</div>
     </aside>
   );
 }

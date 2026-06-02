@@ -1,3 +1,0 @@
-- [User Profile](user-profile.md) — 中文用户，React + TS 技术栈，层次化偏好
-- [Project: MiniAPP](project-miniapp.md) — 生活助手网页，当前 v0.2.0 状态
-- [Feedback: UI](feedback-ui.md) — 设置草稿→应用模式，层次结构优先
