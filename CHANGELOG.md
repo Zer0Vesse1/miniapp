@@ -13,6 +13,11 @@
   - 游戏结束红显踩雷格、掀开所有雷、错误旗标显示 ❌
   - 胜利弹窗显示难度和通关用时
 
+- **侧边栏作者标识**：侧边栏底部新增 `© Vessel` 文字标识
+
+### 工程
+- 清理仓库：添加 `.gitignore` 规则（`.claude`、`Plan`、`*.tsbuildinfo`），移除已追踪的多余文件
+
 ### 修复
 - 扫雷右键插旗事件冲突：从 `onClick` + `onContextMenu` 改为统一 `onMouseDown`，通过 `e.button` 区分左/中/右键
 
