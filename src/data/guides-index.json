@@ -12,5 +12,13 @@
     "game": "CS2",
     "tags": ["FPS", "竞技"],
     "created": "2026-05-31"
+  },
+  {
+    "slug": "cs2-util",
+    "title": "CS2 道具",
+    "game": "CS2",
+    "tags": ["道具", "工具"],
+    "created": "2026-06-04",
+    "externalUrl": "https://www.cs2util.com/zh"
   }
 ]

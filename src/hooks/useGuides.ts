@@ -7,6 +7,7 @@ export interface GuideMeta {
   game: string;
   tags: string[];
   created: string;
+  externalUrl?: string;
 }
 
 export interface GuideContent {

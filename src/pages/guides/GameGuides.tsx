@@ -35,19 +35,42 @@ export default function GameGuides() {
       <p className={styles.subtitle}>{gameGuides.length} 篇攻略</p>
 
       <div className={styles.grid}>
-        {gameGuides.map((g) => (
-          <Link key={g.slug} to={`/guides/${g.slug}`} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2>{g.title}</h2>
-            </div>
-            <div className={styles.cardTags}>
-              {g.tags.map((t) => (
-                <span key={t} className={styles.cardTag}>{t}</span>
-              ))}
-            </div>
-            <div className={styles.cardDate}>{g.created}</div>
-          </Link>
-        ))}
+        {gameGuides.map((g) => {
+          if (g.externalUrl) {
+            return (
+              <a
+                key={g.slug}
+                href={g.externalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.card}
+              >
+                <div className={styles.cardHeader}>
+                  <h2>{g.title} ↗</h2>
+                </div>
+                <div className={styles.cardTags}>
+                  {g.tags.map((t) => (
+                    <span key={t} className={styles.cardTag}>{t}</span>
+                  ))}
+                </div>
+                <div className={styles.cardDate}>{g.created}</div>
+              </a>
+            );
+          }
+          return (
+            <Link key={g.slug} to={`/guides/${g.slug}`} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <h2>{g.title}</h2>
+              </div>
+              <div className={styles.cardTags}>
+                {g.tags.map((t) => (
+                  <span key={t} className={styles.cardTag}>{t}</span>
+                ))}
+              </div>
+              <div className={styles.cardDate}>{g.created}</div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
