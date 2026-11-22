@@ -1,0 +1,2 @@
+# Keep archived bytes stable so checksum verification works after checkout.
+/archive/v*/** -text

@@ -1,0 +1,1334 @@
+<style>
+  #m-app-concept {
+    display: grid;
+    justify-items: center;
+    padding: 20px 8px;
+  }
+
+  #m-app-concept .app {
+    --canvas: light-dark(#f3f5fa, #111a2a);
+    --surface: light-dark(#ffffff, #19253a);
+    --ink: light-dark(#152137, #edf2ff);
+    --quiet: light-dark(#586780, #a3b1cb);
+    --line: light-dark(#e4e9f3, #2e3c56);
+    --blue: light-dark(#244eb9, #a3bfff);
+    --on-blue: light-dark(#ffffff, #142545);
+    --blue-tint: light-dark(#e8eeff, #223659);
+    --soft-violet: light-dark(#edf0fb, #293452);
+    --widget-text: #fafcff;
+    --widget-muted: #e6edff;
+    --radius: 20px;
+    --ease: cubic-bezier(.22, .78, .25, 1);
+    width: min(100%, 416px);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--ink);
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--ink) 12%, transparent);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+  }
+  #m-app-concept .app[data-appearance='light'] { color-scheme: light; }
+  #m-app-concept .app[data-appearance='dark'] { color-scheme: dark; }
+
+  #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { box-sizing: border-box; }
+  #m-app-concept [hidden] { display: none !important; }
+  #m-app-concept :is(h1,h2,h3,p,dl,dd) { margin: 0; }
+  #m-app-concept button {
+    min-height: 44px;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    transition: background-color 160ms var(--ease), transform 160ms var(--ease);
+    -webkit-tap-highlight-color: transparent;
+  }
+  #m-app-concept button:active { transform: scale(.98); }
+  #m-app-concept :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  #m-app-concept svg { width: 19px; height: 19px; display: block; stroke-width: 1.8; }
+  #m-app-concept i[data-lucide] { display: inline-grid; place-items: center; min-width: 17px; height: 19px; font: 600 17px/1 system-ui, sans-serif; }
+  #m-app-concept i[data-lucide]::before { content: var(--glyph, '·'); }
+  #m-app-concept i[data-lucide='plus'] { --glyph: '+'; }
+  #m-app-concept i[data-lucide='more-horizontal'], #m-app-concept i[data-lucide='ellipsis'] { --glyph: '···'; }
+  #m-app-concept i[data-lucide='square-parking'], #m-app-concept i[data-lucide='parking-square'] { --glyph: 'P'; }
+  #m-app-concept i[data-lucide='book-open'], #m-app-concept i[data-lucide='cooking-pot'], #m-app-concept i[data-lucide='chef-hat'] { --glyph: '食'; }
+  #m-app-concept i[data-lucide='contact-round'], #m-app-concept i[data-lucide='user-round'] { --glyph: '人'; }
+  #m-app-concept i[data-lucide='map-pin'], #m-app-concept i[data-lucide='utensils'] { --glyph: '⌖'; }
+  #m-app-concept i[data-lucide='calculator'] { --glyph: '÷'; }
+  #m-app-concept i[data-lucide='clock-3'], #m-app-concept i[data-lucide='clock'] { --glyph: '◷'; }
+  #m-app-concept i[data-lucide='layout-grid'] { --glyph: '⊞'; }
+  #m-app-concept i[data-lucide='settings'], #m-app-concept i[data-lucide='settings-2'] { --glyph: '⚙'; }
+  #m-app-concept i[data-lucide='sliders-horizontal'] { --glyph: '≡'; }
+  #m-app-concept i[data-lucide='chevron-right'] { --glyph: '›'; }
+  #m-app-concept i[data-lucide='chevron-left'] { --glyph: '‹'; }
+  #m-app-concept i[data-lucide='arrow-up-right'] { --glyph: '↗'; }
+  #m-app-concept i[data-lucide='check'] { --glyph: '✓'; }
+  #m-app-concept i[data-lucide='eye-off'], #m-app-concept i[data-lucide='circle-minus'] { --glyph: '⊘'; }
+  #m-app-concept i[data-lucide='x'] { --glyph: '×'; }
+  #m-app-concept i[data-lucide='arrow-down-up'] { --glyph: '⇅'; }
+  #m-app-concept i[data-lucide='info'] { --glyph: 'ⓘ'; }
+  #m-app-concept i[data-lucide='history'] { --glyph: '↶'; }
+  #m-app-concept i[data-lucide='monitor'], #m-app-concept i[data-lucide='sun'], #m-app-concept i[data-lucide='moon'] { --glyph: '◐'; }
+  #m-app-concept i[data-lucide='upload'] { --glyph: '↑'; }
+  #m-app-concept i[data-lucide='download'] { --glyph: '↓'; }
+
+  #m-app-concept .shell {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 616px;
+  }
+  #m-app-concept .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 10px 21px;
+    gap: 12px;
+  }
+  #m-app-concept .top-title { font-size: 25px; font-weight: 700; letter-spacing: -.045em; line-height: 1.2; }
+  #m-app-concept .top-action, #m-app-concept .close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    flex: none;
+    border-radius: 50%;
+    color: var(--blue);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .top-action:active, #m-app-concept .close:active { background: var(--blue-tint); }
+  #m-app-concept .top-action svg { width: 22px; height: 22px; }
+  #m-app-concept .top-action i { font-size: 23px; }
+  #m-app-concept .page {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    padding: 4px 19px 18px;
+  }
+
+  #m-app-concept .widget {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius);
+    color: var(--widget-text);
+    background: linear-gradient(132deg, #15274f 0%, #1d3d82 57%, #2a51b0 100%);
+    box-shadow: 0 6px 18px rgb(35 64 134 / 17%);
+  }
+  #m-app-concept .widget[data-widget-kind='cooking'] { background: linear-gradient(132deg, #182f65, #294ea2 75%, #385fbc); }
+  #m-app-concept .widget[data-widget-kind='people'] { background: linear-gradient(132deg, #192d55, #374577 72%, #4b59a0); }
+  #m-app-concept .widget-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 169px;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 17px 19px 18px;
+  }
+  #m-app-concept .widget-body:active { transform: none; background: rgb(0 14 41 / 19%); }
+  #m-app-concept .widget-body:focus-visible { outline-offset: -5px; outline-color: var(--widget-text); border-radius: inherit; }
+  #m-app-concept .widget-label { display: flex; align-items: center; gap: 7px; color: var(--widget-muted); font-size: 13px; margin-top: 2px; margin-bottom: auto; padding-right: 47px; }
+  #m-app-concept .widget-label svg { width: 15px; height: 15px; }
+  #m-app-concept .widget-label i { min-width: 15px; height: 15px; font-size: 13px; }
+  #m-app-concept .widget-title { display: block; max-width: 100%; overflow-wrap: anywhere; font-size: clamp(24px, 6vw, 34px); font-weight: 670; line-height: 1.17; letter-spacing: -.045em; }
+  #m-app-concept .widget-meta { display: block; color: var(--widget-muted); margin-top: 8px; font-size: 12px; overflow-wrap: anywhere; }
+  #m-app-concept :is(.widget-title,.widget-meta) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  #m-app-concept .widget-config {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 2;
+    top: 11px;
+    right: 11px;
+    width: 44px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--widget-text);
+    background: rgb(246 250 255 / 15%);
+    box-shadow: inset 0 0 0 1px rgb(246 250 255 / 14%);
+  }
+  #m-app-concept .widget-config:active { background: rgb(246 250 255 / 26%); }
+  #m-app-concept .widget-config:focus-visible { outline-color: var(--widget-text); }
+  #m-app-concept .widget-config i { font-size: 19px; letter-spacing: 1px; }
+  #m-app-concept .widget-decoration {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    right: -29px;
+    bottom: -86px;
+    width: 212px;
+    height: 225px;
+    border-radius: 42px;
+    border: 1px solid rgb(205 221 255 / 22%);
+    transform: rotate(-25deg);
+    background: linear-gradient(155deg, transparent, rgb(140 178 255 / 15%));
+  }
+  #m-app-concept .widget-decoration::before, #m-app-concept .widget-decoration::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border-radius: 31px;
+    border: 1px solid rgb(205 221 255 / 19%);
+  }
+  #m-app-concept .widget-decoration::after { inset: 31px; border-radius: 22px; }
+  #m-app-concept [data-widget-slot] > .secondary { width: 100%; }
+
+  #m-app-concept .section-heading { margin: 24px 2px 10px; font-size: 17px; font-weight: 690; letter-spacing: -.02em; }
+  #m-app-concept .rows { border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+  #m-app-concept [data-recent-list] { margin-bottom: 1px; }
+  #m-app-concept .record, #m-app-concept .option {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr) auto;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+  }
+  #m-app-concept .record:not(:last-child)::after, #m-app-concept .option:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 61px;
+    right: 12px;
+    height: 1px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  #m-app-concept .record:active, #m-app-concept .option:active { background: var(--blue-tint); transform: none; }
+  #m-app-concept .record:focus-visible, #m-app-concept .option:focus-visible { outline-offset: -3px; }
+  #m-app-concept .record-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: var(--blue);
+    background: var(--blue-tint);
+  }
+  #m-app-concept .record-icon:is([data-kind='people'],.people) { background: var(--soft-violet); }
+  #m-app-concept .record-info, #m-app-concept .option-text { min-width: 0; }
+  #m-app-concept .record-name, #m-app-concept .option-name { display: block; font-size: 14px; font-weight: 660; color: var(--ink); }
+  #m-app-concept .record-meta, #m-app-concept .option-meta { display: block; font-size: 12px; color: var(--quiet); margin-top: 3px; }
+  #m-app-concept .record :is(.record-name,.record-meta) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  #m-app-concept .record-time, #m-app-concept .setting-value { color: var(--quiet); font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  #m-app-concept .record-time svg, #m-app-concept .setting-value svg { width: 15px; height: 15px; }
+  #m-app-concept .setting-value { max-width: 108px; }
+  #m-app-concept .setting-value > :first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #m-app-concept .setting-value > :last-child { flex: none; }
+  #m-app-concept .option-text { overflow-wrap: anywhere; }
+  #m-app-concept .option-marker { color: var(--blue); width: 20px; }
+
+  #m-app-concept .module-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .topbar:has(.module-tabs:not([hidden])) { padding-block: 7px; }
+  #m-app-concept .module-tab {
+    min-width: 0;
+    padding-inline: 5px;
+    border-radius: 15px;
+    color: var(--quiet);
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  #m-app-concept .module-tab[aria-selected='true'] {
+    color: var(--blue);
+    background: var(--blue-tint);
+    font-weight: 700;
+  }
+  #m-app-concept .module-tab:focus-visible { outline-offset: -3px; }
+  #m-app-concept .module-tab:active { background: var(--blue-tint); }
+  #m-app-concept .module-entries .option { min-height: 66px; }
+  #m-app-concept .module-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding-inline: 3px 10px;
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 650;
+    border-radius: 12px;
+  }
+  #m-app-concept .module-back:active { background: var(--blue-tint); }
+  #m-app-concept .module-back svg { width: 15px; height: 15px; }
+  #m-app-concept .module-feature {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    padding: 18px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .feature-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    color: var(--blue);
+    background: var(--blue-tint);
+  }
+  #m-app-concept .feature-icon svg { width: 22px; height: 22px; }
+  #m-app-concept .feature-header { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+  #m-app-concept .feature-copy { min-width: 0; }
+  #m-app-concept .feature-title { font-size: 25px; font-weight: 710; letter-spacing: -.04em; }
+  #m-app-concept .feature-meta { font-size: 13px; color: var(--quiet); margin-top: 3px; overflow-wrap: anywhere; }
+  #m-app-concept .feature-value { font-size: 28px; font-weight: 680; letter-spacing: -.04em; color: var(--blue); overflow-wrap: anywhere; }
+  #m-app-concept .module-content, #m-app-concept .module-actions { display: grid; gap: 9px; min-width: 0; }
+  #m-app-concept .module-content .rows { background: var(--canvas); border-radius: 14px; }
+  #m-app-concept .module-actions:has(> :nth-child(2)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #m-app-concept .module-content output { font-weight: 650; color: var(--blue); }
+  #m-app-concept .settings-stack { display: grid; gap: 12px; }
+  #m-app-concept .settings-row { min-height: 58px; }
+  #m-app-concept .settings-account { min-height: 74px; }
+  #m-app-concept .settings-avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a5bc0, #193777);
+    color: #f5f8ff;
+    font-weight: 680;
+  }
+  #m-app-concept .settings-arrow { color: var(--quiet); }
+  #m-app-concept .settings-arrow svg { width: 15px; height: 15px; }
+  #m-app-concept .settings-note, #m-app-concept .settings-meta { font-size: 13px; color: var(--quiet); overflow-wrap: anywhere; }
+  #m-app-concept .settings-detail { gap: 8px; }
+  #m-app-concept .version-entry { display: grid; gap: 5px; }
+  #m-app-concept .version-entry:not(:last-child) { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 3px; }
+  #m-app-concept .field .data-text { font: 13px/1.55 ui-monospace, Consolas, monospace; resize: vertical; }
+  #m-app-concept .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 5px;
+    padding: 5px;
+    margin: 4px 16px 12px;
+    border-radius: 26px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line), 0 4px 13px color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+  #m-app-concept .bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 46px;
+    border-radius: 21px;
+    color: var(--quiet);
+    font-size: 11px;
+  }
+  #m-app-concept .bottom-nav button[aria-current='page'], #m-app-concept .bottom-nav button:active {
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 680;
+  }
+
+  #m-app-concept .overlay {
+    display: grid;
+    align-items: end;
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    overflow: hidden;
+    background: rgb(11 23 47 / 0%);
+    transition: background-color 230ms ease;
+  }
+  #m-app-concept .overlay[data-open='true'] { background: rgb(11 23 47 / 38%); }
+  #m-app-concept .sheet {
+    --drag: 0px;
+    min-width: 0;
+    max-height: calc(100% - 22px);
+    overflow: auto;
+    padding: 0 17px 18px;
+    color: var(--ink);
+    background: var(--surface);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+    transition: transform 280ms var(--ease);
+    box-shadow: 0 -7px 22px rgb(11 23 47 / 13%);
+  }
+  #m-app-concept .overlay[data-open='true'] .sheet { transform: translateY(var(--drag)); }
+  #m-app-concept .sheet[data-dragging='true'] { transition: none; }
+  #m-app-concept .handle { display: grid; place-items: center; width: 100%; min-height: 44px; touch-action: none; }
+  #m-app-concept .handle:active { transform: none; }
+  #m-app-concept .handle::before { content: ""; width: 32px; height: 4px; border-radius: 99px; background: var(--line); }
+  #m-app-concept .sheet-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px 0 13px; }
+  #m-app-concept .sheet-title { font-size: 22px; font-weight: 690; letter-spacing: -.035em; overflow-wrap: anywhere; }
+  #m-app-concept .sheet-content { display: grid; gap: 10px; }
+  #m-app-concept .sheet-content .rows { background: var(--canvas); }
+  #m-app-concept .sheet-content .option + .option { margin-top: 0; }
+  #m-app-concept .detail { display: grid; gap: 8px; padding: 13px; border-radius: 14px; background: var(--canvas); overflow-wrap: anywhere; }
+  #m-app-concept .detail :is(h3,strong) { font-weight: 680; }
+  #m-app-concept .detail p, #m-app-concept .detail dt { color: var(--quiet); font-size: 13px; white-space: pre-wrap; }
+  #m-app-concept .detail dl { display: grid; gap: 8px; }
+  #m-app-concept .form { display: grid; gap: 10px; }
+  #m-app-concept .field { display: grid; gap: 4px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .field :is(input,textarea,select) {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--ink);
+    background: var(--canvas);
+    font: inherit;
+    font-size: 16px;
+  }
+  #m-app-concept :is(.primary,.secondary) { justify-self: stretch; border-radius: 13px; font-weight: 650; font-size: 14px; padding-inline: 12px; }
+  #m-app-concept .primary { color: var(--on-blue); background: var(--blue); }
+  #m-app-concept .primary:active { background: color-mix(in srgb, var(--blue) 86%, var(--ink)); }
+  #m-app-concept .secondary { color: var(--blue); background: var(--blue-tint); }
+  #m-app-concept .secondary:active { background: color-mix(in srgb, var(--blue-tint) 88%, var(--blue)); }
+  #m-app-concept .empty { padding: 13px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .notice {
+    position: absolute;
+    z-index: 2;
+    bottom: 78px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 22px);
+    padding: 5px 11px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  #m-app-concept .notice-action { min-height: 44px; padding: 0 6px; font-weight: 650; text-decoration: underline; }
+  #m-app-concept .live-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  @media (max-width: 385px) {
+    #m-app-concept { padding-block: 12px; }
+    #m-app-concept .shell { height: 550px; }
+    #m-app-concept .topbar { padding-inline: 15px; }
+    #m-app-concept .page { padding-inline: 13px; }
+    #m-app-concept .bottom-nav { margin-inline: 11px; }
+    #m-app-concept .widget-body { padding-inline: 15px; }
+    #m-app-concept .widget-title { padding-right: 26px; }
+    #m-app-concept .record, #m-app-concept .option { gap: 8px; padding-inline: 9px; }
+    #m-app-concept .module-feature { padding-inline: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { transition: none !important; }
+    #m-app-concept button:active { transform: none; }
+  }
+</style>
+
+<div id="m-app-concept" class="viz-dotted-background">
+  <article class="app" aria-label="M_APP · 手机界面">
+    <div class="shell">
+      <header class="topbar">
+        <h1 class="top-title">最近</h1>
+        <button class="top-action cursor-interaction" type="button" id="m-app-add" data-action="add" aria-label="新增记录"><i data-lucide="plus" aria-hidden="true"></i></button>
+        <div class="module-tabs" data-module-tabs role="tablist" aria-label="模块分类" hidden>
+          <button id="m-app-module-tab-permanent" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="true" data-action="select-category" data-key="permanent">永久记录</button>
+          <button id="m-app-module-tab-temporary" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="temporary">临时记录</button>
+          <button id="m-app-module-tab-tools" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="tools">工具</button>
+        </div>
+      </header>
+      <section class="page" data-page="recent" aria-label="最近">
+        <div data-widget-slot></div>
+        <h2 class="section-heading">最近记录</h2>
+        <div class="rows" data-recent-list></div>
+      </section>
+      <section class="page" data-page="modules" aria-label="模块" hidden>
+        <div id="m-app-module-pane" data-module-pane role="tabpanel"></div>
+      </section>
+      <section class="page" data-page="settings" aria-label="设置" hidden>
+        <div class="settings-stack">
+          <div class="rows">
+            <button class="record settings-row settings-account cursor-interaction" type="button" data-action="settings-item" data-key="account">
+              <span class="record-icon settings-avatar" aria-hidden="true">M</span>
+              <span class="record-info"><span class="record-name">我的账号</span><span class="record-meta">示例用户</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="modules">
+              <span class="record-icon"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">模块管理</span></span>
+              <span class="setting-value"><span data-enabled-module-count>5 个模块</span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
+              <span class="record-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">偏好设置</span><span class="record-meta">外观和小组件</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="data">
+              <span class="record-icon"><i data-lucide="arrow-down-up" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">数据导入 / 导出</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="about">
+              <span class="record-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">关于我们</span></span>
+              <span class="setting-value"><span data-app-version></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="changelog">
+              <span class="record-icon"><i data-lucide="history" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">版本日志</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="cursor-interaction" type="button" data-tab="recent" aria-current="page"><i data-lucide="clock-3" aria-hidden="true"></i>最近</button>
+        <button class="cursor-interaction" type="button" data-tab="modules"><i data-lucide="layout-grid" aria-hidden="true"></i>模块</button>
+        <button class="cursor-interaction" type="button" data-tab="settings"><i data-lucide="settings" aria-hidden="true"></i>设置</button>
+      </nav>
+    </div>
+    <div class="notice" hidden></div>
+    <div class="live-status" role="status"></div>
+    <div class="overlay" hidden>
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-app-sheet-title">
+        <button class="handle cursor-interaction" type="button" data-close-sheet aria-label="下拉或点击关闭"></button>
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="m-app-sheet-title"></h2>
+          <button class="close cursor-interaction" type="button" data-close-sheet aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="sheet-content"></div>
+      </section>
+    </div>
+  </article>
+</div>
+
+<script>
+  (() => {
+    if (!globalThis.Tweak) return;
+    const app = document.getElementById('m-app-concept').querySelector('.app');
+    const appearance = { radius: 20 };
+    const tweak = new Tweak({ container: app, onChange: () => app.style.setProperty('--radius', `${appearance.radius}px`) });
+    tweak.addSlider(appearance, 'radius', { label: '卡片圆角', min: 12, max: 32, unit: 'px', reference: '--radius' });
+  })();
+</script>
+
+<script>
+(() => {
+  const root = document.getElementById('m-app-concept');
+  const app = root.querySelector('.app');
+  const shell = root.querySelector('.shell');
+  const pageTitle = root.querySelector('.top-title');
+  const addButton = root.querySelector('#m-app-add');
+  const pages = [...root.querySelectorAll('[data-page]')];
+  const tabs = [...root.querySelectorAll('[data-tab]')];
+  const widgetSlot = root.querySelector('[data-widget-slot]');
+  const recentList = root.querySelector('[data-recent-list]');
+  const enabledModuleCount = root.querySelector('[data-enabled-module-count]');
+  const overlay = root.querySelector('.overlay');
+  const sheet = root.querySelector('.sheet');
+  const handle = sheet.querySelector('.handle');
+  const closeButton = sheet.querySelector('.close');
+  const sheetTitle = sheet.querySelector('.sheet-title');
+  const sheetContent = sheet.querySelector('.sheet-content');
+  const notice = root.querySelector('.notice');
+  const status = root.querySelector('.live-status');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const pageLabels = { recent: '最近', modules: '模块', settings: '设置' };
+  const modules = {
+    cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat', field: '菜名', note: '食材和做法' },
+    people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
+    food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
+    parking: { label: '停车备忘', icon: 'square-parking' },
+    calculator: { label: '计算器', icon: 'calculator' }
+  };
+  const persistentKinds = ['cooking', 'people', 'food'];
+  const state = {
+    page: 'recent',
+    category: 'permanent',
+    module: null,
+    enabledModules: Object.keys(modules),
+    appearance: 'system',
+    widget: 'parking',
+    parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
+    records: [
+      { id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18', detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。' },
+      { id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。' },
+      { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
+    ]
+  };
+  const drafts = new Map();
+  const scrollPositions = new Map();
+  let nextId = 1;
+  let returnFocus;
+  let noticeTimer;
+  let dragStart;
+  let draggedHandle = false;
+  let recentlyCompleted;
+
+  const icon = (name) => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const findRecord = (key) => state.records.find((record) => record.id === key);
+  const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+
+  function updateIcons() {
+    globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
+  }
+
+  function syncHeader() {
+    const hasModuleTabs = state.page === 'modules';
+    pageTitle.textContent = pageLabels[state.page];
+    pageTitle.hidden = hasModuleTabs;
+    addButton.hidden = state.page !== 'recent';
+    moduleTabs.hidden = !hasModuleTabs;
+  }
+
+  function applyAppearance() {
+    app.dataset.appearance = state.appearance;
+  }
+
+  function setPage(key) {
+    const previous = pages.find((page) => page.dataset.page === state.page);
+    scrollPositions.set(state.page, previous.scrollTop);
+    state.page = key;
+    syncHeader();
+    for (const page of pages) page.hidden = page.dataset.page !== key;
+    for (const tab of tabs) {
+      if (tab.dataset.tab === key) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    }
+    pages.find((page) => page.dataset.page === key).scrollTop = scrollPositions.get(key) || 0;
+  }
+
+  function parkingTitle(parking) {
+    return [parking.area, parking.number].filter(Boolean).join(' · ') || parking.place;
+  }
+
+  function widgetView() {
+    if (state.widget === 'none') return null;
+    if (state.widget === 'parking') {
+      return state.parking
+        ? { kind: 'parking', label: '当前停车', title: parkingTitle(state.parking), meta: `${state.parking.place} · ${state.parking.time}`, action: 'record', key: 'parking' }
+        : { kind: 'empty', label: '停车记录', title: '记录停车', meta: '保存楼层、区域和车位号', action: 'create', key: 'parking' };
+    }
+    const record = findRecord(state.widget);
+    return { kind: record.kind, label: modules[record.kind].label, title: record.title, meta: record.summary, action: 'record', key: record.id };
+  }
+
+  function renderWidget() {
+    const item = widgetView();
+    if (!item) {
+      widgetSlot.innerHTML = `<button class="secondary cursor-interaction" type="button" data-action="widget-settings">${icon('plus')}添加小组件</button>`;
+      return;
+    }
+    widgetSlot.innerHTML = `
+      <article class="widget" data-widget-kind="${item.kind}">
+        <span class="widget-decoration" aria-hidden="true"></span>
+        <button class="widget-body cursor-interaction" type="button" data-action="${item.action}" data-key="${item.key}">
+          <span class="widget-label">${icon(item.kind === 'empty' ? 'square-parking' : modules[item.kind].icon)}<span></span></span>
+          <span class="widget-title"></span>
+          <span class="widget-meta"></span>
+        </button>
+        <button class="widget-config cursor-interaction" type="button" data-action="widget-settings" aria-label="编辑小组件">${icon('sliders-horizontal')}</button>
+      </article>`;
+    widgetSlot.querySelector('.widget-label span').textContent = item.label;
+    widgetSlot.querySelector('.widget-title').textContent = item.title;
+    widgetSlot.querySelector('.widget-meta').textContent = item.meta;
+  }
+
+  function recordRow(record) {
+    const button = document.createElement('button');
+    button.className = 'record cursor-interaction';
+    button.type = 'button';
+    button.dataset.action = 'record';
+    button.dataset.key = record.id;
+    button.innerHTML = `
+      <span class="record-icon" data-kind="${record.kind}">${icon(modules[record.kind].icon)}</span>
+      <span class="record-info"><span class="record-name"></span><span class="record-meta"></span></span>
+      <span class="record-time"></span>`;
+    button.querySelector('.record-name').textContent = record.title;
+    button.querySelector('.record-meta').textContent = `${modules[record.kind].label} · ${record.summary}`;
+    button.querySelector('.record-time').textContent = record.time;
+    return button;
+  }
+
+  function renderRecent() {
+    const rows = state.records.map(recordRow);
+    if (state.parking && state.widget !== 'parking') {
+      rows.unshift(recordRow({ id: 'parking', kind: 'parking', title: parkingTitle(state.parking), summary: state.parking.place, time: state.parking.time }));
+    }
+    if (rows.length) recentList.replaceChildren(...rows);
+    else recentList.innerHTML = '<p class="empty">还没有最近记录</p>';
+  }
+
+  function render() {
+    renderWidget();
+    renderRecent();
+    syncHeader();
+    renderModules();
+    enabledModuleCount.textContent = `${state.enabledModules.length} 个模块`;
+    updateIcons();
+  }
+
+  function toggleManagedModule(key) {
+    const wasEnabled = state.enabledModules.includes(key);
+    state.enabledModules = Object.keys(modules).filter((module) => module === key ? !wasEnabled : state.enabledModules.includes(module));
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    render();
+  }
+
+  function setSheet(label, html, trigger) {
+    if (overlay.dataset.open === 'false' && !overlay.hidden) return;
+    sheetTitle.textContent = label;
+    sheetContent.innerHTML = html;
+    sheet.scrollTop = 0;
+    if (overlay.hidden) {
+      returnFocus = trigger;
+      overlay.hidden = false;
+      shell.inert = true;
+      notice.inert = true;
+      overlay.getBoundingClientRect();
+      overlay.dataset.open = 'true';
+    }
+    closeButton.focus({ preventScroll: true });
+    updateIcons();
+  }
+
+  function focusAfterClose() {
+    if (returnFocus?.isConnected) {
+      returnFocus.focus({ preventScroll: true });
+      return;
+    }
+    const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden]')
+      && button.dataset.action === returnFocus?.dataset.action && button.dataset.key === returnFocus?.dataset.key);
+    const widgetButton = returnFocus?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
+    const selectedCategory = state.page === 'modules' && moduleTabs.querySelector('[aria-selected="true"]');
+    (replacement || widgetButton || selectedCategory || tabs.find((tab) => tab.dataset.tab === state.page)).focus({ preventScroll: true });
+  }
+
+  function closeSheet(afterClose) {
+    if (overlay.dataset.open !== 'true') return;
+    overlay.dataset.open = 'false';
+    sheet.style.removeProperty('--drag');
+    const finish = () => {
+      overlay.hidden = true;
+      shell.inert = false;
+      notice.inert = false;
+      focusAfterClose();
+      afterClose?.();
+    };
+    if (reducedMotion.matches) finish();
+    else setTimeout(finish, 280);
+  }
+
+  function showNotice(text, canUndo = false) {
+    clearTimeout(noticeTimer);
+    notice.innerHTML = `<span></span>${canUndo ? '<button class="notice-action cursor-interaction" type="button" data-action="undo-parking">撤销</button>' : ''}`;
+    notice.firstElementChild.textContent = text;
+    notice.hidden = false;
+    status.textContent = text;
+    noticeTimer = setTimeout(() => { notice.hidden = true; }, canUndo ? 5200 : 2300);
+  }
+
+  function optionRow({ action, key, name, meta, symbol, selected }) {
+    const marker = selected === undefined ? icon('chevron-right') : selected ? icon('check') : '';
+    const pressed = selected === undefined ? '' : ` aria-pressed="${selected}"`;
+    return `<button class="option cursor-interaction" type="button" data-action="${action}" data-key="${key}"${pressed}>
+      ${symbol ? `<span class="record-icon">${icon(symbol)}</span>` : ''}
+      <span class="option-text"><span class="option-name">${name}</span>${meta ? `<span class="option-meta">${meta}</span>` : ''}</span>
+      <span class="option-marker">${marker}</span>
+    </button>`;
+  }
+
+  function showWidgetSettings(trigger) {
+    const choices = [
+      { key: 'parking', name: '当前停车', meta: '显示当前车位，也可快速记录', symbol: 'square-parking' },
+      ...state.records.map((record) => ({ key: record.id, name: '', meta: modules[record.kind].label, symbol: modules[record.kind].icon, title: record.title })),
+      { key: 'none', name: '隐藏小组件', symbol: 'circle-minus' }
+    ];
+    const options = choices.map((item) => optionRow({ ...item, action: 'set-widget', selected: state.widget === item.key }));
+    setSheet('编辑小组件', `<div class="rows">${options.join('')}</div>`, trigger);
+    const labels = sheetContent.querySelectorAll('.option-name');
+    choices.forEach((item, index) => { if (item.title) labels[index].textContent = item.title; });
+  }
+
+  function showAdd(trigger) {
+    const options = ['parking', ...persistentKinds].map((kind) => optionRow({
+      action: 'create', key: kind, name: kind === 'parking' ? (state.parking ? '更新车位' : '记录停车') : `新增${modules[kind].item}`, symbol: modules[kind].icon
+    }));
+    setSheet('新增记录', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showCreate(kind, trigger) {
+    const parking = kind === 'parking';
+    const updatingParking = parking && state.parking;
+    const module = modules[kind];
+    const fields = parking
+      ? '<label class="field">停车地点<input name="place" maxlength="28" required placeholder="例如环贸广场"></label><label class="field">楼层和区域<input name="area" maxlength="18" placeholder="例如 B2 · C 区"></label><label class="field">车位号<input name="number" maxlength="12" placeholder="例如 128"></label>'
+      : `<label class="field">${module.field}<input name="title" maxlength="30" required></label><label class="field">${module.note}<textarea name="note" rows="2" maxlength="180"></textarea></label>`;
+    const label = updatingParking ? '更新车位' : parking ? '记录停车' : `新增${module.item}`;
+    setSheet(label, `<form class="form" data-create="${kind}">
+      ${fields}<button class="primary cursor-interaction" type="button" data-action="save">${parking ? '保存车位' : '保存记录'}</button></form>`, trigger);
+    const draft = drafts.get(kind) || (updatingParking && Object.entries(updatingParking).filter(([name]) => name !== 'time'));
+    const form = sheetContent.querySelector('form');
+    if (draft) for (const [name, value] of draft) form.elements.namedItem(name).value = value;
+  }
+
+  function showRecord(key, trigger) {
+    if (key === 'parking') {
+      if (!state.parking) {
+        showCreate('parking', trigger);
+        return;
+      }
+      setSheet('当前停车', `<div class="detail">
+        <strong class="detail-value"></strong><p></p>
+        <button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button></div>`, trigger);
+      sheetContent.querySelector('strong').textContent = parkingTitle(state.parking);
+      sheetContent.querySelector('p').textContent = `今天 ${state.parking.time} · ${state.parking.place}`;
+      return;
+    }
+    const record = findRecord(key);
+    setSheet(record.title, '<div class="detail"><p></p></div>', trigger);
+    sheetContent.querySelector('p').textContent = record.detail || record.summary;
+  }
+
+  function save(form) {
+    if (overlay.dataset.open !== 'true') return;
+    const required = form.querySelector('input[required]');
+    required.value = required.value.trim();
+    if (!form.reportValidity()) return;
+    const values = new FormData(form);
+    const kind = form.dataset.create;
+    if (kind === 'parking') {
+      recentlyCompleted = undefined;
+      state.parking = { place: values.get('place'), area: values.get('area').trim(), number: values.get('number').trim(), time: timeNow() };
+    } else {
+      const detail = values.get('note').trim();
+      const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
+      let id;
+      do { id = `record-${nextId++}`; } while (findRecord(id));
+      state.records.unshift({ id, kind, title: values.get('title'), summary, detail, time: timeNow() });
+    }
+    drafts.delete(kind);
+    render();
+    closeSheet(() => showNotice(kind === 'parking' ? '车位已保存' : '记录已保存'));
+  }
+
+  const moduleTabs = root.querySelector('[data-module-tabs]');
+  const modulePane = root.querySelector('[data-module-pane]');
+  const modulePage = modulePane.closest('.page');
+  const categoryTabs = [...moduleTabs.querySelectorAll('[role="tab"]')];
+  const moduleCategories = {
+    permanent: ['cooking', 'people', 'food'],
+    temporary: ['parking'],
+    tools: ['calculator']
+  };
+  const moduleEntryNotes = {
+    cooking: '菜谱、食材和做法',
+    people: '生日、关系和备忘',
+    food: '店铺和到访笔记',
+    parking: '记录当前车位',
+    calculator: '快速计算聚餐分摊'
+  };
+  const categoryScrollPositions = new Map();
+  const calculatorDraft = { amount: '128', people: '4', result: '每人 ¥32.00' };
+
+  function renderModuleTabs() {
+    for (const tab of categoryTabs) {
+      const selected = tab.dataset.key === state.category;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected) modulePane.setAttribute('aria-labelledby', tab.id);
+    }
+  }
+
+  function renderCategoryEntries() {
+    const keys = moduleCategories[state.category].filter((key) => state.enabledModules.includes(key));
+    if (!keys.length) {
+      modulePane.innerHTML = `<div class="module-feature">
+        <p class="feature-meta">此分类暂无已启用的模块。</p>
+        <button class="secondary cursor-interaction" type="button" data-action="settings-item" data-key="modules">模块管理</button>
+      </div>`;
+      return;
+    }
+
+    const entries = keys.map((key) => optionRow({
+      action: 'open-module', key, name: modules[key].label, meta: moduleEntryNotes[key], symbol: modules[key].icon
+    }));
+    modulePane.innerHTML = `<div class="rows module-entries">${entries.join('')}</div>`;
+    if (state.category === 'temporary' && state.parking) {
+      modulePane.querySelector('[data-key="parking"] .option-meta').textContent = parkingTitle(state.parking);
+    }
+  }
+
+  function renderPersistentModule(key) {
+    const module = modules[key];
+    const entries = state.records.filter((record) => record.kind === key);
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon(module.icon)}</span>
+          <div class="feature-copy">
+            <h2 class="feature-title">${module.label}</h2>
+            <p class="feature-meta">${entries.length} 条记录</p>
+          </div>
+        </div>
+        <div class="module-content">
+          <div class="rows"></div>
+          <button class="primary cursor-interaction" type="button" data-action="create" data-key="${key}">${icon('plus')}新增${module.item}</button>
+        </div>
+      </section>`;
+
+    const list = modulePane.querySelector('.rows');
+    if (entries.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = `暂无${module.item}`;
+      list.append(empty);
+      return;
+    }
+
+    for (const record of entries) {
+      const row = recordRow(record);
+      row.querySelector('.record-meta').textContent = record.summary;
+      list.append(row);
+    }
+  }
+
+  function renderParkingModule() {
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon('square-parking')}</span>
+          <div class="feature-copy">
+            <h2 class="feature-title">停车备忘</h2>
+            <p class="feature-value"></p>
+            <p class="feature-meta"></p>
+          </div>
+        </div>
+        <div class="module-actions">
+          ${state.parking ? '<button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button>' : ''}
+          <button class="${state.parking ? 'secondary' : 'primary'} cursor-interaction" type="button" data-action="create" data-key="parking">${state.parking ? '更新车位' : '记录停车'}</button>
+        </div>
+      </section>`;
+    modulePane.querySelector('.feature-value').textContent = state.parking ? parkingTitle(state.parking) : '当前没有停车记录';
+    modulePane.querySelector('.feature-meta').textContent = state.parking
+      ? `${state.parking.place} · ${state.parking.time}`
+      : '保存地点和车位，取车后结束。';
+  }
+
+  function renderCalculatorModule() {
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon('calculator')}</span>
+          <div class="feature-copy"><h2 class="feature-title">聚餐分摊</h2></div>
+        </div>
+        <form class="form module-content" data-calculator>
+          <label class="field">总金额<input name="amount" type="number" min="0" step="any" inputmode="decimal" required></label>
+          <label class="field">人数<input name="people" type="number" min="1" inputmode="numeric" required></label>
+          <output class="feature-value" aria-live="polite"></output>
+        </form>
+      </section>`;
+    const form = modulePane.querySelector('[data-calculator]');
+    form.elements.amount.value = calculatorDraft.amount;
+    form.elements.people.value = calculatorDraft.people;
+    form.querySelector('output').textContent = calculatorDraft.result;
+  }
+
+  function renderModules() {
+    const calculator = modulePane.querySelector('[data-calculator]');
+    if (calculator) {
+      calculatorDraft.amount = calculator.elements.amount.value;
+      calculatorDraft.people = calculator.elements.people.value;
+      calculatorDraft.result = calculator.querySelector('output').textContent;
+    }
+
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    renderModuleTabs();
+    if (!state.module) {
+      renderCategoryEntries();
+      return;
+    }
+
+    if (state.module === 'parking') renderParkingModule();
+    else if (state.module === 'calculator') renderCalculatorModule();
+    else renderPersistentModule(state.module);
+    const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
+    modulePane.insertAdjacentHTML('afterbegin', `<button class="module-back cursor-interaction" type="button" data-action="back-to-category">${icon('chevron-left')}返回${categoryLabel}</button>`);
+  }
+
+  function selectCategory(key) {
+    if (key === state.category && !state.module) return;
+    if (!state.module) categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.category = key;
+    state.module = null;
+    renderModules();
+    updateIcons();
+    modulePage.scrollTop = categoryScrollPositions.get(key) || 0;
+  }
+
+  function openModule(key) {
+    if (!state.enabledModules.includes(key) || !moduleCategories[state.category].includes(key)) return;
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.module = key;
+    renderModules();
+    updateIcons();
+    modulePage.scrollTop = 0;
+    modulePane.querySelector('.module-back').focus({ preventScroll: true });
+  }
+
+  function backToModuleCategory() {
+    const module = state.module;
+    selectCategory(state.category);
+    modulePane.querySelector(`[data-action="open-module"][data-key="${module}"]`)?.focus({ preventScroll: true });
+  }
+
+  const moduleActions = {
+    'select-category': selectCategory,
+    'open-module': openModule,
+    'back-to-category': backToModuleCategory
+  };
+
+  moduleTabs.addEventListener('keydown', (event) => {
+    const tab = event.target.closest('[role="tab"]');
+    if (!tab) return;
+    const current = categoryTabs.indexOf(tab);
+    const last = categoryTabs.length - 1;
+    let next;
+    if (event.key === 'ArrowRight') next = current === last ? 0 : current + 1;
+    else if (event.key === 'ArrowLeft') next = current === 0 ? last : current - 1;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = last;
+    else return;
+
+    event.preventDefault();
+    const target = categoryTabs[next];
+    selectCategory(target.dataset.key);
+    target.focus({ preventScroll: true });
+  });
+
+  const settingsVersion = '0.3.0';
+  const appearanceLabels = { system: '跟随系统', light: '浅色', dark: '深色' };
+  const backupFormat = 'm-app-preview';
+  const backupTextLimit = 240000;
+  const backupIdPattern = /^[A-Za-z0-9_-]{1,64}$/;
+  let pendingBackup;
+
+  function showManagedModules(trigger) {
+    const moduleOptions = Object.entries(modules).map(([key, module]) => {
+      const enabled = state.enabledModules.includes(key);
+      return optionRow({
+        action: 'toggle-managed-module', key, name: module.label, symbol: module.icon,
+        meta: enabled ? '已添加' : '未添加', selected: enabled
+      });
+    });
+    setSheet('模块管理', `<p class="settings-meta">选择在各分类内显示的功能入口。移除入口后，原有记录仍会保留。</p>
+      <div class="rows">${moduleOptions.join('')}</div>`, trigger);
+  }
+
+  function showPreferences(trigger) {
+    const widgetOption = optionRow({
+      action: 'widget-settings', key: 'recent-widget', name: '最近页小组件',
+      meta: '选择固定在上方的内容', symbol: 'layout-grid'
+    });
+    const appearanceOptions = Object.entries(appearanceLabels).map(([key, name]) => optionRow({
+      action: 'settings-appearance', key, name, symbol: { system: 'monitor', light: 'sun', dark: 'moon' }[key],
+      selected: state.appearance === key
+    }));
+    setSheet('偏好设置', `<div class="rows">${widgetOption}</div>
+      <h3 class="settings-meta">界面外观</h3><div class="rows">${appearanceOptions.join('')}</div>`, trigger);
+  }
+
+  function showDataSettings(trigger) {
+    pendingBackup = undefined;
+    const options = [
+      optionRow({ action: 'settings-backup-view', key: 'import', name: '导入数据', meta: '从 JSON 备份恢复记录', symbol: 'upload' }),
+      optionRow({ action: 'settings-backup-view', key: 'export', name: '导出数据', meta: '生成可复制的 JSON 备份', symbol: 'download' })
+    ];
+    setSheet('数据导入／导出', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showBackupImport(trigger, source = '') {
+    pendingBackup = undefined;
+    setSheet('导入数据', `<label class="field">粘贴 M_APP 的 JSON 备份
+      <textarea class="data-text" data-backup-input rows="7" maxlength="${backupTextLimit}" spellcheck="false"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="review-settings-import">检查备份</button>`, trigger);
+    sheetContent.querySelector('[data-backup-input]').value = source;
+  }
+
+  function showBackupExport(trigger) {
+    setSheet('导出数据', `<p class="settings-meta">备份包含当前的长期记录和车位。选中后可复制到本地文件。</p>
+      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false"></textarea></label>
+      <button class="primary cursor-interaction" type="button" data-action="select-settings-backup">选中全部 JSON</button>`, trigger);
+    sheetContent.querySelector('[data-backup-output]').value = JSON.stringify({
+      format: backupFormat,
+      schema: 1,
+      records: state.records,
+      parking: state.parking
+    }, null, 2);
+  }
+
+  function backupString(value, field, maxLength, required = false) {
+    if (typeof value !== 'string' || value.length > maxLength || (required && !value.trim())) {
+      throw new Error(`备份中的${field}格式不正确。`);
+    }
+    return value;
+  }
+
+  function parseSettingsBackup(source) {
+    if (!source.trim()) throw new Error('请先粘贴 JSON 备份。');
+    if (source.length > backupTextLimit) throw new Error('这份备份超出预览可导入的大小。');
+    let json;
+    try {
+      json = JSON.parse(source);
+    } catch {
+      throw new Error('没有读到有效的 JSON，请检查备份是否完整。');
+    }
+    if (json?.format !== backupFormat || json.schema !== 1 || !Array.isArray(json.records)) {
+      throw new Error('请选择由这个预览导出的 M_APP 备份。');
+    }
+    if (json.records.length > 500) throw new Error('这个预览一次可导入最多 500 条记录。');
+    const recordIds = new Set();
+    const records = json.records.map((record) => {
+      if (!record || !persistentKinds.includes(record.kind) || typeof record.id !== 'string'
+        || !backupIdPattern.test(record.id) || ['parking', 'none'].includes(record.id) || recordIds.has(record.id)) {
+        throw new Error('备份中的记录类型或编号无效。');
+      }
+      recordIds.add(record.id);
+      return {
+        id: record.id,
+        kind: record.kind,
+        title: backupString(record.title, '标题', 30, true),
+        summary: backupString(record.summary, '摘要', 180),
+        time: backupString(record.time, '时间', 32, true),
+        detail: backupString(record.detail, '内容', 180)
+      };
+    });
+    let parking = null;
+    if (json.parking !== null) {
+      if (!json.parking || typeof json.parking !== 'object' || Array.isArray(json.parking)) {
+        throw new Error('备份中的停车记录格式不正确。');
+      }
+      parking = {
+        place: backupString(json.parking.place, '停车地点', 28, true),
+        area: backupString(json.parking.area, '楼层和区域', 18),
+        number: backupString(json.parking.number, '车位号', 12),
+        time: backupString(json.parking.time, '停车时间', 32, true)
+      };
+    }
+    return { records, parking, recordIds, source };
+  }
+
+  function reviewSettingsImport(trigger) {
+    const source = sheetContent.querySelector('[data-backup-input]').value;
+    try {
+      pendingBackup = parseSettingsBackup(source);
+    } catch (error) {
+      const message = sheetContent.querySelector('[data-backup-error]');
+      message.hidden = false;
+      message.textContent = error.message;
+      return;
+    }
+    setSheet('确认导入', `<div class="detail settings-detail">
+      <strong>${pendingBackup.records.length} 条长期记录 · ${pendingBackup.parking ? '1 条车位记录' : '无车位记录'}</strong>
+      <p>确认后，备份将替换当前预览中的记录和车位。</p></div>
+      <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
+      <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
+  }
+
+  function applySettingsImport() {
+    if (!pendingBackup) return;
+    const { records, parking, recordIds } = pendingBackup;
+    pendingBackup = undefined;
+    state.records = records;
+    state.parking = parking;
+    if (!['parking', 'none'].includes(state.widget) && !recordIds.has(state.widget)) state.widget = 'parking';
+    recentlyCompleted = undefined;
+    drafts.clear();
+    notice.hidden = true;
+    render();
+    closeSheet(() => showNotice('已导入数据'));
+  }
+
+  function showSettingsItem(key, trigger) {
+    switch (key) {
+      case 'account':
+        setSheet('我的账号', `<div class="detail settings-detail">
+          <h3>M_APP 预览用户</h3><p>本地示例账号</p></div>`, trigger);
+        break;
+      case 'modules':
+        showManagedModules(trigger);
+        break;
+      case 'preferences':
+        showPreferences(trigger);
+        break;
+      case 'data':
+        showDataSettings(trigger);
+        break;
+      case 'about':
+        setSheet('关于我们', `<div class="detail settings-detail">
+          <h3>M_APP</h3><p>在一处整理菜谱、人物、美食和临时停车记录。</p><p>当前原型版本 v${settingsVersion}</p></div>`, trigger);
+        break;
+      case 'changelog':
+        setSheet('版本日志', `<article class="detail version-entry"><h3>v${settingsVersion}</h3>
+          <p>增加永久记录、临时记录和工具三个分类，可在设置中选择各分类的模块入口。设置增加账号、偏好、数据备份和版本信息。</p></article>
+          <article class="detail version-entry"><h3>v0.2.0</h3><p>换用深蓝界面，加入「最近」「模块」「设置」三个入口，支持自定义最近页小组件。</p></article>
+          <article class="detail version-entry"><h3>v0.1.0</h3><p>完成最近记录、当前车位和底部弹层的初版设计。</p></article>`, trigger);
+        break;
+    }
+  }
+
+  const settingsActions = {
+    'settings-item': showSettingsItem,
+    'toggle-managed-module': (key, button) => {
+      const scrollTop = sheet.scrollTop;
+      toggleManagedModule(key);
+      showManagedModules(button);
+      sheet.scrollTop = scrollTop;
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-appearance': (key, button) => {
+      state.appearance = key;
+      applyAppearance();
+      showPreferences(button);
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-backup-view': (key, button) => {
+      if (key === 'import') showBackupImport(button);
+      else showBackupExport(button);
+    },
+    'select-settings-backup': () => {
+      const output = sheetContent.querySelector('[data-backup-output]');
+      output.focus();
+      output.select();
+    },
+    'review-settings-import': (_, button) => reviewSettingsImport(button),
+    'edit-settings-import': (_, button) => showBackupImport(button, pendingBackup?.source),
+    'apply-settings-import': applySettingsImport
+  };
+
+  const actions = {
+    ...moduleActions,
+    ...settingsActions,
+    'widget-settings': (_, button) => showWidgetSettings(button),
+    'set-widget': (key) => {
+      state.widget = key;
+      render();
+      closeSheet(() => showNotice(key === 'none' ? '小组件已隐藏' : '小组件已更新'));
+    },
+    add: (_, button) => showAdd(button),
+    create: showCreate,
+    record: showRecord,
+    save: (_, button) => save(button.closest('[data-create]')),
+    'complete-parking': () => {
+      if (!state.parking) return;
+      recentlyCompleted = state.parking;
+      state.parking = null;
+      drafts.delete('parking');
+      render();
+      if (overlay.dataset.open === 'true') closeSheet(() => showNotice('停车记录已结束', true));
+      else {
+        root.querySelector('[data-module-pane] [data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
+        showNotice('停车记录已结束', true);
+      }
+    },
+    'undo-parking': () => {
+      if (state.parking || !recentlyCompleted) return;
+      state.parking = recentlyCompleted;
+      recentlyCompleted = undefined;
+      render();
+      tabs.find((tab) => tab.dataset.tab === state.page).focus({ preventScroll: true });
+      showNotice('停车记录已恢复');
+    }
+  };
+
+  root.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (button?.dataset.tab) setPage(button.dataset.tab);
+    if (button === handle && draggedHandle && event.detail !== 0) return;
+    if (button?.hasAttribute('data-close-sheet') || event.target === overlay) closeSheet();
+    if (button?.dataset.action) actions[button.dataset.action]?.(button.dataset.key, button);
+  });
+
+  root.addEventListener('input', (event) => {
+    const form = event.target.closest('form');
+    if (!form) return;
+    if (form.dataset.create) drafts.set(form.dataset.create, new FormData(form));
+    if (form.hasAttribute('data-calculator')) {
+      const amount = form.elements.amount.valueAsNumber;
+      const people = form.elements.people.valueAsNumber;
+      form.querySelector('output').textContent = form.checkValidity() ? `每人 ¥${(amount / people).toFixed(2)}` : '请输入金额和人数';
+    }
+  });
+  root.addEventListener('submit', (event) => event.preventDefault());
+
+  overlay.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeSheet();
+    }
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT' && !event.isComposing) {
+      const form = event.target.closest('[data-create]');
+      if (form) {
+        event.preventDefault();
+        save(form);
+      }
+    }
+    if (event.key !== 'Tab') return;
+    const controls = [...sheet.querySelectorAll('button, input, textarea')].filter((element) => element.getClientRects().length);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  handle.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    draggedHandle = false;
+    dragStart = event.clientY;
+    sheet.dataset.dragging = 'true';
+    handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    if (Math.abs(distance) > 6) draggedHandle = true;
+    if (!reducedMotion.matches) sheet.style.setProperty('--drag', `${Math.max(0, distance)}px`);
+  });
+  function finishDrag(event) {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    dragStart = undefined;
+    sheet.dataset.dragging = 'false';
+    if (event.type === 'pointerup' && distance > 54) closeSheet();
+    else sheet.style.removeProperty('--drag');
+  }
+  handle.addEventListener('pointerup', finishDrag);
+  handle.addEventListener('pointercancel', finishDrag);
+
+  setPage(state.page);
+  applyAppearance();
+  root.querySelector('[data-app-version]').textContent = `v${settingsVersion}`;
+  render();
+})();
+</script>
