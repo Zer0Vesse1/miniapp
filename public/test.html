@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>测试</title>
+    <style>
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        background: #f4f6fa;
+        font-family: system-ui, sans-serif;
+      }
+
+      button {
+        min-height: 48px;
+        padding: 0.75rem 2rem;
+        border: 0;
+        border-radius: 0.625rem;
+        background: #1656c1;
+        color: #fff;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #11459c;
+      }
+
+      button:focus-visible {
+        outline: 3px solid #1656c1;
+        outline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" id="test-button">测试</button>
+    <script>
+      document.getElementById('test-button').addEventListener('click', () => {
+        window.alert('开始了！');
+      });
+    </script>
+  </body>
+</html>
