@@ -2,7 +2,7 @@
 
 ## 开发位置
 
-- 当前界面原型在 `work/m-app-concept.html`，根目录的 `index.html` 是测试入口。日常开发和验证使用当前文件。
+- 当前界面源码在 `work/m-app-concept.html`。`npm run build` 从该源码生成根目录的 `index.html` 和 Cloudflare Pages 所需的 `dist/`。页面更新以界面源码为准。
 - `archive/vX.Y.Z/` 保存冻结的版本快照。查阅或恢复时先复制到独立目录，保留归档原件。
 
 ## 更新与归档
@@ -16,3 +16,8 @@
 
 - 当前原型的 `moduleSettings` 分别维护每个模块的偏好、版本日期和更新日志。模块可以按自己的迭代节奏推进版本。
 - 主 App 按上面的流程冻结版本。若该次归档纳入模块更新，在项目日志中注明模块名称和对应版本。
+
+## 域名发布
+
+- 用户要求推送或发布时，更新 `origin/main`。Cloudflare Pages 使用 `npm run build` 构建，输出目录为 `dist`。
+- 推送后检查部署状态，并打开 [ve1.xyz](https://ve1.xyz/) 核对实际页面版本。

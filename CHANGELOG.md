@@ -4,6 +4,10 @@
 
 ## 未发布
 
+### 维护
+
+- 主站入口改为可直接运行的 M_APP 页面。Cloudflare Pages 从 `main` 构建 `dist`，用于更新 [ve1.xyz](https://ve1.xyz/)。
+
 ## v0.4.0（2026-11-22）
 
 ### 新增
