@@ -84,6 +84,7 @@
   #m-app-concept i[data-lucide='download'] { --glyph: '↓'; }
 
   #m-app-concept .shell {
+    position: relative;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
     height: 616px;
@@ -300,7 +301,11 @@
   #m-app-concept .module-view-option[aria-checked='false'] .view-check { visibility: hidden; }
   #m-app-concept .module-view-option i[data-lucide] { font-size: 16px; }
   #m-app-concept .view-check svg { width: 15px; height: 15px; }
-  #m-app-concept .module-entries .option { min-height: 66px; }
+  #m-app-concept .module-entries .option {
+    min-height: 66px;
+    transition-property: transform;
+  }
+  #m-app-concept .module-entries .option:active { background: transparent; transform: scale(.985); }
   #m-app-concept .module-entries[data-view='grid'] {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -321,7 +326,7 @@
     background: var(--surface);
     box-shadow: inset 0 0 0 1px var(--line);
   }
-  #m-app-concept .module-entries[data-view='grid'] .option:active { background: var(--blue-tint); transform: scale(.98); }
+  #m-app-concept .module-entries[data-view='grid'] .option:active { background: var(--surface); }
   #m-app-concept .module-entries[data-view='grid'] .option::after,
   #m-app-concept .module-entries[data-view='grid'] .option-marker { display: none; }
   #m-app-concept .module-entries[data-view='grid'] .record-icon {
@@ -337,26 +342,52 @@
   #m-app-concept .module-entries[data-view='grid'] .record-icon svg { width: 24px; height: 24px; }
   #m-app-concept .module-entries[data-view='grid'] .record-icon i { font-size: 21px; }
   #m-app-concept .module-entries[data-view='grid'] .option-name { font-size: 15px; }
-  #m-app-concept .module-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding-inline: 3px 10px;
-    color: var(--blue);
-    font-size: 13px;
-    font-weight: 650;
-    border-radius: 12px;
+  #m-app-concept .shell.module-open:not(.module-moving) > :is(.topbar, [data-page='modules'], .bottom-nav) {
+    visibility: hidden;
   }
-  #m-app-concept .module-back:active { background: var(--blue-tint); }
-  #m-app-concept .module-back svg { width: 15px; height: 15px; }
+  #m-app-concept .module-window {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+      env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    background: var(--canvas);
+    transform-origin: top left;
+  }
+  #m-app-concept .module-window[inert] { pointer-events: none; }
   #m-app-concept .module-toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 4px;
+    padding: 10px 19px 8px;
   }
-  #m-app-concept .module-toolbar .top-action svg { width: 19px; height: 19px; }
+  #m-app-concept .module-toolbar-button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+    background: linear-gradient(var(--surface), color-mix(in srgb, var(--surface) 65%, var(--canvas)));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
+      0 2px 6px color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  #m-app-concept .module-back::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: solid currentColor;
+    border-width: 0 0 3px 3px;
+    border-radius: 1px;
+    transform: translateX(2px) rotate(45deg);
+  }
+  #m-app-concept .module-toolbar-button:active { transform: scale(.94); }
+  #m-app-concept .module-toolbar-button i[data-lucide] { font-size: 21px; font-variant-emoji: text; }
   #m-app-concept .module-settings-view { display: grid; gap: 15px; }
   #m-app-concept .module-settings-heading { padding-inline: 3px; font-size: 20px; font-weight: 690; }
   #m-app-concept .module-settings-group { display: grid; gap: 6px; }
@@ -554,13 +585,14 @@
     white-space: nowrap;
   }
   #m-app-concept .notice-action { min-height: 44px; padding: 0 6px; font-weight: 650; text-decoration: underline; }
-  #m-app-concept .live-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #m-app-concept .live-status { position: absolute; inset: 0 auto auto 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   @media (max-width: 385px) {
     #m-app-concept { padding-block: 12px; }
     #m-app-concept .shell { height: 550px; }
     #m-app-concept .topbar { padding-inline: 15px; }
     #m-app-concept .page { padding-inline: 13px; }
+    #m-app-concept .module-toolbar { padding-inline: 13px; }
     #m-app-concept .bottom-nav { margin-inline: 11px; }
     #m-app-concept .widget-body { padding-inline: 15px; }
     #m-app-concept .widget-title { padding-right: 26px; }
@@ -570,7 +602,8 @@
   @media (prefers-reduced-motion: reduce) {
     #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { transition: none !important; }
     #m-app-concept button:active,
-    #m-app-concept .module-entries[data-view='grid'] .option:active { transform: none; }
+    #m-app-concept .module-toolbar-button:active,
+    #m-app-concept .module-entries .option:active { transform: none; }
   }
   @media (prefers-reduced-motion: no-preference) {
     #m-app-concept .module-view-menu { animation: m-app-view-menu-in 140ms var(--ease); }
@@ -766,6 +799,13 @@
       </section>
       <section class="page" data-page="modules" aria-label="模块" hidden>
         <div id="m-app-module-pane" data-module-pane role="tabpanel"></div>
+      </section>
+      <section class="module-window" aria-label="模块详情" hidden>
+        <div class="module-toolbar">
+          <button class="module-back module-toolbar-button cursor-interaction" type="button" aria-label="返回模块" data-action="back-to-category"></button>
+          <button class="module-toolbar-button cursor-interaction" type="button" aria-label="模块设置" data-action="open-module-settings" hidden><i data-lucide="settings" aria-hidden="true"></i></button>
+        </div>
+        <div class="page" data-module-detail></div>
       </section>
       <section class="page" data-page="settings" aria-label="设置" hidden>
         <div class="settings-stack">
@@ -1175,6 +1215,7 @@
   const root = document.getElementById('m-app-concept');
   const app = root.querySelector('.app');
   const shell = root.querySelector('.shell');
+  const topbar = shell.querySelector('.topbar');
   const pageTitle = root.querySelector('.top-title');
   const addButton = root.querySelector('#m-app-add');
   const releaseBack = root.querySelector('.release-back');
@@ -1269,6 +1310,7 @@
     mainNavigation.hidden = isChangelog;
     moduleTabs.hidden = !hasModuleTabs;
     syncModuleViewPicker();
+    syncModuleWindow();
   }
 
   function applyAppearance() {
@@ -1276,6 +1318,7 @@
   }
 
   function setPage(key) {
+    if (key !== state.page) stopModuleMotion();
     const previous = pages.find((page) => page.dataset.page === state.page);
     scrollPositions.set(state.page, previous.scrollTop);
     state.page = key;
@@ -1388,11 +1431,13 @@
       returnFocus.focus({ preventScroll: true });
       return;
     }
-    const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden]')
+    const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden], [inert]')
       && button.dataset.action === returnFocus?.dataset.action && button.dataset.key === returnFocus?.dataset.key);
     const widgetButton = returnFocus?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
-    const selectedCategory = state.page === 'modules' && moduleTabs.querySelector('[aria-selected="true"]');
-    (replacement || widgetButton || selectedCategory || tabs.find((tab) => tab.dataset.tab === state.page)).focus({ preventScroll: true });
+    const pageControl = state.page === 'modules'
+      ? (state.module ? moduleBack : moduleTabs.querySelector('[aria-selected="true"]'))
+      : tabs.find((tab) => tab.dataset.tab === state.page);
+    (replacement || widgetButton || pageControl)?.focus({ preventScroll: true });
   }
 
   function closeSheet(afterClose) {
@@ -1509,8 +1554,12 @@
   const moduleViewMenu = moduleViewPicker.querySelector('[role="menu"]');
   const moduleViewOptions = [...moduleViewMenu.querySelectorAll('[role="menuitemradio"]')];
   const moduleViewIcons = [...moduleViewTrigger.querySelectorAll('[data-view-icon]')];
-  const modulePane = root.querySelector('[data-module-pane]');
-  const modulePage = modulePane.closest('.page');
+  const moduleDirectory = root.querySelector('[data-module-pane]');
+  const modulePage = moduleDirectory.closest('.page');
+  const moduleWindow = shell.querySelector('.module-window');
+  const moduleBack = moduleWindow.querySelector('.module-back');
+  const moduleSettingsButton = moduleWindow.querySelector('[data-action="open-module-settings"]');
+  const modulePane = moduleWindow.querySelector('[data-module-detail]');
   const categoryTabs = [...moduleTabs.querySelectorAll('[role="tab"]')];
   const moduleCategories = {
     permanent: ['cooking', 'people', 'food'],
@@ -1528,13 +1577,16 @@
   const categoryScrollPositions = new Map();
   const moduleScrollPositions = new Map();
   const calculatorDraft = { amount: '128', people: '4' };
+  const moduleMotionTiming = { duration: 380, easing: 'cubic-bezier(.2, .75, .22, 1)', fill: 'both' };
+  const moduleReturnTiming = { duration: 220, easing: 'cubic-bezier(.32, .12, .46, 1)', fill: 'both' };
+  let moduleMotion;
 
   function renderModuleTabs() {
     for (const tab of categoryTabs) {
       const selected = tab.dataset.key === state.category;
       tab.setAttribute('aria-selected', String(selected));
       tab.tabIndex = selected ? 0 : -1;
-      if (selected) modulePane.setAttribute('aria-labelledby', tab.id);
+      if (selected) moduleDirectory.setAttribute('aria-labelledby', tab.id);
     }
   }
 
@@ -1547,15 +1599,16 @@
   }
 
   function syncModuleViewPicker() {
-    moduleViewPicker.hidden = state.page !== 'modules' || Boolean(state.module);
+    moduleViewPicker.hidden = state.page !== 'modules';
     if (moduleViewPicker.hidden && !moduleViewMenu.hidden) setModuleViewMenu(false);
     for (const icon of moduleViewIcons) icon.hidden = icon.dataset.viewIcon !== state.moduleView;
     for (const option of moduleViewOptions) option.setAttribute('aria-checked', String(option.dataset.key === state.moduleView));
   }
 
   function selectModuleView(key) {
+    stopModuleMotion();
     state.moduleView = key;
-    const entries = modulePane.querySelector('.module-entries');
+    const entries = moduleDirectory.querySelector('.module-entries');
     if (entries) entries.dataset.view = key;
     syncModuleViewPicker();
     setModuleViewMenu(false, true);
@@ -1564,7 +1617,7 @@
   function renderCategoryEntries() {
     const keys = moduleCategories[state.category].filter((key) => state.enabledModules.includes(key));
     if (!keys.length) {
-      modulePane.innerHTML = `<div class="module-feature">
+      moduleDirectory.innerHTML = `<div class="module-feature">
         <p class="feature-meta">此分类暂无已启用的模块。</p>
         <button class="secondary cursor-interaction" type="button" data-action="settings-item" data-key="modules">模块管理</button>
       </div>`;
@@ -1574,9 +1627,9 @@
     const entries = keys.map((key) => optionRow({
       action: 'open-module', key, name: modules[key].label, meta: moduleEntryNotes[key], symbol: modules[key].icon
     }));
-    modulePane.innerHTML = `<div class="rows module-entries" data-view="${state.moduleView}">${entries.join('')}</div>`;
+    moduleDirectory.innerHTML = `<div class="rows module-entries" data-view="${state.moduleView}">${entries.join('')}</div>`;
     if (state.category === 'temporary' && state.parking) {
-      modulePane.querySelector('[data-key="parking"] .option-meta').textContent = parkingTitle(state.parking);
+      moduleDirectory.querySelector('[data-key="parking"] .option-meta').textContent = parkingTitle(state.parking);
     }
   }
 
@@ -1667,7 +1720,54 @@
     updateCalculatorResult(form);
   }
 
+  function syncModuleWindow() {
+    const open = state.page === 'modules' && Boolean(state.module);
+    shell.classList.toggle('module-open', open);
+    topbar.inert = mainNavigation.inert = modulePage.inert = open;
+    moduleWindow.inert = !open;
+    moduleWindow.hidden = !open && !moduleMotion;
+  }
+
+  function stopModuleMotion() {
+    if (!moduleMotion) return;
+    moduleMotion.cancel();
+    moduleMotion = null;
+    shell.classList.remove('module-moving');
+    syncModuleWindow();
+  }
+
+  function playModuleMotion(iconBounds, closing = false) {
+    const paintedBounds = moduleWindow.getBoundingClientRect();
+    const style = getComputedStyle(moduleWindow);
+    const opacity = Number(style.opacity);
+    const borderRadius = style.borderRadius;
+    stopModuleMotion();
+    if (!iconBounds?.width || reducedMotion.matches || typeof moduleWindow.animate !== 'function') return;
+    const bounds = moduleWindow.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    const pageBounds = modulePage.getBoundingClientRect();
+    const scale = Math.min(iconBounds.width / bounds.width, iconBounds.height / bounds.height);
+    const iconCenterX = iconBounds.left + iconBounds.width / 2;
+    const iconCenterY = Math.max(pageBounds.top, Math.min(pageBounds.bottom, iconBounds.top + iconBounds.height / 2));
+    const x = iconCenterX - bounds.left;
+    const y = iconCenterY - bounds.top;
+    const atIcon = (size) => `translate(${x - bounds.width * size / 2}px, ${y - bounds.height * size / 2}px) scale(${size})`;
+    const current = {
+      transform: `translate(${paintedBounds.left - bounds.left}px, ${paintedBounds.top - bounds.top}px) scale(${paintedBounds.width / bounds.width})`,
+      opacity,
+      borderRadius
+    };
+    const frames = closing
+      ? [current, { transform: atIcon(0), opacity: 0, borderRadius: '32px' }]
+      : [{ transform: atIcon(scale), opacity: .45, borderRadius: '32px' }, { transform: 'none', opacity: 1, borderRadius: '0px' }];
+    shell.classList.add('module-moving');
+    const animation = moduleWindow.animate(frames, closing ? moduleReturnTiming : moduleMotionTiming);
+    moduleMotion = animation;
+    animation.onfinish = () => { if (moduleMotion === animation) stopModuleMotion(); };
+  }
+
   function renderModules() {
+    stopModuleMotion();
     const calculator = modulePane.querySelector('[data-calculator]');
     if (calculator) {
       calculatorDraft.amount = calculator.elements.amount.value;
@@ -1676,9 +1776,11 @@
 
     if (!state.enabledModules.includes(state.module)) state.module = null;
     renderModuleTabs();
+    renderCategoryEntries();
+    syncModuleWindow();
     if (!state.module) {
       state.moduleScreen = 'content';
-      renderCategoryEntries();
+      modulePane.replaceChildren();
       return;
     }
 
@@ -1692,53 +1794,57 @@
     const moduleLabel = modules[state.module].label;
     const backLabel = state.moduleScreen === 'releases' ? '模块设置'
       : state.moduleScreen === 'settings' ? moduleLabel : categoryLabel;
-    const backAction = state.moduleScreen === 'content' ? 'back-to-category' : 'back-in-module';
-    const settingsButton = state.moduleScreen === 'content'
-      ? `<button class="top-action cursor-interaction" type="button" data-action="open-module-settings" aria-label="${moduleLabel}设置">${icon('settings')}</button>`
-      : '';
-    modulePane.insertAdjacentHTML('afterbegin', `<div class="module-toolbar">
-      <button class="module-back cursor-interaction" type="button" data-action="${backAction}">${icon('chevron-left')}返回${backLabel}</button>
-      ${settingsButton}
-    </div>`);
+    moduleWindow.setAttribute('aria-label', moduleLabel);
+    moduleBack.setAttribute('aria-label', `返回${backLabel}`);
+    moduleBack.dataset.action = state.moduleScreen === 'content' ? 'back-to-category' : 'back-in-module';
+    moduleSettingsButton.hidden = state.moduleScreen !== 'content';
+    moduleSettingsButton.setAttribute('aria-label', `${moduleLabel}设置`);
   }
 
   function selectCategory(key) {
-    if (key === state.category && !state.module) return;
-    if (!state.module) categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    if (key === state.category) return;
+    stopModuleMotion();
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
     state.category = key;
-    state.module = null;
-    state.moduleScreen = 'content';
-    renderModules();
-    syncModuleViewPicker();
+    renderModuleTabs();
+    renderCategoryEntries();
     updateIcons();
     modulePage.scrollTop = categoryScrollPositions.get(key) || 0;
   }
 
-  function openModule(key) {
+  function openModule(key, button) {
     if (!state.enabledModules.includes(key) || !moduleCategories[state.category].includes(key)) return;
+    const iconBounds = button.querySelector('.record-icon').getBoundingClientRect();
     categoryScrollPositions.set(state.category, modulePage.scrollTop);
     state.module = key;
     state.moduleScreen = 'content';
     renderModules();
-    syncModuleViewPicker();
     updateIcons();
-    modulePage.scrollTop = 0;
-    modulePane.querySelector('.module-back').focus({ preventScroll: true });
+    modulePane.scrollTop = 0;
+    playModuleMotion(iconBounds);
+    moduleBack.focus({ preventScroll: true });
   }
 
   function backToModuleCategory() {
     const module = state.module;
-    selectCategory(state.category);
-    modulePane.querySelector(`[data-action="open-module"][data-key="${module}"]`)?.focus({ preventScroll: true });
+    if (!module) return;
+    modulePage.scrollTop = categoryScrollPositions.get(state.category) || 0;
+    const entry = moduleDirectory.querySelector(`[data-action="open-module"][data-key="${module}"]`);
+    playModuleMotion(entry?.querySelector('.record-icon').getBoundingClientRect(), true);
+    state.module = null;
+    state.moduleScreen = 'content';
+    syncModuleWindow();
+    entry?.focus({ preventScroll: true });
   }
 
   function setModuleScreen(screen, focusTarget) {
-    moduleScrollPositions.set(`${state.module}:${state.moduleScreen}`, modulePage.scrollTop);
+    moduleScrollPositions.set(`${state.module}:${state.moduleScreen}`, modulePane.scrollTop);
     state.moduleScreen = screen;
     renderModules();
     updateIcons();
-    modulePage.scrollTop = moduleScrollPositions.get(`${state.module}:${screen}`) || 0;
-    modulePane.querySelector(focusTarget)?.focus({ preventScroll: true });
+    modulePane.scrollTop = moduleScrollPositions.get(`${state.module}:${screen}`) || 0;
+    const target = focusTarget ? moduleWindow.querySelector(focusTarget) : moduleBack;
+    target?.focus({ preventScroll: true });
   }
 
   function backInModule() {
@@ -1752,10 +1858,10 @@
       state.mahjong.colorMode = key;
       persistMahjong();
     } else state.modulePreferences[state.module] = key;
-    const scrollTop = modulePage.scrollTop;
+    const scrollTop = modulePane.scrollTop;
     renderModules();
     updateIcons();
-    modulePage.scrollTop = scrollTop;
+    modulePane.scrollTop = scrollTop;
     modulePane.querySelector(`[data-action="module-preference"][data-key="${key}"]`)?.focus({ preventScroll: true });
   }
 
@@ -1906,8 +2012,8 @@
     'select-category': selectCategory,
     'open-module': openModule,
     'back-to-category': backToModuleCategory,
-    'open-module-settings': () => setModuleScreen('settings', '.module-back'),
-    'open-module-releases': () => setModuleScreen('releases', '.module-back'),
+    'open-module-settings': () => setModuleScreen('settings'),
+    'open-module-releases': () => setModuleScreen('releases'),
     'back-in-module': backInModule,
     'module-preference': setModulePreference,
     'toggle-module-view-menu': () => setModuleViewMenu(moduleViewMenu.hidden, true),
@@ -1959,8 +2065,20 @@
     target.focus({ preventScroll: true });
   });
 
-  const settingsVersion = '0.4.0';
+  const settingsVersion = '0.5.0';
   const releaseNotes = [
+    {
+      version: '0.5.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['工具新增麻将胡结算 v0.1.0，支持四人轮休、单局和累计输赢、自定义每胡金额，并将历史记录纳入数据备份。']],
+        ['优化', [
+          '模块详情占满应用区域，左上角为圆形返回键，右上角为独立设置入口。',
+          '模块从入口图标展开，返回时缩回图标中心，并恢复目录的滚动位置。'
+        ]],
+        ['修复', ['模块入口按压和进出时保持背景色稳定，退出动画完全淡出以消除图标上的残影。']]
+      ]
+    },
     {
       version: '0.4.0',
       date: '2026-11-22',
@@ -2270,7 +2388,7 @@
       render();
       if (overlay.dataset.open === 'true') closeSheet(() => showNotice('停车记录已结束', true));
       else {
-        root.querySelector('[data-module-pane] [data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
+        modulePane.querySelector('[data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
         showNotice('停车记录已结束', true);
       }
     },
@@ -2279,7 +2397,8 @@
       state.parking = recentlyCompleted;
       recentlyCompleted = undefined;
       render();
-      const pageControl = state.page === 'changelog' ? releaseBack : tabs.find((tab) => tab.dataset.tab === state.page);
+      const pageControl = state.page === 'changelog' ? releaseBack
+        : state.page === 'modules' && state.module ? moduleBack : tabs.find((tab) => tab.dataset.tab === state.page);
       pageControl.focus({ preventScroll: true });
       showNotice('停车记录已恢复');
     }
@@ -2298,9 +2417,10 @@
     if (state.page === 'changelog') {
       event.preventDefault();
       backFromChangelog();
-    } else if (state.page === 'modules' && state.module && state.moduleScreen !== 'content') {
+    } else if (state.page === 'modules' && state.module) {
       event.preventDefault();
-      backInModule();
+      if (state.moduleScreen === 'content') backToModuleCategory();
+      else backInModule();
     }
   });
 
