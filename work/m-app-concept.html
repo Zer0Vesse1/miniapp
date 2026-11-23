@@ -572,6 +572,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
 </style>
+<link rel="stylesheet" href="./mahjong.css">
 
 <div id="m-app-concept" class="viz-dotted-background">
   <article class="app" aria-label="M_APP · 手机界面">
@@ -621,7 +622,7 @@
             <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="modules">
               <span class="record-icon"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
               <span class="record-info"><span class="record-name">模块管理</span></span>
-              <span class="setting-value"><span data-enabled-module-count>5 个模块</span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+              <span class="setting-value"><span data-enabled-module-count></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
             </button>
             <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
               <span class="record-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
@@ -672,6 +673,8 @@
   </article>
 </div>
 
+<script src="./mahjong.js"></script>
+<script src="./mahjong-ui.js"></script>
 <script>
   (() => {
     if (!globalThis.Tweak) return;
@@ -705,13 +708,16 @@
   const notice = root.querySelector('.notice');
   const status = root.querySelector('.live-status');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mahjongCalculator = globalThis.MahjongCalculator;
+  const mahjongStorageKey = 'm-app-mahjong-v1';
   const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
   const modules = {
     cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat', field: '菜名', note: '食材和做法' },
     people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
     food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
     parking: { label: '停车备忘', icon: 'square-parking' },
-    calculator: { label: '计算器', icon: 'calculator' }
+    calculator: { label: '计算器', icon: 'calculator' },
+    mahjong: { label: '麻将胡结算', icon: 'mahjong' }
   };
   const persistentKinds = ['cooking', 'people', 'food'];
   const state = {
@@ -724,6 +730,7 @@
     enabledModules: Object.keys(modules),
     appearance: 'system',
     widget: 'parking',
+    mahjong: loadMahjong(),
     parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
     records: [
       { id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18', detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。' },
@@ -740,9 +747,28 @@
   let draggedHandle = false;
   let recentlyCompleted;
 
-  const icon = (name) => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const icon = (name) => name === 'mahjong' ? '<span aria-hidden="true">胡</span>' : `<i data-lucide="${name}" aria-hidden="true"></i>`;
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+
+  function loadMahjong() {
+    try {
+      const saved = localStorage.getItem(mahjongStorageKey) ?? localStorage.getItem('mahjong_state_v4');
+      return mahjongCalculator.normalizeState(JSON.parse(saved));
+    } catch {
+      return mahjongCalculator.normalizeState();
+    }
+  }
+
+  function persistMahjong() {
+    try {
+      localStorage.setItem(mahjongStorageKey, JSON.stringify(state.mahjong));
+      return true;
+    } catch {
+      showNotice('麻将数据未能保存到此浏览器');
+      return false;
+    }
+  }
 
   function updateIcons() {
     globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
@@ -1004,14 +1030,15 @@
   const moduleCategories = {
     permanent: ['cooking', 'people', 'food'],
     temporary: ['parking'],
-    tools: ['calculator']
+    tools: ['calculator', 'mahjong']
   };
   const moduleEntryNotes = {
     cooking: '菜谱、食材和做法',
     people: '生日、关系和备忘',
     food: '店铺和到访笔记',
     parking: '记录当前车位',
-    calculator: '快速计算聚餐分摊'
+    calculator: '快速计算聚餐分摊',
+    mahjong: '四人轮休，按胡数差结算'
   };
   const categoryScrollPositions = new Map();
   const moduleScrollPositions = new Map();
@@ -1174,6 +1201,7 @@
     else if (state.moduleScreen === 'releases') renderModuleReleases(state.module);
     else if (state.module === 'parking') renderParkingModule();
     else if (state.module === 'calculator') renderCalculatorModule();
+    else if (state.module === 'mahjong') globalThis.MahjongModule.render(modulePane, state.mahjong, persistMahjong);
     else renderPersistentModule(state.module);
     const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
     const moduleLabel = modules[state.module].label;
@@ -1235,7 +1263,10 @@
 
   function setModulePreference(key) {
     if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
-    state.modulePreferences[state.module] = key;
+    if (state.module === 'mahjong') {
+      state.mahjong.colorMode = key;
+      persistMahjong();
+    } else state.modulePreferences[state.module] = key;
     const scrollTop = modulePage.scrollTop;
     renderModules();
     updateIcons();
@@ -1308,12 +1339,25 @@
         date: '2026-11-22',
         groups: [['新增', ['根据总金额和人数计算每人分摊金额。', '结果可保留两位小数或四舍五入到元。']]]
       }]
+    },
+    mahjong: {
+      preferenceLabel: '输赢颜色',
+      defaultPreference: 'default',
+      options: [
+        { key: 'default', label: '绿赢、红输' },
+        { key: 'chinese', label: '红赢、绿输' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-23',
+        groups: [['新增', ['记录四人轮休对局，按三位参赛玩家的胡数差计算单局与累计输赢。', '可设置每胡金额及输赢颜色，历史记录保存在本地浏览器。']]]
+      }]
     }
   };
 
   function modulePreference(key) {
     const settings = moduleSettings[key];
-    const selected = state.modulePreferences[key];
+    const selected = key === 'mahjong' ? state.mahjong.colorMode : state.modulePreferences[key];
     return settings.options.some((option) => option.key === selected) ? selected : settings.defaultPreference;
   }
 
@@ -1331,6 +1375,11 @@
     });
     modulePane.innerHTML = `<section class="module-settings-view">
       <h2 class="module-settings-heading">${module.label}设置</h2>
+      ${key === 'mahjong' ? `<form class="form module-settings-group" data-mahjong-rate>
+        <label class="field">每胡金额（元）<input name="rate" type="number" min="0.01" step="0.01" inputmode="decimal" required aria-describedby="m-app-mahjong-rate-note"></label>
+        <p class="settings-meta" id="m-app-mahjong-rate-note">修改金额会重新计算所有对局的输赢。</p>
+        <button class="primary cursor-interaction" type="submit">保存每胡金额</button>
+      </form>` : ''}
       <section class="module-settings-group" aria-labelledby="m-app-module-preference-${key}">
         <h3 id="m-app-module-preference-${key}">${settings.preferenceLabel}</h3>
         <div class="rows">${choices.join('')}</div>
@@ -1340,6 +1389,24 @@
         <div class="rows">${versionLink}</div>
       </section>
     </section>`;
+    if (key === 'mahjong') {
+      const form = modulePane.querySelector('[data-mahjong-rate]');
+      const input = form.elements.rate;
+      input.value = state.mahjong.rate;
+      input.addEventListener('input', () => input.setCustomValidity(''));
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rate = mahjongCalculator.parseRate(input.value);
+        if (rate === null) {
+          input.setCustomValidity('请输入大于零、精确到分的金额。');
+          input.reportValidity();
+          return;
+        }
+        state.mahjong.rate = rate;
+        input.value = rate;
+        if (persistMahjong()) showNotice('已保存每胡金额');
+      });
+    }
   }
 
   function renderModuleReleases(key) {
@@ -1542,14 +1609,15 @@
   }
 
   function showBackupExport(trigger) {
-    setSheet('导出数据', `<p class="settings-meta">备份包含当前的长期记录和车位。选中后可复制到本地文件。</p>
+    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、车位和麻将结算数据。选中后可复制到本地文件。</p>
       <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false"></textarea></label>
       <button class="primary cursor-interaction" type="button" data-action="select-settings-backup">选中全部 JSON</button>`, trigger);
     sheetContent.querySelector('[data-backup-output]').value = JSON.stringify({
       format: backupFormat,
       schema: 1,
       records: state.records,
-      parking: state.parking
+      parking: state.parking,
+      mahjong: state.mahjong
     }, null, 2);
   }
 
@@ -1601,7 +1669,10 @@
         time: backupString(json.parking.time, '停车时间', 32, true)
       };
     }
-    return { records, parking, recordIds, source };
+    const mahjong = Object.hasOwn(json, 'mahjong')
+      ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
+      : undefined;
+    return { records, parking, mahjong, recordIds, source };
   }
 
   function reviewSettingsImport(trigger) {
@@ -1614,16 +1685,17 @@
       message.textContent = error.message;
       return;
     }
+    const { records, parking, mahjong } = pendingBackup;
     setSheet('确认导入', `<div class="detail settings-detail">
-      <strong>${pendingBackup.records.length} 条长期记录 · ${pendingBackup.parking ? '1 条车位记录' : '无车位记录'}</strong>
-      <p>确认后，备份将替换当前预览中的记录和车位。</p></div>
+      <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
+      <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
       <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
       <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
   }
 
   function applySettingsImport() {
     if (!pendingBackup) return;
-    const { records, parking, recordIds } = pendingBackup;
+    const { records, parking, mahjong, recordIds } = pendingBackup;
     pendingBackup = undefined;
     state.records = records;
     state.parking = parking;
@@ -1631,8 +1703,10 @@
     recentlyCompleted = undefined;
     drafts.clear();
     notice.hidden = true;
+    if (mahjong) state.mahjong = mahjong;
+    const saved = !mahjong || persistMahjong();
     render();
-    closeSheet(() => showNotice('已导入数据'));
+    closeSheet(saved ? () => showNotice('已导入数据') : undefined);
   }
 
   function showSettingsItem(key, trigger) {

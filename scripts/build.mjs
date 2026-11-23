@@ -1,17 +1,24 @@
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
-const fragment = (await readFile(new URL('work/m-app-concept.html', root), 'utf8'))
-  .replace(/\r\n/g, '\n')
-  .trim();
+const readSource = async (name) => (await readFile(new URL(`work/${name}`, root), 'utf8'))
+  .replace(/\r\n/g, '\n').trim();
+const [fragment, mahjongStyle, mahjongCalculator, mahjongModule] = await Promise.all([
+  readSource('m-app-concept.html'), readSource('mahjong.css'),
+  readSource('mahjong.js'), readSource('mahjong-ui.js'),
+]);
 const styleEnd = fragment.indexOf('</style>');
 
 if (!fragment.startsWith('<style>') || styleEnd === -1) {
   throw new Error('The app prototype must start with its stylesheet.');
 }
 
-const style = fragment.slice(0, styleEnd + '</style>'.length);
-const app = fragment.slice(style.length).trim();
+const style = `${fragment.slice(0, styleEnd).trimEnd()}\n\n${mahjongStyle}\n</style>`;
+const app = fragment.slice(styleEnd + '</style>'.length)
+  .replace('<link rel="stylesheet" href="./mahjong.css">', '')
+  .replace('<script src="./mahjong.js"></script>', () => `<script>\n${mahjongCalculator}\n</script>`)
+  .replace('<script src="./mahjong-ui.js"></script>', () => `<script>\n${mahjongModule}\n</script>`)
+  .trim();
 const html = `<!doctype html>
 <!-- Generated from work/m-app-concept.html by npm run build. -->
 <html lang="zh-CN">

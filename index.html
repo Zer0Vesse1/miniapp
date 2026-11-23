@@ -579,6 +579,120 @@
     from { opacity: 0; transform: translateY(-4px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+#m-app-concept .mahjong-view {
+    --mahjong-win: light-dark(#176642, #78d9ad);
+    --mahjong-loss: light-dark(#aa2934, #ff9aa5);
+    display: grid;
+    gap: 12px;
+  }
+
+  #m-app-concept .mahjong-view[data-color-mode="chinese"] {
+    --mahjong-win: light-dark(#aa2934, #ff9aa5);
+    --mahjong-loss: light-dark(#176642, #78d9ad);
+  }
+
+  #m-app-concept .mahjong-view form { gap: 14px; }
+  #m-app-concept .mahjong-fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  #m-app-concept .mahjong-fieldset legend {
+    margin-bottom: 7px;
+    padding: 0;
+    font-weight: 650;
+  }
+
+  #m-app-concept .mahjong-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 10px;
+  }
+
+  #m-app-concept .mahjong-grid input:disabled { opacity: .64; }
+
+  #m-app-concept :is(.mahjong-rest,.mahjong-results) {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  #m-app-concept .mahjong-rest label {
+    position: relative;
+    min-width: 0;
+    cursor: pointer;
+  }
+
+  #m-app-concept .mahjong-rest input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: inherit;
+  }
+
+  #m-app-concept .mahjong-rest span {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--canvas);
+    text-align: center;
+    overflow-wrap: anywhere;
+    font-size: 13px;
+  }
+
+  #m-app-concept .mahjong-rest input:checked + span {
+    border-color: var(--blue);
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 650;
+  }
+
+  #m-app-concept .mahjong-rest input:focus-visible + span {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+  }
+
+  #m-app-concept .mahjong-view h3 { font-size: 16px; }
+  #m-app-concept .mahjong-view h4 { margin: 0; font-size: 14px; }
+  #m-app-concept .mahjong-view h3 .mahjong-muted { margin-inline-start: 5px; font-weight: 400; }
+
+  #m-app-concept .mahjong-results {
+    margin-top: 7px;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #m-app-concept .mahjong-result {
+    min-width: 0;
+    padding: 7px 4px;
+    border-radius: 10px;
+    background: var(--canvas);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  #m-app-concept .mahjong-result dt { font-weight: 650; }
+  #m-app-concept .mahjong-result dd { margin-top: 3px; }
+  #m-app-concept .mahjong-money { font-weight: 650; }
+  #m-app-concept .mahjong-money[data-outcome="win"] { color: var(--mahjong-win); }
+  #m-app-concept .mahjong-money[data-outcome="loss"] { color: var(--mahjong-loss); }
+  #m-app-concept .mahjong-muted { color: var(--quiet); font-size: 13px; }
+  #m-app-concept .mahjong-error { color: light-dark(#aa2934, #ff9aa5); font-size: 13px; }
+
+  #m-app-concept .mahjong-history { gap: 6px; }
+  #m-app-concept .mahjong-section-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  #m-app-concept .mahjong-delete { padding-inline: 8px; color: light-dark(#aa2934, #ff9aa5); font-size: 13px; }
+  #m-app-concept .mahjong-history-round { padding-bottom: 10px; }
+  #m-app-concept .mahjong-history-round + .mahjong-history-round { border-top: 1px solid var(--line); }
+  #m-app-concept .mahjong-history-round:last-child { padding-bottom: 0; }
+  #m-app-concept .mahjong-history-round .mahjong-results { margin-top: 0; }
 </style>
   <style>
     html { background: light-dark(#e8edf7, #0b1220); }
@@ -666,7 +780,7 @@
             <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="modules">
               <span class="record-icon"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
               <span class="record-info"><span class="record-name">模块管理</span></span>
-              <span class="setting-value"><span data-enabled-module-count>5 个模块</span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+              <span class="setting-value"><span data-enabled-module-count></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
             </button>
             <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
               <span class="record-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
@@ -718,6 +832,335 @@
 </div>
 
 <script>
+(() => {
+  'use strict';
+
+  const PLAYERS = Object.freeze(['a', 'b', 'c', 'd']);
+  const DEFAULT_NAMES = Object.freeze({ a: '甲', b: '乙', c: '丙', d: '丁' });
+  const DEFAULT_RATE = 0.05;
+  const DEFAULT_RESTING = 'd';
+  const NAME_LIMIT = 6;
+
+  function readNumber(value) {
+    if (typeof value === 'number') return value;
+    return typeof value === 'string' && value.trim() ? Number(value) : NaN;
+  }
+
+  function readRateCents(decimal) {
+    const parts = /^(\d*)(?:\.(\d{0,2})0*)?$/.exec(decimal);
+    if (!parts) return null;
+    const [, yuan, fraction = ''] = parts;
+    return BigInt(yuan || '0') * 100n + BigInt(fraction.padEnd(2, '0'));
+  }
+
+  function parseRate(value) {
+    const rate = readNumber(value);
+    if (!(rate > 0 && rate <= Number.MAX_SAFE_INTEGER / 100)) return null;
+    const cents = readRateCents(String(rate));
+    if (typeof value === 'string' && cents !== readRateCents(value.trim())) return null;
+    return cents === null ? null : rate;
+  }
+
+  function readRound(hu, resting) {
+    if (!PLAYERS.includes(resting)) return null;
+    const round = { resting };
+    for (const player of PLAYERS) {
+      const count = player === resting ? 0 : readNumber(hu?.[player]);
+      if (!Number.isSafeInteger(count)) return null;
+      round[player] = count;
+    }
+    return round;
+  }
+
+  function createRound(hu, resting) {
+    const round = readRound(hu, resting);
+    if (!round) throw new Error('请为上场的三位玩家填写整数胡数。');
+    return round;
+  }
+
+  function normalizeState(value, { strict = false } = {}) {
+    const resting = value?.resting;
+    const colorMode = value?.colorMode;
+    const rate = parseRate(value?.rate);
+    const playerNames = {};
+    for (const player of PLAYERS) {
+      const name = value?.playerNames?.[player];
+      const trimmed = typeof name === 'string' ? name.trim() : '';
+      if (strict && (!trimmed || trimmed.length > NAME_LIMIT)) {
+        throw new Error('备份中的麻将玩家名称格式不正确。');
+      }
+      const shortened = trimmed.slice(0, NAME_LIMIT).replace(/[\uD800-\uDBFF]$/, '').trimEnd();
+      playerNames[player] = shortened || DEFAULT_NAMES[player];
+    }
+
+    if (strict && (!PLAYERS.includes(resting) || !['default', 'chinese'].includes(colorMode)
+      || rate === null || typeof value.rate !== 'number' || !Array.isArray(value.rounds))) {
+      throw new Error('备份中的麻将结算设置格式不正确。');
+    }
+
+    const rounds = [];
+    for (const source of Array.isArray(value?.rounds) ? value.rounds : []) {
+      // Legacy records with three players omit the fourth player's score and rest status.
+      const round = readRound(source, strict ? source?.resting : source?.resting ?? DEFAULT_RESTING);
+      if (strict && (!round || PLAYERS.some(player => source[player] !== round[player]))) {
+        throw new Error(`备份中的麻将第 ${rounds.length + 1} 局记录格式不正确。`);
+      }
+      if (round) rounds.push(round);
+    }
+
+    return {
+      rounds,
+      resting: PLAYERS.includes(resting) ? resting : DEFAULT_RESTING,
+      playerNames,
+      colorMode: colorMode === 'chinese' ? 'chinese' : 'default',
+      rate: rate ?? DEFAULT_RATE
+    };
+  }
+
+  function zeroAmounts() {
+    return { a: 0n, b: 0n, c: 0n, d: 0n };
+  }
+
+  function toRateCents(rate) {
+    const validRate = parseRate(rate);
+    if (validRate === null) throw new Error('每胡金额须为大于 0 的金额，最多保留两位小数。');
+    return readRateCents(String(validRate));
+  }
+
+  function settleInCents(round, rateCents) {
+    const amounts = zeroAmounts();
+    const active = PLAYERS.filter(player => player !== round.resting);
+    for (const [index, left] of active.entries()) {
+      for (const right of active.slice(index + 1)) {
+        const difference = (BigInt(round[left]) - BigInt(round[right])) * rateCents;
+        amounts[left] += difference;
+        amounts[right] -= difference;
+      }
+    }
+    return amounts;
+  }
+
+  function settleRound(round, rate) {
+    return settleInCents(round, toRateCents(rate));
+  }
+
+  function summarize(rounds, rate) {
+    const rateCents = toRateCents(rate);
+    const totals = zeroAmounts();
+    const results = rounds.map(round => {
+      const amounts = settleInCents(round, rateCents);
+      for (const player of PLAYERS) totals[player] += amounts[player];
+      return amounts;
+    });
+    return { results, totals };
+  }
+
+  function formatMoney(cents) {
+    const absolute = cents < 0n ? -cents : cents;
+    const sign = cents < 0n ? '-' : cents > 0n ? '+' : '';
+    return `${sign}${absolute / 100n}.${String(absolute % 100n).padStart(2, '0')}`;
+  }
+
+  globalThis.MahjongCalculator = Object.freeze({
+    PLAYERS, DEFAULT_NAMES, DEFAULT_RATE, parseRate, normalizeState,
+    createRound, settleRound, summarize, formatMoney
+  });
+})();
+</script>
+<script>
+(() => {
+  'use strict';
+
+  const { PLAYERS, DEFAULT_NAMES, createRound, summarize, formatMoney } = globalThis.MahjongCalculator;
+  const drafts = new WeakMap();
+
+  function amount(cents) {
+    const outcome = cents > 0n ? 'win' : cents < 0n ? 'loss' : 'even';
+    return `<span class="mahjong-money" data-outcome="${outcome}">${formatMoney(cents)}</span>`;
+  }
+
+  function playerResults(totals, round) {
+    return `<dl class="mahjong-results">${PLAYERS.map((player) => `
+      <div class="mahjong-result">
+        <dt data-player-name="${player}"></dt>
+        <dd>${round?.resting === player ? '<span class="mahjong-muted">轮休</span>' : amount(totals[player])}</dd>
+      </div>`).join('')}</dl>`;
+  }
+
+  function render(pane, model, onChange) {
+    const scores = drafts.get(model) ?? {};
+    drafts.set(model, scores);
+
+    pane.innerHTML = `<div class="mahjong-view" data-mahjong-module data-color-mode="${model.colorMode}">
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon" aria-hidden="true">胡</span>
+          <div class="feature-copy">
+            <h2 class="feature-title">麻将胡结算</h2>
+            <p class="feature-meta">每胡 ¥${model.rate.toFixed(2)} · 每局一人轮休</p>
+          </div>
+        </div>
+        <fieldset class="mahjong-fieldset">
+          <legend>玩家名称</legend>
+          <div class="mahjong-grid">
+            ${PLAYERS.map((player) => `<label class="field">${DEFAULT_NAMES[player]}<input type="text" name="name-${player}" aria-label="玩家${DEFAULT_NAMES[player]}名称" maxlength="6"></label>`).join('')}
+          </div>
+        </fieldset>
+        <form class="form" data-mahjong-round>
+          <fieldset class="mahjong-fieldset">
+            <legend>本局轮休</legend>
+            <div class="mahjong-rest">
+              ${PLAYERS.map((player) => `<label>
+                <input type="radio" name="resting" value="${player}">
+                <span data-player-name="${player}"></span>
+              </label>`).join('')}
+            </div>
+          </fieldset>
+          <fieldset class="mahjong-fieldset">
+            <legend>本局胡数</legend>
+            <div class="mahjong-grid">
+              ${PLAYERS.map((player) => `<label class="field">
+                <span><span data-player-name="${player}"></span><span data-score-rest="${player}"></span></span>
+                <input name="${player}" type="number" step="1" inputmode="numeric" required placeholder="0">
+              </label>`).join('')}
+            </div>
+          </fieldset>
+          <p class="mahjong-error" role="alert" hidden></p>
+          <button class="primary cursor-interaction" type="submit">记录本局</button>
+        </form>
+      </section>
+      <div data-mahjong-summary></div>
+      <section class="module-feature mahjong-history" aria-labelledby="m-app-mahjong-history">
+        <div class="mahjong-section-header">
+          <h3 id="m-app-mahjong-history" tabindex="-1">历史记录</h3>
+          <button class="cursor-interaction mahjong-delete" type="button" data-mahjong-clear hidden>全部清除</button>
+        </div>
+        <div class="mahjong-history-list"></div>
+      </section>
+      <p class="live-status" data-mahjong-status role="status"></p>
+    </div>`;
+
+    const view = pane.querySelector('[data-mahjong-module]');
+    const form = view.querySelector('[data-mahjong-round]');
+    const error = form.querySelector('[role="alert"]');
+    const summary = view.querySelector('[data-mahjong-summary]');
+    const history = view.querySelector('.mahjong-history-list');
+    const historyHeading = view.querySelector('#m-app-mahjong-history');
+    const clear = view.querySelector('[data-mahjong-clear]');
+    const status = view.querySelector('[data-mahjong-status]');
+
+    function showNames() {
+      for (const element of view.querySelectorAll('[data-player-name]')) {
+        element.textContent = model.playerNames[element.dataset.playerName];
+      }
+    }
+
+    function showResting() {
+      form.elements.resting.value = model.resting;
+      for (const player of PLAYERS) {
+        const resting = player === model.resting;
+        const input = form.elements[player];
+        input.disabled = resting;
+        input.placeholder = resting ? '轮休' : '0';
+        input.value = resting ? '' : scores[player] ?? '';
+        view.querySelector(`[data-score-rest="${player}"]`).textContent = resting ? '（轮休）' : '';
+      }
+    }
+
+    function showResults() {
+      const { rounds, rate } = model;
+      const { results, totals } = summarize(rounds, rate);
+      const latest = rounds.at(-1);
+      summary.innerHTML = latest ? `<section class="module-feature mahjong-summary">
+        <div><h3>本局结果</h3>${playerResults(results.at(-1), latest)}</div>
+        <div><h3>累计输赢 <span class="mahjong-muted">共 ${rounds.length} 局</span></h3>${playerResults(totals)}</div>
+      </section>` : '';
+      summary.hidden = !latest;
+      clear.hidden = !latest;
+      history.innerHTML = latest ? rounds.map((round, index) => `<article class="mahjong-history-round">
+        <div class="mahjong-section-header">
+          <h4>第 ${index + 1} 局</h4>
+          <button class="cursor-interaction mahjong-delete" type="button" data-remove-round="${index}" aria-label="删除第 ${index + 1} 局">删除</button>
+        </div>
+        <dl class="mahjong-results">${PLAYERS.map((player) => `<div class="mahjong-result">
+          <dt data-player-name="${player}"></dt>
+          <dd class="mahjong-muted">${player === round.resting ? '轮休' : `${round[player]} 胡`}</dd>
+          ${player === round.resting ? '' : `<dd>${amount(results[index][player])}</dd>`}
+        </div>`).join('')}</dl>
+      </article>`).join('') : '<p class="mahjong-muted">暂无对局记录</p>';
+      showNames();
+    }
+
+    for (const player of PLAYERS) {
+      const name = view.querySelector(`[name="name-${player}"]`);
+      name.value = model.playerNames[player];
+      name.addEventListener('change', () => {
+        model.playerNames[player] = name.value.trim() || model.playerNames[player];
+        name.value = model.playerNames[player];
+        showNames();
+        onChange();
+      });
+      form.elements[player].addEventListener('input', (event) => {
+        scores[player] = event.target.value;
+        error.hidden = true;
+      });
+    }
+
+    form.addEventListener('change', (event) => {
+      if (event.target.name !== 'resting') return;
+      model.resting = event.target.value;
+      delete scores[model.resting];
+      showResting();
+      error.hidden = true;
+      onChange();
+    });
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      let round;
+      try {
+        round = createRound(scores, model.resting);
+      } catch (failure) {
+        error.textContent = failure.message;
+        error.hidden = false;
+        return;
+      }
+      model.rounds.push(round);
+      for (const player of PLAYERS) delete scores[player];
+      error.hidden = true;
+      showResting();
+      showResults();
+      onChange();
+      status.textContent = `已记录第 ${model.rounds.length} 局`;
+      form.elements[PLAYERS.find((player) => player !== model.resting)].focus({ preventScroll: true });
+    });
+    history.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-remove-round]');
+      if (!button) return;
+      const index = Number(button.dataset.removeRound);
+      model.rounds.splice(index, 1);
+      showResults();
+      onChange();
+      status.textContent = '已删除该局记录';
+      const next = history.querySelector(`[data-remove-round="${Math.min(index, model.rounds.length - 1)}"]`);
+      (next || historyHeading).focus({ preventScroll: true });
+    });
+    clear.addEventListener('click', () => {
+      if (!confirm('确定清除全部麻将对局记录？')) return;
+      model.rounds.length = 0;
+      showResults();
+      onChange();
+      status.textContent = '已清除全部对局记录';
+      historyHeading.focus({ preventScroll: true });
+    });
+
+    showResting();
+    showResults();
+  }
+
+  globalThis.MahjongModule = Object.freeze({ render });
+})();
+</script>
+<script>
   (() => {
     if (!globalThis.Tweak) return;
     const app = document.getElementById('m-app-concept').querySelector('.app');
@@ -750,13 +1193,16 @@
   const notice = root.querySelector('.notice');
   const status = root.querySelector('.live-status');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mahjongCalculator = globalThis.MahjongCalculator;
+  const mahjongStorageKey = 'm-app-mahjong-v1';
   const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
   const modules = {
     cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat', field: '菜名', note: '食材和做法' },
     people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
     food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
     parking: { label: '停车备忘', icon: 'square-parking' },
-    calculator: { label: '计算器', icon: 'calculator' }
+    calculator: { label: '计算器', icon: 'calculator' },
+    mahjong: { label: '麻将胡结算', icon: 'mahjong' }
   };
   const persistentKinds = ['cooking', 'people', 'food'];
   const state = {
@@ -769,6 +1215,7 @@
     enabledModules: Object.keys(modules),
     appearance: 'system',
     widget: 'parking',
+    mahjong: loadMahjong(),
     parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
     records: [
       { id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18', detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。' },
@@ -785,9 +1232,28 @@
   let draggedHandle = false;
   let recentlyCompleted;
 
-  const icon = (name) => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const icon = (name) => name === 'mahjong' ? '<span aria-hidden="true">胡</span>' : `<i data-lucide="${name}" aria-hidden="true"></i>`;
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+
+  function loadMahjong() {
+    try {
+      const saved = localStorage.getItem(mahjongStorageKey) ?? localStorage.getItem('mahjong_state_v4');
+      return mahjongCalculator.normalizeState(JSON.parse(saved));
+    } catch {
+      return mahjongCalculator.normalizeState();
+    }
+  }
+
+  function persistMahjong() {
+    try {
+      localStorage.setItem(mahjongStorageKey, JSON.stringify(state.mahjong));
+      return true;
+    } catch {
+      showNotice('麻将数据未能保存到此浏览器');
+      return false;
+    }
+  }
 
   function updateIcons() {
     globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
@@ -1049,14 +1515,15 @@
   const moduleCategories = {
     permanent: ['cooking', 'people', 'food'],
     temporary: ['parking'],
-    tools: ['calculator']
+    tools: ['calculator', 'mahjong']
   };
   const moduleEntryNotes = {
     cooking: '菜谱、食材和做法',
     people: '生日、关系和备忘',
     food: '店铺和到访笔记',
     parking: '记录当前车位',
-    calculator: '快速计算聚餐分摊'
+    calculator: '快速计算聚餐分摊',
+    mahjong: '四人轮休，按胡数差结算'
   };
   const categoryScrollPositions = new Map();
   const moduleScrollPositions = new Map();
@@ -1219,6 +1686,7 @@
     else if (state.moduleScreen === 'releases') renderModuleReleases(state.module);
     else if (state.module === 'parking') renderParkingModule();
     else if (state.module === 'calculator') renderCalculatorModule();
+    else if (state.module === 'mahjong') globalThis.MahjongModule.render(modulePane, state.mahjong, persistMahjong);
     else renderPersistentModule(state.module);
     const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
     const moduleLabel = modules[state.module].label;
@@ -1280,7 +1748,10 @@
 
   function setModulePreference(key) {
     if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
-    state.modulePreferences[state.module] = key;
+    if (state.module === 'mahjong') {
+      state.mahjong.colorMode = key;
+      persistMahjong();
+    } else state.modulePreferences[state.module] = key;
     const scrollTop = modulePage.scrollTop;
     renderModules();
     updateIcons();
@@ -1353,12 +1824,25 @@
         date: '2026-11-22',
         groups: [['新增', ['根据总金额和人数计算每人分摊金额。', '结果可保留两位小数或四舍五入到元。']]]
       }]
+    },
+    mahjong: {
+      preferenceLabel: '输赢颜色',
+      defaultPreference: 'default',
+      options: [
+        { key: 'default', label: '绿赢、红输' },
+        { key: 'chinese', label: '红赢、绿输' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-23',
+        groups: [['新增', ['记录四人轮休对局，按三位参赛玩家的胡数差计算单局与累计输赢。', '可设置每胡金额及输赢颜色，历史记录保存在本地浏览器。']]]
+      }]
     }
   };
 
   function modulePreference(key) {
     const settings = moduleSettings[key];
-    const selected = state.modulePreferences[key];
+    const selected = key === 'mahjong' ? state.mahjong.colorMode : state.modulePreferences[key];
     return settings.options.some((option) => option.key === selected) ? selected : settings.defaultPreference;
   }
 
@@ -1376,6 +1860,11 @@
     });
     modulePane.innerHTML = `<section class="module-settings-view">
       <h2 class="module-settings-heading">${module.label}设置</h2>
+      ${key === 'mahjong' ? `<form class="form module-settings-group" data-mahjong-rate>
+        <label class="field">每胡金额（元）<input name="rate" type="number" min="0.01" step="0.01" inputmode="decimal" required aria-describedby="m-app-mahjong-rate-note"></label>
+        <p class="settings-meta" id="m-app-mahjong-rate-note">修改金额会重新计算所有对局的输赢。</p>
+        <button class="primary cursor-interaction" type="submit">保存每胡金额</button>
+      </form>` : ''}
       <section class="module-settings-group" aria-labelledby="m-app-module-preference-${key}">
         <h3 id="m-app-module-preference-${key}">${settings.preferenceLabel}</h3>
         <div class="rows">${choices.join('')}</div>
@@ -1385,6 +1874,24 @@
         <div class="rows">${versionLink}</div>
       </section>
     </section>`;
+    if (key === 'mahjong') {
+      const form = modulePane.querySelector('[data-mahjong-rate]');
+      const input = form.elements.rate;
+      input.value = state.mahjong.rate;
+      input.addEventListener('input', () => input.setCustomValidity(''));
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rate = mahjongCalculator.parseRate(input.value);
+        if (rate === null) {
+          input.setCustomValidity('请输入大于零、精确到分的金额。');
+          input.reportValidity();
+          return;
+        }
+        state.mahjong.rate = rate;
+        input.value = rate;
+        if (persistMahjong()) showNotice('已保存每胡金额');
+      });
+    }
   }
 
   function renderModuleReleases(key) {
@@ -1587,14 +2094,15 @@
   }
 
   function showBackupExport(trigger) {
-    setSheet('导出数据', `<p class="settings-meta">备份包含当前的长期记录和车位。选中后可复制到本地文件。</p>
+    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、车位和麻将结算数据。选中后可复制到本地文件。</p>
       <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false"></textarea></label>
       <button class="primary cursor-interaction" type="button" data-action="select-settings-backup">选中全部 JSON</button>`, trigger);
     sheetContent.querySelector('[data-backup-output]').value = JSON.stringify({
       format: backupFormat,
       schema: 1,
       records: state.records,
-      parking: state.parking
+      parking: state.parking,
+      mahjong: state.mahjong
     }, null, 2);
   }
 
@@ -1646,7 +2154,10 @@
         time: backupString(json.parking.time, '停车时间', 32, true)
       };
     }
-    return { records, parking, recordIds, source };
+    const mahjong = Object.hasOwn(json, 'mahjong')
+      ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
+      : undefined;
+    return { records, parking, mahjong, recordIds, source };
   }
 
   function reviewSettingsImport(trigger) {
@@ -1659,16 +2170,17 @@
       message.textContent = error.message;
       return;
     }
+    const { records, parking, mahjong } = pendingBackup;
     setSheet('确认导入', `<div class="detail settings-detail">
-      <strong>${pendingBackup.records.length} 条长期记录 · ${pendingBackup.parking ? '1 条车位记录' : '无车位记录'}</strong>
-      <p>确认后，备份将替换当前预览中的记录和车位。</p></div>
+      <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
+      <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
       <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
       <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
   }
 
   function applySettingsImport() {
     if (!pendingBackup) return;
-    const { records, parking, recordIds } = pendingBackup;
+    const { records, parking, mahjong, recordIds } = pendingBackup;
     pendingBackup = undefined;
     state.records = records;
     state.parking = parking;
@@ -1676,8 +2188,10 @@
     recentlyCompleted = undefined;
     drafts.clear();
     notice.hidden = true;
+    if (mahjong) state.mahjong = mahjong;
+    const saved = !mahjong || persistMahjong();
     render();
-    closeSheet(() => showNotice('已导入数据'));
+    closeSheet(saved ? () => showNotice('已导入数据') : undefined);
   }
 
   function showSettingsItem(key, trigger) {
