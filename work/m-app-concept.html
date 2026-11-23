@@ -48,19 +48,19 @@
   #m-app-concept button:active { transform: scale(.98); }
   #m-app-concept :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
   #m-app-concept svg { width: 19px; height: 19px; display: block; stroke-width: 1.8; }
+  #m-app-concept .icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
   #m-app-concept i[data-lucide] { display: inline-grid; place-items: center; min-width: 17px; height: 19px; font: 600 17px/1 system-ui, sans-serif; }
   #m-app-concept i[data-lucide]::before { content: var(--glyph, '·'); }
   #m-app-concept i[data-lucide='plus'] { --glyph: '+'; }
   #m-app-concept i[data-lucide='more-horizontal'], #m-app-concept i[data-lucide='ellipsis'] { --glyph: '···'; }
   #m-app-concept i[data-lucide='square-parking'], #m-app-concept i[data-lucide='parking-square'] { --glyph: 'P'; }
-  #m-app-concept i[data-lucide='book-open'], #m-app-concept i[data-lucide='cooking-pot'], #m-app-concept i[data-lucide='chef-hat'] { --glyph: '食'; }
+  #m-app-concept i[data-lucide='book-open'], #m-app-concept i[data-lucide='cooking-pot'] { --glyph: '食'; }
   #m-app-concept i[data-lucide='contact-round'], #m-app-concept i[data-lucide='user-round'] { --glyph: '人'; }
   #m-app-concept i[data-lucide='map-pin'], #m-app-concept i[data-lucide='utensils'] { --glyph: '⌖'; }
   #m-app-concept i[data-lucide='calculator'] { --glyph: '÷'; }
   #m-app-concept i[data-lucide='clock-3'], #m-app-concept i[data-lucide='clock'] { --glyph: '◷'; }
   #m-app-concept i[data-lucide='layout-grid'] { --glyph: '⊞'; }
   #m-app-concept i[data-lucide='list'] { --glyph: '≡'; }
-  #m-app-concept i[data-lucide='settings'], #m-app-concept i[data-lucide='settings-2'] { --glyph: '⚙'; }
   #m-app-concept i[data-lucide='sliders-horizontal'] { --glyph: '≡'; }
   #m-app-concept i[data-lucide='chevron-right'] { --glyph: '›'; }
   #m-app-concept i[data-lucide='chevron-left'] { --glyph: '‹'; }
@@ -160,7 +160,6 @@
   }
   #m-app-concept .widget-config:active { background: rgb(246 250 255 / 26%); }
   #m-app-concept .widget-config:focus-visible { outline-color: var(--widget-text); }
-  #m-app-concept .widget-config i { font-size: 19px; letter-spacing: 1px; }
   #m-app-concept .widget-decoration {
     position: absolute;
     z-index: -1;
@@ -219,6 +218,7 @@
     background: var(--blue-tint);
   }
   #m-app-concept .record-icon:is([data-kind='people'],.people) { background: var(--soft-violet); }
+  #m-app-concept svg:is(.people-module-icon, .cooking-module-icon) { width: 26px; height: 26px; }
   #m-app-concept .record-info, #m-app-concept .option-text { min-width: 0; }
   #m-app-concept .record-name, #m-app-concept .option-name { display: block; font-size: 14px; font-weight: 660; color: var(--ink); }
   #m-app-concept .record-meta, #m-app-concept .option-meta { display: block; font-size: 12px; color: var(--quiet); margin-top: 3px; }
@@ -267,30 +267,37 @@
   #m-app-concept .module-view-menu {
     display: grid;
     position: absolute;
-    inset: calc(100% + 6px) 0 auto auto;
-    min-width: 156px;
-    padding: 5px;
+    inset: calc(100% + 8px) 0 auto auto;
+    min-width: 174px;
+    padding: 6px;
     background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: 0 9px 26px color-mix(in srgb, var(--ink) 17%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: 20px;
+    box-shadow: 0 9px 28px color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    #m-app-concept .module-view-menu {
+      background: color-mix(in srgb, var(--surface) 80%, transparent);
+      -webkit-backdrop-filter: blur(16px) saturate(1.25);
+      backdrop-filter: blur(16px) saturate(1.25);
+    }
   }
   #m-app-concept .module-view-option {
     display: grid;
-    grid-template-columns: 19px 1fr 19px;
+    grid-template-columns: 15px 20px 1fr;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     padding-inline: 9px;
-    border-radius: 11px;
-    font-size: 13px;
+    border-radius: 12px;
+    font-size: 14px;
     text-align: left;
     white-space: nowrap;
   }
   #m-app-concept .module-view-option:focus-visible { outline-offset: -2px; }
-  #m-app-concept .module-view-option[aria-checked='true'] { color: var(--blue); background: var(--blue-tint); font-weight: 650; }
+  #m-app-concept .module-view-option:active { background: var(--blue-tint); }
+  #m-app-concept .module-view-option .view-icon { color: var(--blue); }
   #m-app-concept .module-view-option[aria-checked='false'] .view-check { visibility: hidden; }
-  #m-app-concept .module-view-option i[data-lucide] { font-size: 16px; }
-  #m-app-concept .view-check svg { width: 15px; height: 15px; }
+  #m-app-concept svg.view-check { width: 15px; height: 15px; }
   #m-app-concept .module-entries .option {
     min-height: 66px;
     transition-property: transform;
@@ -330,6 +337,7 @@
   #m-app-concept .module-entries[data-view='grid'] [data-key='people'] .record-icon { background: linear-gradient(145deg, #6673be, #425096); }
   #m-app-concept .module-entries[data-view='grid'] [data-key='food'] .record-icon { background: linear-gradient(145deg, #38799e, #205379); }
   #m-app-concept .module-entries[data-view='grid'] .record-icon svg { width: 24px; height: 24px; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon :is(.people-module-icon, .cooking-module-icon) { width: 34px; height: 34px; }
   #m-app-concept .module-entries[data-view='grid'] .record-icon i { font-size: 21px; }
   #m-app-concept .module-entries[data-view='grid'] .option-name { font-size: 15px; }
   #m-app-concept .shell.module-open:not(.module-moving) > :is(.topbar, [data-page='modules'], .bottom-nav) {
@@ -355,10 +363,11 @@
     gap: 8px;
     padding: 10px 19px 8px;
   }
-  #m-app-concept .module-toolbar-button {
+  #m-app-concept :is(.module-toolbar-button, .page-back) {
     display: grid;
     place-items: center;
     width: 44px;
+    flex: none;
     padding: 0;
     border: 1px solid var(--line);
     border-radius: 50%;
@@ -367,7 +376,7 @@
     box-shadow: inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
       0 2px 6px color-mix(in srgb, var(--ink) 8%, transparent);
   }
-  #m-app-concept .module-back::before {
+  #m-app-concept .page-back::before {
     content: '';
     width: 12px;
     height: 12px;
@@ -376,8 +385,62 @@
     border-radius: 1px;
     transform: translateX(2px) rotate(45deg);
   }
-  #m-app-concept .module-toolbar-button:active { transform: scale(.94); }
-  #m-app-concept .module-toolbar-button i[data-lucide] { font-size: 21px; font-variant-emoji: text; }
+  #m-app-concept :is(.module-toolbar-button, .page-back):active { transform: scale(.94); }
+  #m-app-concept .module-toolbar-button svg { width: 21px; height: 21px; }
+  #m-app-concept .module-home { display: grid; gap: 11px; }
+  #m-app-concept .module-home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #m-app-concept .module-home-header h1 { font-size: 24px; font-weight: 740; line-height: 1.2; }
+  #m-app-concept .module-home-header .primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-block: 7px;
+  }
+  #m-app-concept .module-record-list { display: grid; gap: 8px; }
+  #m-app-concept .module-record-card {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    align-items: center;
+    min-width: 0;
+    min-height: 76px;
+    gap: 11px;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    text-align: left;
+    background: var(--surface);
+  }
+  #m-app-concept .module-record-card:active { background: color-mix(in srgb, var(--surface) 80%, var(--blue-tint)); }
+  #m-app-concept .module-record-card .record-info { display: grid; gap: 2px; overflow-wrap: anywhere; }
+  #m-app-concept .module-record-card .record-name { font-size: 16px; font-weight: 720; }
+  #m-app-concept .module-record-card .record-meta { margin: 0; font-size: 13px; }
+  #m-app-concept .module-record-thumbnail {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 680;
+  }
+  #m-app-concept .module-record-thumbnail.person-list-avatar {
+    width: 48px;
+    height: 48px;
+    justify-self: center;
+    background: var(--soft-violet);
+  }
+  #m-app-concept .module-record-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+  #m-app-concept .module-record-end { display: inline-flex; align-items: center; gap: 4px; color: var(--quiet); }
+  #m-app-concept .module-record-end i { min-width: 12px; }
+  #m-app-concept .module-record-empty { padding-block: 8px; font-size: 14px; color: var(--quiet); }
   #m-app-concept .module-settings-view { display: grid; gap: 15px; }
   #m-app-concept .module-settings-heading { padding-inline: 3px; font-size: 20px; font-weight: 690; }
   #m-app-concept .module-settings-group { display: grid; gap: 6px; }
@@ -391,25 +454,9 @@
     background: var(--surface);
     box-shadow: inset 0 0 0 1px var(--line);
   }
-  #m-app-concept .feature-icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    color: var(--blue);
-    background: var(--blue-tint);
-  }
-  #m-app-concept .feature-icon svg { width: 22px; height: 22px; }
-  #m-app-concept .feature-header { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
-  #m-app-concept .feature-copy { min-width: 0; }
-  #m-app-concept .feature-title { font-size: 25px; font-weight: 710; letter-spacing: -.04em; }
+  #m-app-concept .module-feature h2 { font-size: 17px; font-weight: 680; }
   #m-app-concept .feature-meta { font-size: 13px; color: var(--quiet); margin-top: 3px; overflow-wrap: anywhere; }
   #m-app-concept .feature-value { font-size: 28px; font-weight: 680; letter-spacing: -.04em; color: var(--blue); overflow-wrap: anywhere; }
-  #m-app-concept .module-content, #m-app-concept .module-actions { display: grid; gap: 9px; min-width: 0; }
-  #m-app-concept .module-content .rows { background: var(--canvas); border-radius: 14px; }
-  #m-app-concept .module-actions:has(> :nth-child(2)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #m-app-concept .module-content output { font-weight: 650; color: var(--blue); }
   #m-app-concept .settings-stack { display: grid; gap: 12px; }
   #m-app-concept .settings-row { min-height: 58px; }
   #m-app-concept .settings-account { min-height: 74px; }
@@ -436,7 +483,6 @@
     letter-spacing: -.02em;
     text-align: center;
   }
-  #m-app-concept .release-back svg { width: 21px; height: 21px; }
   #m-app-concept .release-page { padding-top: 8px; }
   #m-app-concept .release-list { display: grid; gap: 12px; }
   #m-app-concept .release-card {
@@ -499,6 +545,7 @@
     color: var(--blue);
     font-weight: 680;
   }
+  #m-app-concept .bottom-nav svg { width: 20px; height: 20px; stroke-width: 1.85; }
 
   #m-app-concept .overlay {
     display: grid;
@@ -525,6 +572,8 @@
     box-shadow: 0 -7px 22px rgb(11 23 47 / 13%);
   }
   #m-app-concept .overlay[data-open='true'] .sheet { transform: translateY(var(--drag)); }
+  #m-app-concept .overlay[data-motion='horizontal'] .sheet { transform: translateX(100%); }
+  #m-app-concept .overlay[data-motion='horizontal'][data-open='true'] .sheet { transform: translateX(0); }
   #m-app-concept .sheet[data-dragging='true'] { transition: none; }
   #m-app-concept .handle { display: grid; place-items: center; width: 100%; min-height: 44px; touch-action: none; }
   #m-app-concept .handle:active { transform: none; }
@@ -592,7 +641,7 @@
   @media (prefers-reduced-motion: reduce) {
     #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { transition: none !important; }
     #m-app-concept button:active,
-    #m-app-concept .module-toolbar-button:active,
+    #m-app-concept :is(.module-toolbar-button, .page-back):active,
     #m-app-concept .module-entries .option:active { transform: none; }
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -605,12 +654,85 @@
 </style>
 <link rel="stylesheet" href="./mahjong.css">
 <link rel="stylesheet" href="./cooking.css">
+<link rel="stylesheet" href="./people.css">
 
 <div id="m-app-concept" class="viz-dotted-background">
+  <!--
+    Navigation icons: Lucide 1.17.0, ISC License
+    Copyright (c) 2026 Lucide Icons and Contributors
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  -->
+  <svg class="icon-definitions" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="m-app-people-medallion" x2="100%" y2="100%">
+        <stop offset="0" stop-color="#7586d1"/>
+        <stop offset="1" stop-color="#354581"/>
+      </linearGradient>
+    </defs>
+    <symbol id="m-app-icon-people" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14" fill="url(#m-app-people-medallion)"/>
+      <circle cx="16" cy="16" r="13.35" fill="none" stroke="#d9e1ff" stroke-opacity=".65" stroke-width="1.3"/>
+      <circle cx="16" cy="11.2" r="4.3" fill="#f7f8ff"/>
+      <path d="M7.25 22.25c1.5-3.1 4.45-5.05 8.75-5.05s7.25 1.95 8.75 5.05a11.2 11.2 0 0 1-17.5 0Z" fill="#f7f8ff"/>
+    </symbol>
+    <symbol id="m-app-icon-cooking" viewBox="0 0 32 32">
+      <path d="M3.5 16.15 21.4 13.15c.6 5.45-2.85 10.45-7.95 11.3-5.05.85-9.2-2.5-9.95-8.3Z"
+        fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="m21.45 13.15 7.1-3.65" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M7.1 10.4 8.7 8.75a.5.5 0 0 1 .72 0l1.42 1.4a.5.5 0 0 1 0 .72l-1.58 1.62a.5.5 0 0 1-.72.02L7.1 11.1a.5.5 0 0 1 0-.7Z
+        M13.6 9.45c.4-1.7 1.75-2.76 3.55-2.8-.1 1.67-1.29 3.12-3.05 3.58a.46.46 0 0 1-.5-.78Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="m-app-icon-recent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 6v6h4"/>
+    </symbol>
+    <symbol id="m-app-icon-modules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <circle cx="17.5" cy="17.5" r="3.5"/>
+    </symbol>
+    <symbol id="m-app-icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033
+        2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0
+        2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051
+        a2.34 2.34 0 0 0 3.319-1.915"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="m-app-icon-view-grid" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </g>
+    </symbol>
+    <symbol id="m-app-icon-view-list" viewBox="0 0 24 24">
+      <path d="M8.5 5H21m-12.5 7H21m-12.5 7H21" fill="none" stroke="currentColor" stroke-linecap="round"/>
+      <g fill="currentColor">
+        <circle cx="3.25" cy="5" r="1.3"/>
+        <circle cx="3.25" cy="12" r="1.3"/>
+        <circle cx="3.25" cy="19" r="1.3"/>
+      </g>
+    </symbol>
+    <symbol id="m-app-icon-view-check" viewBox="0 0 24 24">
+      <path d="m4.5 12.5 5 5L19.5 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
   <article class="app" aria-label="M_APP · 手机界面">
     <div class="shell">
       <header class="topbar">
-        <button class="top-action release-back cursor-interaction" type="button" data-action="back-from-changelog" aria-label="返回设置" hidden><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+        <button class="release-back page-back cursor-interaction" type="button" data-action="back-from-changelog" aria-label="返回设置" hidden></button>
         <h1 class="top-title">最近</h1>
         <button class="top-action cursor-interaction" type="button" id="m-app-add" data-action="add" aria-label="新增记录"><i data-lucide="plus" aria-hidden="true"></i></button>
         <div class="module-tabs" data-module-tabs role="tablist" aria-label="模块分类" hidden>
@@ -620,15 +742,17 @@
         </div>
         <div class="module-view-picker" data-module-view-picker hidden>
           <button class="top-action cursor-interaction" type="button" data-action="toggle-module-view-menu" aria-label="视图样式" aria-haspopup="menu" aria-expanded="false" aria-controls="m-app-module-view-menu">
-            <span data-view-icon="grid"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
-            <span data-view-icon="list" hidden><i data-lucide="list" aria-hidden="true"></i></span>
+            <span data-view-icon="grid" aria-hidden="true"><svg><use href="#m-app-icon-view-grid"/></svg></span>
+            <span data-view-icon="list" aria-hidden="true" hidden><svg><use href="#m-app-icon-view-list"/></svg></span>
           </button>
           <div class="module-view-menu" id="m-app-module-view-menu" role="menu" aria-label="视图样式" hidden>
             <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="true" tabindex="-1" data-action="set-module-view" data-key="grid">
-              <i data-lucide="layout-grid" aria-hidden="true"></i><span>网格视图</span><span class="view-check"><i data-lucide="check" aria-hidden="true"></i></span>
+              <svg class="view-check" aria-hidden="true"><use href="#m-app-icon-view-check"/></svg>
+              <svg class="view-icon" aria-hidden="true"><use href="#m-app-icon-view-grid"/></svg><span>网格视图</span>
             </button>
             <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" data-action="set-module-view" data-key="list">
-              <i data-lucide="list" aria-hidden="true"></i><span>列表视图</span><span class="view-check"><i data-lucide="check" aria-hidden="true"></i></span>
+              <svg class="view-check" aria-hidden="true"><use href="#m-app-icon-view-check"/></svg>
+              <svg class="view-icon" aria-hidden="true"><use href="#m-app-icon-view-list"/></svg><span>列表视图</span>
             </button>
           </div>
         </div>
@@ -643,8 +767,8 @@
       </section>
       <section class="module-window" aria-label="模块详情" hidden>
         <div class="module-toolbar">
-          <button class="module-back module-toolbar-button cursor-interaction" type="button" aria-label="返回模块" data-action="back-to-category"></button>
-          <button class="module-toolbar-button cursor-interaction" type="button" aria-label="模块设置" data-action="open-module-settings" hidden><i data-lucide="settings" aria-hidden="true"></i></button>
+          <button class="module-back page-back cursor-interaction" type="button" aria-label="返回模块" data-action="back-to-category"></button>
+          <button class="module-toolbar-button cursor-interaction" type="button" aria-label="模块设置" data-action="open-module-settings" hidden><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></button>
         </div>
         <div class="page" data-module-detail></div>
       </section>
@@ -664,7 +788,7 @@
               <span class="setting-value"><span data-enabled-module-count></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
             </button>
             <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
-              <span class="record-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+              <span class="record-icon"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></span>
               <span class="record-info"><span class="record-name">偏好设置</span><span class="record-meta">外观和小组件</span></span>
               <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
             </button>
@@ -692,9 +816,9 @@
         <div class="release-list" data-release-list></div>
       </section>
       <nav class="bottom-nav" aria-label="主导航">
-        <button class="cursor-interaction" type="button" data-tab="recent" aria-current="page"><i data-lucide="clock-3" aria-hidden="true"></i>最近</button>
-        <button class="cursor-interaction" type="button" data-tab="modules"><i data-lucide="layout-grid" aria-hidden="true"></i>模块</button>
-        <button class="cursor-interaction" type="button" data-tab="settings"><i data-lucide="settings" aria-hidden="true"></i>设置</button>
+        <button class="cursor-interaction" type="button" data-tab="recent" aria-current="page"><svg aria-hidden="true"><use href="#m-app-icon-recent"/></svg>最近</button>
+        <button class="cursor-interaction" type="button" data-tab="modules"><svg aria-hidden="true"><use href="#m-app-icon-modules"/></svg>模块</button>
+        <button class="cursor-interaction" type="button" data-tab="settings"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg>设置</button>
       </nav>
     </div>
     <section class="cooking-window" data-cooking-window role="dialog" aria-modal="true" aria-labelledby="cooking-title" hidden></section>
@@ -704,7 +828,9 @@
       <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-app-sheet-title">
         <button class="handle cursor-interaction" type="button" data-close-sheet aria-label="下拉或点击关闭"></button>
         <div class="sheet-header">
+          <button class="page-back cursor-interaction" type="button" data-sheet-back aria-label="返回" hidden></button>
           <h2 class="sheet-title" id="m-app-sheet-title"></h2>
+          <button class="person-edit-button cursor-interaction" type="button" data-person-edit hidden>编辑</button>
           <button class="close cursor-interaction" type="button" data-close-sheet aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
         </div>
         <div class="sheet-content"></div>
@@ -718,6 +844,8 @@
 <script src="./cooking.js"></script>
 <script src="./cooking-store.js"></script>
 <script src="./cooking-ui.js" data-demo-cover="../public/scallion-noodles.jpg"></script>
+<script src="./people.js"></script>
+<script src="./people-ui.js"></script>
 <script>
   (() => {
     if (!globalThis.Tweak) return;
@@ -747,6 +875,8 @@
   const sheet = root.querySelector('.sheet');
   const handle = sheet.querySelector('.handle');
   const closeButton = sheet.querySelector('.close');
+  const sheetBack = sheet.querySelector('[data-sheet-back]');
+  const sheetEdit = sheet.querySelector('[data-person-edit]');
   const sheetTitle = sheet.querySelector('.sheet-title');
   const sheetContent = sheet.querySelector('.sheet-content');
   const notice = root.querySelector('.notice');
@@ -757,10 +887,12 @@
   const cookingModel = globalThis.CookingGuide;
   const cookingModule = globalThis.CookingModule;
   const legacyCookingStorageKey = 'm-app-cooking-v1';
+  const peopleModel = globalThis.PeopleCards;
+  const peopleStore = peopleModel.readStore();
   const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
   const modules = {
-    cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat' },
-    people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
+    cooking: { label: '烹饪指南', item: '菜谱', icon: 'cooking-module' },
+    people: { label: '人物卡片', item: '人物卡片', icon: 'people-module' },
     food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
     parking: { label: '停车备忘', icon: 'square-parking' },
     calculator: { label: '计算器', icon: 'calculator' },
@@ -777,6 +909,8 @@
     module: null,
     moduleScreen: 'content',
     modulePreferences: {},
+    peopleSettings: peopleStore?.settings ?? peopleModel.normalizeSettings(),
+    peopleSort: peopleStore?.sort ?? 'recent',
     moduleView: 'grid',
     enabledModules: Object.keys(modules),
     appearance: 'system',
@@ -785,7 +919,8 @@
     parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
     records: [
       ...loadLegacyCooking(),
-      { id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。' },
+      ...(peopleStore?.records ?? [{ id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。',
+        person: peopleModel.normalizePerson({ birthday: '--05-18', relationships: ['朋友'], notes: '喜欢手冲咖啡。' }) }]),
       { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
     ]
   };
@@ -800,10 +935,19 @@
   let draggedHandle = false;
   let recentlyCompleted;
 
-  const icon = (name) => name === 'mahjong' ? '<span aria-hidden="true">胡</span>' : `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const icon = (name) => {
+    if (name === 'mahjong') return '<span aria-hidden="true">胡</span>';
+    if (name === 'people-module') return '<svg class="people-module-icon" aria-hidden="true"><use href="#m-app-icon-people"/></svg>';
+    if (name === 'cooking-module') return '<svg class="cooking-module-icon" aria-hidden="true"><use href="#m-app-icon-cooking"/></svg>';
+    return `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  };
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
   const cookingWindow = cookingModule.createWindow(root.querySelector('[data-cooking-window]'), shell, saveRecipe, replacementFocus);
+  const peopleView = globalThis.PeopleCardView.create({
+    setSheet, sheetContent, closeSheet, showNotice, savePerson, savePeopleSettings,
+    icon, findRecord, getSettings: () => state.peopleSettings, isOpen: () => overlay.dataset.open === 'true'
+  });
 
   function loadLegacyCooking() {
     try {
@@ -813,7 +957,7 @@
     } catch {
       // The sample remains available if browser storage cannot be read.
     }
-    return [{ id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18',
+    return [{ id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', durationMinutes: 20, summary: '家常快手', time: '12:18',
       detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。', recipe: cookingModel.DEMO_RECIPE }];
   }
 
@@ -852,8 +996,85 @@
     return id;
   }
 
-  async function saveRecipe({ title, summary, recipe }, previous) {
-    const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary,
+  function peopleSnapshot() {
+    return { records: state.records.filter((record) => record.kind === 'people'), settings: state.peopleSettings, sort: state.peopleSort };
+  }
+
+  function personSummary(person, settings) {
+    return peopleModel.summary(person, settings) || (settings.fields.includes('notes')
+      ? person.notes.split('\n', 1)[0].slice(0, peopleModel.limits.summary) : '');
+  }
+
+  function updatePeopleRecords({ records, settings, sort }) {
+    const previousIds = new Set(state.records.filter((record) => record.kind === 'people').map((record) => record.id));
+    const incoming = new Map(records.map((record) => [record.id, record]));
+    const additions = records.filter((record) => !previousIds.has(record.id));
+    state.records = [...additions, ...state.records.flatMap((record) => {
+      if (record.kind === 'people') return incoming.has(record.id) ? [incoming.get(record.id)] : [];
+      return [incoming.has(record.id) ? { ...record, id: nextRecordId(incoming) } : record];
+    })];
+    state.peopleSettings = settings;
+    state.peopleSort = sort;
+    renderRecent();
+    if (state.module === 'people' && state.moduleScreen === 'content') renderModules();
+    updateIcons();
+  }
+
+  function writePeopleStore(bundle) {
+    try {
+      peopleModel.writeStore(bundle);
+    } catch {
+      throw new Error('无法保存人物卡片到此浏览器。请检查可用存储空间后再试。');
+    }
+  }
+
+  function changePeople(makeChanges) {
+    return peopleModel.withStoreLock(() => {
+      const next = makeChanges(peopleModel.readStore() ?? peopleSnapshot());
+      writePeopleStore(next);
+      updatePeopleRecords(next);
+      return next;
+    });
+  }
+
+  async function savePerson(title, person, previous) {
+    let saved;
+    await changePeople((bundle) => {
+      const current = previous && bundle.records.find((record) => record.id === previous.id);
+      if (previous && (!current || current.title !== previous.title || current.time !== previous.time
+        || JSON.stringify(peopleModel.personFor(current)) !== JSON.stringify(peopleModel.personFor(previous)))) {
+        throw new Error('这张人物卡片已在其他页面更新，请重新打开后再编辑。');
+      }
+      saved = {
+        id: previous?.id ?? `person-${crypto.randomUUID()}`, kind: 'people', title,
+        time: previous?.time ?? timeNow(), person, summary: personSummary(person, bundle.settings),
+        detail: person.notes.slice(0, peopleModel.limits.summary)
+      };
+      const records = previous ? bundle.records.map((record) => record.id === previous.id ? saved : record)
+        : [saved, ...bundle.records];
+      return { ...bundle, records };
+    });
+    return saved;
+  }
+
+  async function savePeopleSettings(settings, previous, renames) {
+    const normalized = peopleModel.normalizeSettings(settings, { strict: true });
+    const updated = await changePeople((bundle) => {
+      if (JSON.stringify(bundle.settings) !== JSON.stringify(previous)) {
+        throw new Error('人物设置已在其他页面更新，请重新打开设置后再修改。');
+      }
+      const records = bundle.records.map((record) => {
+        const person = peopleModel.personFor(record);
+        person.relationships = [...new Set(person.relationships.map((label) => renames.get(label) ?? label))];
+        return { ...record, person, summary: personSummary(person, normalized) };
+      });
+      return { ...bundle, records, settings: normalized };
+    });
+    return updated.settings;
+  }
+
+  async function saveRecipe({ title, summary, durationMinutes, recipe }, previous) {
+    const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary, durationMinutes,
       time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe };
     useCookingRecords(await cookingStore.save(record, previous));
     cookingUpdates?.postMessage('changed');
@@ -941,31 +1162,49 @@
           <span class="widget-title"></span>
           <span class="widget-meta"></span>
         </button>
-        <button class="widget-config cursor-interaction" type="button" data-action="widget-settings" aria-label="编辑小组件">${icon('sliders-horizontal')}</button>
+        <button class="widget-config cursor-interaction" type="button" data-action="widget-settings" aria-label="编辑小组件"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></button>
       </article>`;
     widgetSlot.querySelector('.widget-label span').textContent = item.label;
     widgetSlot.querySelector('.widget-title').textContent = item.title;
     widgetSlot.querySelector('.widget-meta').textContent = item.meta;
   }
 
-  function recordRow(record) {
+  function recordRow(record, moduleCard = false) {
     const button = document.createElement('button');
-    button.className = 'record cursor-interaction';
+    button.className = `${moduleCard ? 'module-record-card' : 'record'} cursor-interaction`;
     button.type = 'button';
     button.dataset.action = 'record';
     button.dataset.key = record.id;
+    const time = '<span class="record-time"></span>';
     button.innerHTML = `
-      <span class="record-icon" data-kind="${record.kind}">${icon(modules[record.kind].icon)}</span>
+      <span class="${moduleCard ? 'module-record-thumbnail' : 'record-icon'}" data-kind="${record.kind}" aria-hidden="true">${moduleCard ? '' : icon(modules[record.kind].icon)}</span>
       <span class="record-info"><span class="record-name"></span><span class="record-meta"></span></span>
-      <span class="record-time"></span>`;
+      ${moduleCard ? `<span class="module-record-end">${time}${icon('chevron-right')}</span>` : time}`;
+    const badge = button.firstElementChild;
+    let summary = record.kind === 'cooking' ? cookingModel.formatRecipeMeta(record) : record.summary;
+    if (record.kind === 'people') {
+      const person = peopleModel.personFor(record);
+      summary = personSummary(person, state.peopleSettings);
+      badge.classList.add('person-list-avatar');
+      if (person.avatar && state.peopleSettings.fields.includes('avatar')) {
+        const avatar = document.createElement('img');
+        avatar.src = person.avatar;
+        avatar.alt = '';
+        badge.replaceChildren(avatar);
+      } else badge.textContent = peopleModel.initial(record.title);
+    } else if (moduleCard) {
+      badge.textContent = Array.from(record.title.trim())[0] ?? '·';
+    }
     button.querySelector('.record-name').textContent = record.title;
-    button.querySelector('.record-meta').textContent = [modules[record.kind].label, record.summary].filter(Boolean).join(' · ');
+    const meta = button.querySelector('.record-meta');
+    meta.textContent = moduleCard ? summary : [modules[record.kind].label, summary].filter(Boolean).join(' · ');
+    if (moduleCard && (!summary || (record.kind === 'food' && modulePreference('food') === 'hide'))) meta.hidden = true;
     button.querySelector('.record-time').textContent = record.time;
     return button;
   }
 
   function renderRecent() {
-    const rows = state.records.map(recordRow);
+    const rows = state.records.map((record) => recordRow(record));
     if (state.parking && state.widget !== 'parking') {
       rows.unshift(recordRow({ id: 'parking', kind: 'parking', title: parkingTitle(state.parking), summary: state.parking.place, time: state.parking.time }));
     }
@@ -989,12 +1228,21 @@
     render();
   }
 
-  function setSheet(label, html, trigger) {
-    if (overlay.dataset.open === 'false' && !overlay.hidden) return;
+  function setSheet(label, html, trigger, { onBack, onEdit, backLabel } = {}) {
+    if (overlay.dataset.open === 'false' && !overlay.hidden) return false;
+    overlay.dataset.mode = onBack ? 'people' : '';
+    sheetBack.hidden = !onBack;
+    sheetBack.setAttribute('aria-label', backLabel ?? (state.page === 'modules' ? '返回人物列表' : '返回最近'));
+    sheetBack.onclick = onBack ? () => onBack() : null;
+    sheetEdit.hidden = !onEdit;
+    sheetEdit.onclick = onEdit ?? null;
+    closeButton.hidden = Boolean(onBack);
+    sheetTitle.classList.toggle('live-status', Boolean(onEdit));
     sheetTitle.textContent = label;
     sheetContent.innerHTML = html;
     sheet.scrollTop = 0;
     if (overlay.hidden) {
+      overlay.dataset.motion = onEdit ? 'horizontal' : '';
       returnFocus = trigger;
       overlay.hidden = false;
       shell.inert = true;
@@ -1002,8 +1250,9 @@
       overlay.getBoundingClientRect();
       overlay.dataset.open = 'true';
     }
-    closeButton.focus({ preventScroll: true });
+    (onBack ? sheetBack : closeButton).focus({ preventScroll: true });
     updateIcons();
+    return true;
   }
 
   function replacementFocus(trigger) {
@@ -1067,6 +1316,10 @@
   }
 
   function showCreate(kind, trigger) {
+    if (kind === 'people') {
+      peopleView.showEditor(null, trigger);
+      return;
+    }
     if (kind === 'cooking') {
       if (overlay.dataset.open === 'true') {
         const source = returnFocus;
@@ -1105,6 +1358,10 @@
     if (!record) return;
     if (record.kind === 'cooking') {
       cookingWindow.open(record, trigger);
+      return;
+    }
+    if (record.kind === 'people') {
+      peopleView.showDetails(record, trigger);
       return;
     }
     setSheet(record.title, '<div class="detail"><p></p></div>', trigger);
@@ -1216,65 +1473,57 @@
     }
   }
 
-  function renderPersistentModule(key) {
+  function renderModuleHome(key) {
     const module = modules[key];
+    const updatingParking = key === 'parking' && Boolean(state.parking);
+    const actionLabel = key === 'parking'
+      ? (updatingParking ? '更新车位' : '记录停车')
+      : (module.item ? `新增${module.item}` : '');
+    const action = actionLabel ? `<button class="primary cursor-interaction" type="button" data-action="create" data-key="${key}">
+      ${updatingParking ? '' : icon('plus')}${actionLabel}</button>` : '';
+    modulePane.innerHTML = `
+      <div class="module-home">
+        <header class="module-home-header">
+          <h1>${module.label}</h1>
+          ${action}
+        </header>
+        <div class="module-home-content"></div>
+      </div>`;
+    const content = modulePane.querySelector('.module-home-content');
+    if (key === 'parking') renderParkingModule(content);
+    else if (key === 'calculator') renderCalculatorModule(content);
+    else if (key === 'mahjong') globalThis.MahjongModule.render(content, state.mahjong, persistMahjong);
+    else renderPersistentModule(content, key);
+  }
+
+  function renderPersistentModule(content, key) {
     const entries = state.records.filter((record) => record.kind === key);
     if (modulePreference(key) === 'name') entries.sort((left, right) => left.title.localeCompare(right.title, 'zh-CN'));
     if (key === 'cooking') {
-      cookingModule.renderList(modulePane, entries, icon);
+      cookingModule.renderList(content, entries, icon);
       return;
     }
-    modulePane.innerHTML = `
-      <section class="module-feature">
-        <div class="feature-header">
-          <span class="feature-icon">${icon(module.icon)}</span>
-          <div class="feature-copy">
-            <h2 class="feature-title">${module.label}</h2>
-            <p class="feature-meta">${entries.length} 条记录</p>
-          </div>
-        </div>
-        <div class="module-content">
-          <div class="rows"></div>
-          <button class="primary cursor-interaction" type="button" data-action="create" data-key="${key}">${icon('plus')}新增${module.item}</button>
-        </div>
-      </section>`;
-
-    const list = modulePane.querySelector('.rows');
     if (entries.length === 0) {
-      const empty = document.createElement('p');
-      empty.className = 'empty';
-      empty.textContent = `暂无${module.item}`;
-      list.append(empty);
+      content.innerHTML = `<p class="module-record-empty">还没有${modules[key].item}</p>`;
       return;
     }
-
-    for (const record of entries) {
-      const row = recordRow(record);
-      const summary = row.querySelector('.record-meta');
-      summary.textContent = record.summary;
-      summary.hidden = key === 'food' && modulePreference(key) === 'hide';
-      list.append(row);
-    }
+    const list = document.createElement('div');
+    list.className = 'module-record-list';
+    for (const record of entries) list.append(recordRow(record, true));
+    content.append(list);
   }
 
-  function renderParkingModule() {
-    modulePane.innerHTML = `
+  function renderParkingModule(content) {
+    content.innerHTML = `
       <section class="module-feature">
-        <div class="feature-header">
-          <span class="feature-icon">${icon('square-parking')}</span>
-          <div class="feature-copy">
-            <h2 class="feature-title">停车备忘</h2>
-            <p class="feature-value"></p>
-            <p class="feature-meta"></p>
-          </div>
+        <div>
+          <p class="feature-value"></p>
+          <p class="feature-meta"></p>
         </div>
-        <div class="module-actions">
-          ${state.parking ? '<button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button>' : ''}
-          <button class="${state.parking ? 'secondary' : 'primary'} cursor-interaction" type="button" data-action="create" data-key="parking">${state.parking ? '更新车位' : '记录停车'}</button>
-        </div>
+        ${state.parking ? '<button class="secondary cursor-interaction" type="button" data-action="complete-parking">已取车</button>' : ''}
       </section>`;
-    modulePane.querySelector('.feature-value').textContent = state.parking ? parkingTitle(state.parking) : '当前没有停车记录';
-    modulePane.querySelector('.feature-meta').textContent = state.parking
+    content.querySelector('.feature-value').textContent = state.parking ? parkingTitle(state.parking) : '当前没有停车记录';
+    content.querySelector('.feature-meta').textContent = state.parking
       ? [state.parking.place, ...(modulePreference('parking') === 'show' ? [state.parking.time] : [])].join(' · ')
       : '保存地点和车位，取车后结束。';
   }
@@ -1288,20 +1537,17 @@
       : '请输入金额和人数';
   }
 
-  function renderCalculatorModule() {
-    modulePane.innerHTML = `
+  function renderCalculatorModule(content) {
+    content.innerHTML = `
       <section class="module-feature">
-        <div class="feature-header">
-          <span class="feature-icon">${icon('calculator')}</span>
-          <div class="feature-copy"><h2 class="feature-title">聚餐分摊</h2></div>
-        </div>
-        <form class="form module-content" data-calculator>
+        <h2>聚餐分摊</h2>
+        <form class="form" data-calculator>
           <label class="field">总金额<input name="amount" type="number" min="0" step="any" inputmode="decimal" required></label>
           <label class="field">人数<input name="people" type="number" min="1" inputmode="numeric" required></label>
           <output class="feature-value" aria-live="polite"></output>
         </form>
       </section>`;
-    const form = modulePane.querySelector('[data-calculator]');
+    const form = content.querySelector('[data-calculator]');
     form.elements.amount.value = calculatorDraft.amount;
     form.elements.people.value = calculatorDraft.people;
     updateCalculatorResult(form);
@@ -1373,10 +1619,7 @@
 
     if (state.moduleScreen === 'settings') renderModuleSettings(state.module);
     else if (state.moduleScreen === 'releases') renderModuleReleases(state.module);
-    else if (state.module === 'parking') renderParkingModule();
-    else if (state.module === 'calculator') renderCalculatorModule();
-    else if (state.module === 'mahjong') globalThis.MahjongModule.render(modulePane, state.mahjong, persistMahjong);
-    else renderPersistentModule(state.module);
+    else renderModuleHome(state.module);
     const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
     const moduleLabel = modules[state.module].label;
     const backLabel = state.moduleScreen === 'releases' ? '模块设置'
@@ -1439,12 +1682,28 @@
     else setModuleScreen('content', '[data-action="open-module-settings"]');
   }
 
-  function setModulePreference(key) {
+  async function setModulePreference(key) {
     if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
+    const module = state.module;
     if (state.module === 'mahjong') {
       state.mahjong.colorMode = key;
       persistMahjong();
-    } else state.modulePreferences[state.module] = key;
+    } else if (module === 'people') {
+      try {
+        await changePeople((bundle) => ({ ...bundle, sort: key }));
+      } catch (error) {
+        showNotice(error.message);
+        return;
+      }
+      if (state.module !== module || state.moduleScreen !== 'settings') return;
+      for (const button of modulePane.querySelectorAll('[data-action="module-preference"]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.key === key));
+        const marker = button.querySelector('.option-marker');
+        marker.innerHTML = button.dataset.key === key ? icon('check') : '';
+      }
+      updateIcons();
+      return;
+    } else state.modulePreferences[module] = key;
     const scrollTop = modulePane.scrollTop;
     renderModules();
     updateIcons();
@@ -1461,6 +1720,14 @@
         { key: 'name', label: '按菜名排序', symbol: 'book-open' }
       ],
       releases: [{
+        version: '0.3.0',
+        date: '2026-11-24',
+        groups: [['变更', [
+          '烹饪时间和简介分开编辑，可直接输入分钟数或用加减按钮调整。',
+          '用料和步骤可以分别折叠，从列表底部添加新项。',
+          '烹饪指南换用炒锅图标，模块首页统一采用标题和独立记录卡的布局。'
+        ]]]
+      }, {
         version: '0.2.0',
         date: '2026-11-23',
         groups: [
@@ -1481,6 +1748,13 @@
         { key: 'name', label: '按姓名排序', symbol: 'user-round' }
       ],
       releases: [{
+        version: '0.2.0',
+        date: '2026-11-23',
+        groups: [
+          ['新增', ['人物卡片支持头像、昵称、生日和自动计算年龄、所在地及多条联系方式。', '可以在设置中配置多选关系、调整显示属性并添加自定义属性。', '人物卡片和属性设置保存在当前浏览器，可通过 JSON 备份恢复。']],
+          ['变更', ['人物卡片模块采用蓝紫色圆底人像图标。', '人物列表显示头像或姓名首字。详情从右侧滑入，左上角返回，右上角编辑。', '自定义属性可从设置中移除，恢复时会找回已填内容。', '没有完整生日时，可以单独填写年龄。']]
+        ]
+      }, {
         version: '0.1.0',
         date: '2026-11-22',
         groups: [['新增', ['支持新建、查看人物卡片，记录关系和备注。', '可设置人物卡片的排序方式。']]]
@@ -1516,8 +1790,8 @@
       preferenceLabel: '分摊结果精度',
       defaultPreference: 'decimals',
       options: [
-        { key: 'decimals', label: '保留两位小数', symbol: 'calculator' },
-        { key: 'whole', label: '四舍五入到元', symbol: 'calculator' }
+        { key: 'decimals', label: '保留两位小数', symbol: 'sliders-horizontal' },
+        { key: 'whole', label: '四舍五入到元', symbol: 'sliders-horizontal' }
       ],
       releases: [{
         version: '0.1.0',
@@ -1542,7 +1816,7 @@
 
   function modulePreference(key) {
     const settings = moduleSettings[key];
-    const selected = key === 'mahjong' ? state.mahjong.colorMode : state.modulePreferences[key];
+    const selected = key === 'mahjong' ? state.mahjong.colorMode : key === 'people' ? state.peopleSort : state.modulePreferences[key];
     return settings.options.some((option) => option.key === selected) ? selected : settings.defaultPreference;
   }
 
@@ -1569,11 +1843,13 @@
         <h3 id="m-app-module-preference-${key}">${settings.preferenceLabel}</h3>
         <div class="rows">${choices.join('')}</div>
       </section>
+      ${key === 'people' ? '<div class="module-settings-group" data-people-settings></div>' : ''}
       <section class="module-settings-group" aria-labelledby="m-app-module-version-${key}">
         <h3 id="m-app-module-version-${key}">版本</h3>
         <div class="rows">${versionLink}</div>
       </section>
     </section>`;
+    if (key === 'people') peopleView.mountSettings(modulePane.querySelector('[data-people-settings]'));
     if (key === 'mahjong') {
       const form = modulePane.querySelector('[data-mahjong-rate]');
       const input = form.elements.rate;
@@ -1659,8 +1935,20 @@
     target.focus({ preventScroll: true });
   });
 
-  const settingsVersion = '0.6.0';
+  const settingsVersion = '0.7.0';
   const releaseNotes = [
+    {
+      version: '0.7.0',
+      date: '2026-11-24',
+      groups: [
+        ['新增', ['人物卡片 v0.2.0 支持头像、昵称、年龄、多选关系、多条联系方式和自定义属性，可随备份导入导出。']],
+        ['变更', [
+          '六个模块首页统一采用标题和内容卡片布局，移除大标题旁的模块 Logo。',
+          '底部导航统一线框图标，模块视图菜单更新图标和选中状态。可返回的页面统一使用圆形左箭头。',
+          '烹饪指南 v0.3.0 分开编辑时长和简介，用料与步骤可以折叠，并可从各自列表底部添加项目。'
+        ]]
+      ]
+    },
     {
       version: '0.6.0',
       date: '2026-11-23',
@@ -1819,7 +2107,7 @@
   }
 
   async function showBackupExport(trigger) {
-    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、车位和麻将结算数据。选中后可复制到本地文件。</p>
+    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、人物属性设置、车位和麻将结算数据。选中后可复制到本地文件。</p>
       <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取最新菜谱…"></textarea></label>
       <p class="settings-meta" data-backup-error role="alert" hidden></p>
       <button class="primary cursor-interaction" type="button" data-action="select-settings-backup" disabled>选中全部 JSON</button>`, trigger);
@@ -1829,11 +2117,17 @@
     try {
       if (importingBackup) throw new Error('正在导入数据，请完成后再导出备份。');
       await refreshCookingRecords();
+      await peopleModel.withStoreLock(() => {
+        const bundle = peopleModel.readStore();
+        if (bundle) updatePeopleRecords(bundle);
+      });
       if (!backupSheetIsOpen(output)) return;
       output.value = JSON.stringify({
         format: backupFormat,
         schema: 1,
         records: state.records,
+        peopleSettings: state.peopleSettings,
+        peopleSort: state.peopleSort,
         parking: state.parking,
         mahjong: state.mahjong
       }, null, 2);
@@ -1874,6 +2168,11 @@
       recordIds.add(record.id);
       const recipe = record.kind === 'cooking' && Object.hasOwn(record, 'recipe')
         ? cookingModel.normalizeRecipe(record.recipe, { strict: true }) : undefined;
+      const duration = record.kind === 'cooking' && Object.hasOwn(record, 'durationMinutes')
+        ? { durationMinutes: cookingModel.normalizeDuration(record.durationMinutes) } : {};
+      const person = record.kind === 'people'
+        ? (Object.hasOwn(record, 'person') ? peopleModel.normalizePerson(record.person, { strict: true }) : peopleModel.personFor(record))
+        : undefined;
       return {
         id: record.id,
         kind: record.kind,
@@ -1881,7 +2180,9 @@
         summary: backupString(record.summary, '摘要', 180),
         time: backupString(record.time, '时间', 32, true),
         detail: backupString(record.detail, '内容', 180),
-        ...(recipe && { recipe })
+        ...duration,
+        ...(recipe && { recipe }),
+        ...(person && { person })
       };
     });
     let parking = null;
@@ -1899,7 +2200,12 @@
     const mahjong = Object.hasOwn(json, 'mahjong')
       ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
       : undefined;
-    return { records, parking, mahjong, source };
+    const peopleSettings = Object.hasOwn(json, 'peopleSettings')
+      ? peopleModel.normalizeSettings(json.peopleSettings, { strict: true }) : undefined;
+    if (Object.hasOwn(json, 'peopleSort') && !['recent', 'name'].includes(json.peopleSort)) {
+      throw new Error('备份中的人物排序格式不正确。');
+    }
+    return { records, parking, mahjong, peopleSettings, peopleSort: json.peopleSort, source };
   }
 
   async function reviewSettingsImport(trigger) {
@@ -1914,6 +2220,7 @@
       await refreshCookingRecords();
       if (!backupSheetIsOpen(input)) return;
       backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
+      backup.peopleBase = peopleModel.readStore() ?? peopleSnapshot();
       pendingBackup = backup;
       const { records, parking, mahjong } = backup;
       setSheet('确认导入', `<div class="detail settings-detail">
@@ -1937,7 +2244,7 @@
   async function applySettingsImport(_, trigger) {
     if (!pendingBackup || importingBackup) return;
     const backup = pendingBackup;
-    const { records, parking, mahjong, cookingBase } = backup;
+    const { records, parking, mahjong, cookingBase, peopleSettings, peopleSort, peopleBase } = backup;
     const edit = sheetContent.querySelector('[data-action="edit-settings-import"]');
     const message = sheetContent.querySelector('[data-backup-error]');
     importingBackup = true;
@@ -1946,7 +2253,28 @@
     edit.disabled = true;
     message.hidden = true;
     try {
-      await replaceCookingRecords(records, cookingBase);
+      await peopleModel.withStoreLock(async () => {
+        const stored = peopleModel.readStore();
+        const previous = stored ?? peopleSnapshot();
+        if (JSON.stringify(previous) !== JSON.stringify(peopleBase)) {
+          throw new Error('其他页面更新了人物卡片。请重新检查备份后再确认导入。');
+        }
+        const imported = {
+          records: records.filter((record) => record.kind === 'people'),
+          settings: peopleSettings ?? previous.settings,
+          sort: peopleSort ?? previous.sort
+        };
+        writePeopleStore(imported);
+        try {
+          await replaceCookingRecords(records, cookingBase);
+        } catch (error) {
+          if (stored) writePeopleStore(stored);
+          else localStorage.removeItem(peopleModel.storageKey);
+          throw error;
+        }
+        state.peopleSettings = imported.settings;
+        state.peopleSort = imported.sort;
+      });
     } catch (error) {
       if (backupSheetIsOpen(trigger)) {
         trigger.disabled = false;
@@ -1966,6 +2294,7 @@
     recentlyCompleted = undefined;
     drafts.clear();
     cookingWindow.clearDraft();
+    peopleView.clearDrafts();
     notice.hidden = true;
     const previousMahjong = state.mahjong;
     if (mahjong) state.mahjong = mahjong;
@@ -2101,7 +2430,8 @@
   overlay.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       event.preventDefault();
-      closeSheet();
+      if (sheetBack.hidden) closeSheet();
+      else sheetBack.click();
     }
     if (event.key === 'Enter' && event.target.tagName === 'INPUT' && !event.isComposing) {
       const form = event.target.closest('[data-create]');
@@ -2111,7 +2441,8 @@
       }
     }
     if (event.key !== 'Tab') return;
-    const controls = [...sheet.querySelectorAll('button, input, textarea')].filter((element) => element.getClientRects().length);
+    const controls = [...sheet.querySelectorAll('button, input, textarea, select, a[href]')]
+      .filter((element) => !element.matches(':disabled') && element.getClientRects().length);
     const first = controls[0];
     const last = controls[controls.length - 1];
     if (event.shiftKey && document.activeElement === first) {
@@ -2155,6 +2486,13 @@
   const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
   cookingUpdates?.addEventListener('message', syncCookingRecords);
   window.addEventListener('focus', syncCookingRecords);
+  window.addEventListener('storage', (event) => {
+    if (event.key !== peopleModel.storageKey) return;
+    peopleModel.withStoreLock(() => {
+      const bundle = peopleModel.readStore();
+      if (bundle) updatePeopleRecords(bundle);
+    }).catch(() => {});
+  });
   syncCookingRecords();
 })();
 </script>

@@ -101,6 +101,25 @@
     };
   }
 
+  function normalizeDuration(value) {
+    if (value === null || (Number.isSafeInteger(value) && value >= 0)) return value;
+    throw new Error('烹饪时间请输入有效的整数分钟。');
+  }
+
+  function readRecipeMeta(record) {
+    const summary = record.summary ?? '';
+    if (Object.hasOwn(record, 'durationMinutes')) return { durationMinutes: record.durationMinutes, summary };
+    const legacy = /^\s*([0-9]+)\s*分钟(?:\s*[·丨｜|]\s*(.*?))?\s*$/s.exec(summary);
+    const minutes = Number(legacy?.[1]);
+    if (Number.isSafeInteger(minutes)) return { durationMinutes: minutes, summary: legacy[2] ?? '' };
+    return { durationMinutes: null, summary };
+  }
+
+  function formatRecipeMeta(record) {
+    const { durationMinutes, summary } = readRecipeMeta(record);
+    return [durationMinutes === null ? '' : `${durationMinutes}分钟`, summary].filter(Boolean).join(' 丨 ');
+  }
+
   function parseQuantity(value) {
     const fraction = /^(?:(\d+)\s+)?(\d+)\s*\/\s*(\d+)$/.exec(value);
     if (fraction && Number(fraction[3])) return Number(fraction[1] || 0) + Number(fraction[2]) / Number(fraction[3]);
@@ -119,5 +138,6 @@
     return [scaled, unit].filter(Boolean).join(' ') || '—';
   }
 
-  globalThis.CookingGuide = { MIN_SERVINGS, MAX_SERVINGS, MAX_ROWS, DEMO_RECIPE, normalizeRecipe, readRecipe, formatIngredientAmount };
+  globalThis.CookingGuide = { MIN_SERVINGS, MAX_SERVINGS, MAX_ROWS, DEMO_RECIPE, normalizeRecipe, readRecipe,
+    normalizeDuration, readRecipeMeta, formatRecipeMeta, formatIngredientAmount };
 })();

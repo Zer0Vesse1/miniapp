@@ -23,13 +23,7 @@
 
     pane.innerHTML = `<div class="mahjong-view" data-mahjong-module data-color-mode="${model.colorMode}">
       <section class="module-feature">
-        <div class="feature-header">
-          <span class="feature-icon" aria-hidden="true">胡</span>
-          <div class="feature-copy">
-            <h2 class="feature-title">麻将胡结算</h2>
-            <p class="feature-meta">每胡 ¥${model.rate.toFixed(2)} · 每局一人轮休</p>
-          </div>
-        </div>
+        <p class="feature-meta">每胡 ¥${model.rate.toFixed(2)} · 每局一人轮休</p>
         <fieldset class="mahjong-fieldset">
           <legend>玩家名称</legend>
           <div class="mahjong-grid">

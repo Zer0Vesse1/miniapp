@@ -1,0 +1,290 @@
+#m-app-concept .app {
+  --person-canvas: light-dark(#f4f4fa, #121a2b);
+  --person-accent: light-dark(#4658a8, #b2bfff);
+  --person-tint: light-dark(#eceeff, #2b3557);
+  --person-line: light-dark(#e3e6f0, #344159);
+  --person-danger: light-dark(#a62d49, #ff9aae);
+}
+
+#m-app-concept .overlay[data-mode='people'] .sheet {
+  --person-left: max(16px, env(safe-area-inset-left, 0px));
+  --person-right: max(16px, env(safe-area-inset-right, 0px));
+  height: 100%;
+  max-height: 100%;
+  padding: 0;
+  border-radius: 0;
+  overscroll-behavior-y: contain;
+  scroll-padding-top: calc(60px + env(safe-area-inset-top, 0px));
+  background: var(--person-canvas);
+  box-shadow: none;
+}
+
+#m-app-concept .overlay[data-mode='people'] .handle { display: none; }
+#m-app-concept .overlay[data-mode='people'] .sheet-header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  gap: 12px;
+  margin: 0;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) calc(19px + env(safe-area-inset-right, 0px))
+    8px calc(19px + env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid var(--person-line);
+  background: var(--person-canvas);
+}
+
+#m-app-concept .overlay[data-mode='people'] .sheet-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: normal;
+  margin-inline-end: auto;
+}
+
+#m-app-concept .overlay[data-mode='people'] .sheet-content {
+  padding: 12px var(--person-right) calc(24px + env(safe-area-inset-bottom, 0px)) var(--person-left);
+}
+
+#m-app-concept :is(.person-card, .person-form, .person-groups, .person-settings) {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+#m-app-concept .person-edit-button {
+  padding-inline: 14px;
+  border-radius: 12px;
+  color: var(--person-accent);
+  background: var(--person-tint);
+  font-size: 14px;
+  font-weight: 680;
+}
+
+#m-app-concept .person-hero {
+  display: grid;
+  justify-items: center;
+  min-width: 0;
+  gap: 8px;
+  padding: 4px 8px 16px;
+  text-align: center;
+}
+
+#m-app-concept .person-form .person-hero { padding-block: 9px 4px; }
+#m-app-concept :is(.person-avatar, .person-avatar-fallback) {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--person-accent) 24%, transparent);
+  border-radius: 50%;
+  color: #f8f9ff;
+  background: linear-gradient(145deg, #737fc6, #425099);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  object-fit: cover;
+}
+
+#m-app-concept .person-avatar img { width: 100%; height: 100%; object-fit: cover; }
+#m-app-concept :is(.person-avatar, .person-avatar-fallback) svg { width: 40px; height: 40px; }
+#m-app-concept :is(.person-avatar, .person-avatar-fallback) i { font-size: 31px; }
+
+#m-app-concept .person-name {
+  font-size: clamp(26px, 7.5vw, 34px);
+  font-weight: 740;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+#m-app-concept .person-nickname { color: var(--quiet); font-size: 14px; overflow-wrap: anywhere; }
+#m-app-concept .person-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--person-line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+#m-app-concept .person-row { display: grid; gap: 2px; padding-block: 10px; }
+#m-app-concept .person-row + .person-row,
+#m-app-concept .person-input-row + .person-input-row,
+#m-app-concept .person-contact-row + .person-contact-row,
+#m-app-concept .person-setting-row + .person-setting-row { border-top: 1px solid var(--person-line); }
+
+#m-app-concept .person-row dt { color: var(--quiet); font-size: 12px; line-height: 1.45; }
+#m-app-concept .person-row dd { min-width: 0; font-size: 15px; overflow-wrap: anywhere; }
+#m-app-concept .person-row a { color: var(--person-accent); text-underline-offset: 3px; }
+
+#m-app-concept .person-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#m-app-concept .person-tag {
+  max-width: 100%;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: var(--person-accent);
+  background: var(--person-tint);
+  font-size: 13px;
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+
+#m-app-concept .person-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+#m-app-concept :is(.person-form, .person-settings) input:not([type='checkbox'], [type='file']),
+#m-app-concept :is(.person-form, .person-settings) textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--person-canvas);
+  font: inherit;
+  font-size: 16px;
+}
+
+#m-app-concept .person-form textarea { resize: vertical; }
+#m-app-concept .person-input-row {
+  display: grid;
+  grid-template-columns: minmax(66px, 28%) minmax(0, 1fr);
+  align-items: start;
+  gap: 7px;
+  min-width: 0;
+  padding-block: 4px;
+}
+
+#m-app-concept .person-input-row > span {
+  align-self: center;
+  padding-block: 8px;
+  color: var(--quiet);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+#m-app-concept .person-birthday {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 8px 0 10px;
+  border: 0;
+}
+
+#m-app-concept fieldset.person-birthday.person-group {
+  padding-inline: 14px;
+  border: 1px solid var(--person-line);
+}
+
+#m-app-concept :is(.person-birthday legend, .person-birthday-fields label) { color: var(--quiet); font-size: 13px; }
+#m-app-concept .person-birthday-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+#m-app-concept .person-birthday-fields label { display: grid; gap: 4px; min-width: 0; }
+#m-app-concept .person-birthday-fields input { font-variant-numeric: tabular-nums; }
+#m-app-concept .person-age-output { color: var(--quiet); font-size: 14px; }
+#m-app-concept :is(.person-contact-list, .person-settings-list) { display: grid; min-width: 0; }
+#m-app-concept .person-contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.5fr) auto;
+  align-items: center;
+  min-width: 0;
+  gap: 6px;
+  padding-block: 5px;
+}
+
+#m-app-concept .person-row-remove {
+  display: inline-grid;
+  place-items: center;
+  justify-self: end;
+  min-width: 44px;
+  padding-inline: 5px;
+  border-radius: 9px;
+  color: var(--person-danger);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+#m-app-concept .person-inline-button {
+  justify-self: start;
+  padding-inline: 8px;
+  border-radius: 9px;
+  color: var(--person-accent);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+#m-app-concept :is(.person-inline-button, .person-row-remove):active { background: var(--person-tint); }
+#m-app-concept .person-avatar-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+#m-app-concept .person-avatar-input[hidden] { display: none; }
+
+#m-app-concept .person-field-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-width: 0;
+  padding-block: 4px;
+}
+
+#m-app-concept .person-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 0;
+  color: var(--ink);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+#m-app-concept .person-check input[type='checkbox'] {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--person-accent);
+}
+
+#m-app-concept .person-form-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#m-app-concept .person-form-actions button { flex: 1 1 96px; }
+#m-app-concept .person-setting-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-width: 0;
+  gap: 6px;
+  padding-block: 4px;
+}
+
+#m-app-concept .person-setting-row[data-person-setting-row='custom'] {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+#m-app-concept .person-archive-button { color: var(--person-danger); }
+#m-app-concept .person-custom-archive { border-top: 1px solid var(--person-line); }
+#m-app-concept .person-custom-archive > summary {
+  padding-block: 12px;
+  color: var(--person-accent);
+  font-size: 14px;
+  cursor: pointer;
+}
+#m-app-concept .person-archived-label { overflow-wrap: anywhere; }
+
+#m-app-concept .person-settings .person-field-toggles { display: grid; gap: 0; }
+#m-app-concept .person-form-error { color: var(--person-danger); font-size: 13px; overflow-wrap: anywhere; }
+#m-app-concept .person-empty { padding-block: 10px; color: var(--quiet); font-size: 13px; overflow-wrap: anywhere; }
+#m-app-concept .person-list-avatar { overflow: hidden; border-radius: 50%; font-size: 16px; font-weight: 700; }
+#m-app-concept .person-list-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+@media (max-width: 360px) {
+  #m-app-concept .person-contact-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) auto; gap: 4px; }
+  #m-app-concept .person-group { padding-inline: 10px; }
+}

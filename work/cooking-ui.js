@@ -1,5 +1,6 @@
 (() => {
-  const { MIN_SERVINGS, MAX_SERVINGS, MAX_ROWS, readRecipe, normalizeRecipe, formatIngredientAmount } = globalThis.CookingGuide;
+  const { MIN_SERVINGS, MAX_SERVINGS, MAX_ROWS, readRecipe, normalizeRecipe, normalizeDuration,
+    readRecipeMeta, formatRecipeMeta, formatIngredientAmount } = globalThis.CookingGuide;
   const demoCover = document.currentScript.dataset.demoCover;
   const escapeHtml = (text) => String(text).replace(/[&<>"']/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -13,19 +14,15 @@
   function renderList(pane, entries, icon) {
     const cards = entries.map((record) => {
       const recipe = readRecipe(record);
-      const meta = [record.summary, `${recipe.steps.length} 个步骤`].filter(Boolean).join(' · ');
-      return `<button class="cooking-recipe-card cursor-interaction" type="button" data-action="record" data-key="${escapeHtml(record.id)}">
-        <span class="cooking-card-thumbnail" aria-hidden="true">${recipeImage(recipe.coverImage, 'cooking-card-image') || icon('chef-hat')}</span>
-        <span class="cooking-card-info"><strong>${escapeHtml(record.title)}</strong><span>${escapeHtml(meta)}</span></span>
-        <span class="cooking-card-arrow" aria-hidden="true">${icon('chevron-right')}</span>
+      const meta = [formatRecipeMeta(record), `${recipe.steps.length} 个步骤`].filter(Boolean).join(' · ');
+      const thumbnail = recipeImage(recipe.coverImage, 'module-record-image') || escapeHtml(Array.from(record.title.trim())[0] ?? '·');
+      return `<button class="module-record-card cursor-interaction" type="button" data-action="record" data-key="${escapeHtml(record.id)}">
+        <span class="module-record-thumbnail" aria-hidden="true">${thumbnail}</span>
+        <span class="record-info"><span class="record-name">${escapeHtml(record.title)}</span><span class="record-meta">${escapeHtml(meta)}</span></span>
+        <span class="module-record-end" aria-hidden="true">${icon('chevron-right')}</span>
       </button>`;
     }).join('');
-    pane.innerHTML = `<div class="cooking-library">
-      <header class="cooking-library-header"><h1>烹饪指南</h1>
-        <button class="cooking-button cooking-button-primary cursor-interaction" type="button" data-action="create" data-key="cooking">${icon('plus')}新增菜谱</button>
-      </header>
-      <div class="cooking-library-list">${cards || '<p class="cooking-empty">还没有菜谱</p>'}</div>
-    </div>`;
+    pane.innerHTML = cards ? `<div class="module-record-list">${cards}</div>` : '<p class="module-record-empty">还没有菜谱</p>';
   }
 
   function createWindow(windowElement, shell, saveRecord, fallbackFocus) {
@@ -37,7 +34,8 @@
 
     const button = (action, label, className = '', attributes = '') =>
       `<button class="cooking-button ${className} cursor-interaction" type="button" data-cooking-action="${action}" ${attributes}>${label}</button>`;
-    const backButton = (label) => button('back', '<span aria-hidden="true">‹</span>', 'cooking-back', `aria-label="${label}"`);
+    const backButton = (label) =>
+      `<button class="page-back cursor-interaction" type="button" data-cooking-action="back" aria-label="${label}"></button>`;
     const scroll = () => windowElement.querySelector('.cooking-scroll');
 
     function renderIngredients() {
@@ -72,6 +70,7 @@
 
     function detailView() {
       const { record, recipe } = session;
+      const meta = formatRecipeMeta(record);
       return `<header class="cooking-bar">${backButton('返回')}
         <span class="cooking-bar-title">烹饪指南</span>
         <div class="cooking-bar-actions">${button('edit', '编辑')}</div>
@@ -80,7 +79,7 @@
         <section class="cooking-hero">
           ${recipeImage(recipe.coverImage, 'cooking-cover', `${record.title}成品`)}
           <div class="cooking-hero-content"><h2 id="cooking-title" tabindex="-1">${escapeHtml(record.title)}</h2>
-            ${record.summary ? `<p class="cooking-meta">${escapeHtml(record.summary)}</p>` : ''}
+            ${meta ? `<p class="cooking-meta">${escapeHtml(meta)}</p>` : ''}
           </div>
         </section>
         <section class="cooking-section">
@@ -122,6 +121,21 @@
       return `<label class="field">${label}<textarea name="${name}" ${attributes}>${escapeHtml(value)}</textarea></label>`;
     }
 
+    function durationField(value) {
+      return `<div class="field">
+        <label for="cooking-duration">烹饪时间（选填）</label>
+        <div class="cooking-duration-control">
+          ${button('duration-less', '−', '', 'aria-label="减少烹饪时间"')}
+          <div class="cooking-duration-input">
+            <input id="cooking-duration" name="durationMinutes" type="text" inputmode="numeric" pattern="[0-9]+"
+              maxlength="${String(Number.MAX_SAFE_INTEGER).length}" value="${escapeHtml(value ?? '')}" aria-describedby="cooking-duration-unit">
+            <span id="cooking-duration-unit">分钟</span>
+          </div>
+          ${button('duration-more', '+', '', 'aria-label="增加烹饪时间"')}
+        </div>
+      </div>`;
+    }
+
     function imageField(label, name, value) {
       const demo = value === 'demo:scallion-noodles';
       const attributes = `type="url" maxlength="2048" placeholder="https://…"${demo ? ' data-demo-image="demo:scallion-noodles"' : ''}`;
@@ -149,9 +163,25 @@
       </div>`;
     }
 
+    function editorGroup(kind, items, open) {
+      const step = kind === 'step';
+      const label = step ? '步骤' : '用料';
+      return `<details class="cooking-section cooking-editor-group"${open ? ' open' : ''}>
+        <summary>
+          <span class="cooking-editor-group-title">${label}</span>
+          <span class="cooking-editor-group-count"><span data-editor-count>${items.length}</span> ${step ? '步' : '项'}</span>
+        </summary>
+        <div class="cooking-editor-group-body">
+          <div data-editor-rows="${kind}">${items.map((item, index) => editorRow(kind, index, item)).join('')}</div>
+          ${button(`add-${kind}`, '<span aria-hidden="true">+</span>', 'cooking-editor-add',
+            `aria-label="添加${label}"${items.length >= MAX_ROWS ? ' disabled' : ''}`)}
+        </div>
+      </details>`;
+    }
+
     function editorView() {
       const { record, recipe } = session;
-      const value = !record && draft ? draft : { title: record?.title, summary: record?.summary, recipe };
+      const value = !record && draft ? draft : { title: record?.title, ...(record && readRecipeMeta(record)), recipe };
       const editRecipe = value.recipe;
       return `<header class="cooking-bar">${backButton('取消编辑')}
         <h2 id="cooking-title" class="cooking-bar-title" tabindex="-1">${record ? '编辑菜谱' : '新增菜谱'}</h2>
@@ -160,18 +190,13 @@
         <form class="cooking-editor">
           <section class="cooking-section">
             ${field('菜名', 'title', value.title, 'maxlength="30" required')}
-            ${field('简介（选填）', 'summary', value.summary, 'maxlength="180" placeholder="例如 20 分钟 · 家常快手"')}
+            ${durationField(value.durationMinutes)}
+            ${textarea('简介（选填）', 'summary', value.summary, 'maxlength="180" rows="2" placeholder="例如 家常快手"')}
             ${field('原始份数', 'servings', editRecipe.servings, `type="number" min="${MIN_SERVINGS}" max="${MAX_SERVINGS}" step="1" inputmode="numeric" required`)}
             ${imageField('成品图片链接（选填）', 'coverImage', editRecipe.coverImage)}
           </section>
-          <section class="cooking-section">
-            <div class="cooking-section-header"><h3>用料</h3>${button('add-ingredient', '添加用料', '', editRecipe.ingredients.length >= MAX_ROWS ? 'disabled' : '')}</div>
-            <div data-editor-rows="ingredient">${editRecipe.ingredients.map((item, index) => editorRow('ingredient', index, item)).join('')}</div>
-          </section>
-          <section class="cooking-section">
-            <div class="cooking-section-header"><h3>步骤</h3>${button('add-step', '添加步骤', '', editRecipe.steps.length >= MAX_ROWS ? 'disabled' : '')}</div>
-            <div data-editor-rows="step">${editRecipe.steps.map((step, index) => editorRow('step', index, step)).join('')}</div>
-          </section>
+          ${editorGroup('ingredient', editRecipe.ingredients, !record)}
+          ${editorGroup('step', editRecipe.steps, !record)}
           <section class="cooking-section">${textarea('小贴士（选填）', 'tips', editRecipe.tips, 'maxlength="2000" rows="3"')}</section>
           <p class="cooking-form-error" role="alert" hidden></p>
           <button class="cooking-button cooking-button-primary cursor-interaction" type="submit">保存菜谱</button>
@@ -189,11 +214,36 @@
       windowElement.querySelectorAll('[data-cooking-action="more"]').forEach((control) => { control.disabled = servings >= MAX_SERVINGS; });
     }
 
+    function syncDuration(input) {
+      const value = Number(input.value);
+      const control = input.closest('.cooking-duration-control');
+      input.dataset.lastValue = input.value;
+      control.querySelector('[data-cooking-action="duration-less"]').disabled = value === 0;
+      control.querySelector('[data-cooking-action="duration-more"]').disabled = value === Number.MAX_SAFE_INTEGER;
+    }
+
+    function changeDuration(input, delta) {
+      const value = Number(input.value) + delta;
+      if (!Number.isSafeInteger(value) || value < 0) return;
+      input.value = String(value);
+      syncDuration(input);
+    }
+
+    function checkDurationInput(event) {
+      const input = event.target;
+      if (input.id !== 'cooking-duration' || event.isComposing) return;
+      const digits = input.value.normalize('NFKC');
+      if (!/^\d*$/.test(digits) || !Number.isSafeInteger(Number(digits))) input.value = input.dataset.lastValue;
+      else if (digits !== input.value) input.value = digits;
+      syncDuration(input);
+    }
+
     function render(nextScreen, focusAction) {
       screen = nextScreen;
       windowElement.dataset.screen = screen;
       windowElement.innerHTML = screen === 'mode' ? modeView() : screen === 'editor' ? editorView() : detailView();
       if (screen === 'detail') scroll().scrollTop = session.detailScroll;
+      if (screen === 'editor') syncDuration(windowElement.querySelector('#cooking-duration'));
       syncServings();
       const focusTarget = focusAction && windowElement.querySelector(`[data-cooking-action="${focusAction}"]`);
       (focusTarget || windowElement.querySelector('#cooking-title')).focus({ preventScroll: true });
@@ -253,7 +303,7 @@
       const rows = (kind, names) => [...form.querySelectorAll(`[data-cooking-row="${kind}"]`)].map((row) =>
         Object.fromEntries(names.map((name) => [name, readField(row, name)])));
       return {
-        title: text('title'), summary: text('summary'),
+        title: text('title'), summary: text('summary'), durationMinutes: text('durationMinutes'),
         recipe: {
           servings: values.get('servings'), tips: text('tips'),
           coverImage: readField(form, 'coverImage'),
@@ -271,12 +321,18 @@
       close();
     }
 
+    function syncEditorCount(list) {
+      const group = list.closest('.cooking-editor-group');
+      group.querySelector('[data-editor-count]').textContent = list.children.length;
+      group.querySelector('.cooking-editor-add').disabled = list.children.length >= MAX_ROWS;
+    }
+
     function addRow(kind, trigger) {
-      const list = windowElement.querySelector(`[data-editor-rows="${kind}"]`);
+      const list = trigger.parentElement.querySelector('[data-editor-rows]');
       if (list.children.length >= MAX_ROWS) return;
       list.insertAdjacentHTML('beforeend', editorRow(kind, list.children.length));
       list.lastElementChild.querySelector('input').focus();
-      trigger.disabled = list.children.length >= MAX_ROWS;
+      syncEditorCount(list);
     }
 
     function removeRow(trigger) {
@@ -291,7 +347,7 @@
         remaining.querySelector('[data-row-title]').textContent = `${label} ${index + 1}`;
         remaining.querySelector('button').setAttribute('aria-label', `移除${label} ${index + 1}`);
       });
-      add.disabled = false;
+      syncEditorCount(list);
       focusTarget.focus();
     }
 
@@ -325,8 +381,22 @@
         case 'add-ingredient': addRow('ingredient', trigger); break;
         case 'add-step': addRow('step', trigger); break;
         case 'remove': removeRow(trigger); break;
+        case 'duration-less':
+        case 'duration-more': {
+          const input = windowElement.querySelector('#cooking-duration');
+          changeDuration(input, trigger.dataset.cookingAction === 'duration-less' ? -1 : 1);
+          if (trigger.disabled) input.focus({ preventScroll: true });
+          break;
+        }
       }
     });
+    windowElement.addEventListener('input', checkDurationInput);
+    windowElement.addEventListener('compositionend', checkDurationInput);
+
+    windowElement.addEventListener('invalid', (event) => {
+      const group = event.target.closest('.cooking-editor-group');
+      if (group) group.open = true;
+    }, true);
 
     async function saveEditor(form, value) {
       const submit = form.querySelector('button[type="submit"]');
@@ -358,7 +428,13 @@
       try {
         const value = readEditor(form);
         if (!value.title) throw new Error('请填写菜名。');
-        if (!value.recipe.steps.length) throw new Error('请至少添加一个步骤。');
+        if (!value.recipe.steps.length) {
+          const add = form.querySelector('[data-cooking-action="add-step"]');
+          add.closest('.cooking-editor-group').open = true;
+          add.focus();
+          throw new Error('请至少添加一个步骤。');
+        }
+        value.durationMinutes = normalizeDuration(value.durationMinutes === '' ? null : Number(value.durationMinutes));
         value.recipe.servings = Number(value.recipe.servings);
         value.recipe = normalizeRecipe(value.recipe, { strict: true });
         const record = await saveEditor(form, value);
@@ -376,6 +452,11 @@
     });
 
     windowElement.addEventListener('keydown', (event) => {
+      if (!saving && !event.isComposing && event.target.id === 'cooking-duration'
+        && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+        event.preventDefault();
+        changeDuration(event.target, event.key === 'ArrowUp' ? 1 : -1);
+      }
       if (event.key === 'Escape') {
         event.stopPropagation();
         if (event.isComposing) return;
@@ -384,8 +465,8 @@
       }
       if (event.key !== 'Tab') return;
       const region = windowElement.querySelector('.cooking-panel-overlay:not([hidden])') ?? windowElement;
-      const controls = [...region.querySelectorAll('button, input, textarea, [tabindex="0"]')]
-        .filter((element) => !element.disabled && !element.closest('[hidden], [inert]'));
+      const controls = [...region.querySelectorAll('button, input, textarea, summary, [tabindex="0"]')]
+        .filter((element) => !element.disabled && !element.closest('[hidden], [inert], details:not([open]) > :not(summary)'));
       if (event.shiftKey && (document.activeElement === controls[0] || !controls.includes(document.activeElement))) {
         event.preventDefault();
         controls.at(-1)?.focus();
