@@ -124,8 +124,6 @@
     background: linear-gradient(132deg, #15274f 0%, #1d3d82 57%, #2a51b0 100%);
     box-shadow: 0 6px 18px rgb(35 64 134 / 17%);
   }
-  #m-app-concept .widget[data-widget-kind='cooking'] { background: linear-gradient(132deg, #182f65, #294ea2 75%, #385fbc); }
-  #m-app-concept .widget[data-widget-kind='people'] { background: linear-gradient(132deg, #192d55, #374577 72%, #4b59a0); }
   #m-app-concept .widget-body {
     display: flex;
     flex-direction: column;
@@ -606,6 +604,7 @@
   }
 </style>
 <link rel="stylesheet" href="./mahjong.css">
+<link rel="stylesheet" href="./cooking.css">
 
 <div id="m-app-concept" class="viz-dotted-background">
   <article class="app" aria-label="M_APP · 手机界面">
@@ -698,6 +697,7 @@
         <button class="cursor-interaction" type="button" data-tab="settings"><i data-lucide="settings" aria-hidden="true"></i>设置</button>
       </nav>
     </div>
+    <section class="cooking-window" data-cooking-window role="dialog" aria-modal="true" aria-labelledby="cooking-title" hidden></section>
     <div class="notice" hidden></div>
     <div class="live-status" role="status"></div>
     <div class="overlay" hidden>
@@ -715,6 +715,9 @@
 
 <script src="./mahjong.js"></script>
 <script src="./mahjong-ui.js"></script>
+<script src="./cooking.js"></script>
+<script src="./cooking-store.js"></script>
+<script src="./cooking-ui.js" data-demo-cover="../public/scallion-noodles.jpg"></script>
 <script>
   (() => {
     if (!globalThis.Tweak) return;
@@ -751,9 +754,12 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const mahjongCalculator = globalThis.MahjongCalculator;
   const mahjongStorageKey = 'm-app-mahjong-v1';
+  const cookingModel = globalThis.CookingGuide;
+  const cookingModule = globalThis.CookingModule;
+  const legacyCookingStorageKey = 'm-app-cooking-v1';
   const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
   const modules = {
-    cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat', field: '菜名', note: '食材和做法' },
+    cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat' },
     people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
     food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
     parking: { label: '停车备忘', icon: 'square-parking' },
@@ -761,6 +767,10 @@
     mahjong: { label: '麻将胡结算', icon: 'mahjong' }
   };
   const persistentKinds = ['cooking', 'people', 'food'];
+  const widgetChoices = [
+    { key: 'parking', name: '当前停车', meta: '显示当前车位，也可快速记录', symbol: 'square-parking', view: parkingWidgetView },
+    { key: 'none', name: '隐藏小组件', symbol: 'circle-minus' }
+  ];
   const state = {
     page: 'recent',
     category: 'permanent',
@@ -774,11 +784,13 @@
     mahjong: loadMahjong(),
     parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
     records: [
-      { id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18', detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。' },
+      ...loadLegacyCooking(),
       { id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。' },
       { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
     ]
   };
+  const cookingStore = globalThis.CookingStore.createStore(state.records.filter((record) => record.kind === 'cooking'));
+  const cookingUpdates = typeof BroadcastChannel === 'function' ? new BroadcastChannel('m-app-cooking-updates') : null;
   const drafts = new Map();
   const scrollPositions = new Map();
   let nextId = 1;
@@ -791,6 +803,63 @@
   const icon = (name) => name === 'mahjong' ? '<span aria-hidden="true">胡</span>' : `<i data-lucide="${name}" aria-hidden="true"></i>`;
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+  const cookingWindow = cookingModule.createWindow(root.querySelector('[data-cooking-window]'), shell, saveRecipe, replacementFocus);
+
+  function loadLegacyCooking() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(legacyCookingStorageKey));
+      if (Array.isArray(saved)) return saved.filter((record) => record?.kind === 'cooking'
+        && typeof record.title === 'string' && typeof record.id === 'string' && record.id);
+    } catch {
+      // The sample remains available if browser storage cannot be read.
+    }
+    return [{ id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18',
+      detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。', recipe: cookingModel.DEMO_RECIPE }];
+  }
+
+  function useCookingRecords(recipes) {
+    const previous = state.records.filter((record) => record.kind === 'cooking');
+    const recipeIds = new Set(recipes.map((record) => record.id));
+    const hasCollision = state.records.some((record) => record.kind !== 'cooking' && recipeIds.has(record.id));
+    if (!hasCollision && JSON.stringify(previous) === JSON.stringify(recipes)) return;
+    const previousIds = new Set(previous.map((record) => record.id));
+    const addedCount = recipes.filter((record) => !previousIds.has(record.id)).length;
+    const merged = recipes.slice(0, addedCount);
+    let index = addedCount;
+    for (const record of state.records) {
+      if (record.kind === 'cooking') {
+        if (index < recipes.length) merged.push(recipes[index++]);
+      } else {
+        merged.push(recipeIds.has(record.id) ? { ...record, id: nextRecordId(recipeIds) } : record);
+      }
+    }
+    state.records = [...merged, ...recipes.slice(index)];
+    render();
+  }
+
+  async function refreshCookingRecords() {
+    useCookingRecords(await cookingStore.read());
+  }
+
+  async function replaceCookingRecords(records, expectedRecipes) {
+    await cookingStore.replace(records.filter((record) => record.kind === 'cooking'), expectedRecipes);
+    cookingUpdates?.postMessage('changed');
+  }
+
+  function nextRecordId(reserved) {
+    let id;
+    do { id = `record-${nextId++}`; } while (findRecord(id) || reserved?.has(id));
+    return id;
+  }
+
+  async function saveRecipe({ title, summary, recipe }, previous) {
+    const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary,
+      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe };
+    useCookingRecords(await cookingStore.save(record, previous));
+    cookingUpdates?.postMessage('changed');
+    showNotice('菜谱已保存');
+    return record;
+  }
 
   function loadMahjong() {
     try {
@@ -851,28 +920,24 @@
     return [parking.area, parking.number].filter(Boolean).join(' · ') || parking.place;
   }
 
-  function widgetView() {
-    if (state.widget === 'none') return null;
-    if (state.widget === 'parking') {
-      return state.parking
-        ? { kind: 'parking', label: '当前停车', title: parkingTitle(state.parking), meta: `${state.parking.place} · ${state.parking.time}`, action: 'record', key: 'parking' }
-        : { kind: 'empty', label: '停车记录', title: '记录停车', meta: '保存楼层、区域和车位号', action: 'create', key: 'parking' };
-    }
-    const record = findRecord(state.widget);
-    return { kind: record.kind, label: modules[record.kind].label, title: record.title, meta: record.summary, action: 'record', key: record.id };
+  function parkingWidgetView() {
+    return state.parking
+      ? { label: '当前停车', title: parkingTitle(state.parking), meta: `${state.parking.place} · ${state.parking.time}`, action: 'record', key: 'parking' }
+      : { label: '停车记录', title: '记录停车', meta: '保存楼层、区域和车位号', action: 'create', key: 'parking' };
   }
 
   function renderWidget() {
-    const item = widgetView();
+    const choice = widgetChoices.find((option) => option.key === state.widget);
+    const item = choice?.view?.();
     if (!item) {
       widgetSlot.innerHTML = `<button class="secondary cursor-interaction" type="button" data-action="widget-settings">${icon('plus')}添加小组件</button>`;
       return;
     }
     widgetSlot.innerHTML = `
-      <article class="widget" data-widget-kind="${item.kind}">
+      <article class="widget">
         <span class="widget-decoration" aria-hidden="true"></span>
         <button class="widget-body cursor-interaction" type="button" data-action="${item.action}" data-key="${item.key}">
-          <span class="widget-label">${icon(item.kind === 'empty' ? 'square-parking' : modules[item.kind].icon)}<span></span></span>
+          <span class="widget-label">${icon(choice.symbol)}<span></span></span>
           <span class="widget-title"></span>
           <span class="widget-meta"></span>
         </button>
@@ -894,7 +959,7 @@
       <span class="record-info"><span class="record-name"></span><span class="record-meta"></span></span>
       <span class="record-time"></span>`;
     button.querySelector('.record-name').textContent = record.title;
-    button.querySelector('.record-meta').textContent = `${modules[record.kind].label} · ${record.summary}`;
+    button.querySelector('.record-meta').textContent = [modules[record.kind].label, record.summary].filter(Boolean).join(' · ');
     button.querySelector('.record-time').textContent = record.time;
     return button;
   }
@@ -941,18 +1006,18 @@
     updateIcons();
   }
 
-  function focusAfterClose() {
-    if (returnFocus?.isConnected) {
-      returnFocus.focus({ preventScroll: true });
-      return;
-    }
+  function replacementFocus(trigger) {
     const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden], [inert]')
-      && button.dataset.action === returnFocus?.dataset.action && button.dataset.key === returnFocus?.dataset.key);
-    const widgetButton = returnFocus?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
+      && button.dataset.action === trigger?.dataset.action && button.dataset.key === trigger?.dataset.key);
+    const widgetButton = trigger?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
     const pageControl = state.page === 'modules'
       ? (state.module ? moduleBack : moduleTabs.querySelector('[aria-selected="true"]'))
       : tabs.find((tab) => tab.dataset.tab === state.page);
-    (replacement || widgetButton || pageControl)?.focus({ preventScroll: true });
+    return replacement || widgetButton || pageControl;
+  }
+
+  function focusAfterClose() {
+    (returnFocus?.isConnected ? returnFocus : replacementFocus(returnFocus))?.focus({ preventScroll: true });
   }
 
   function closeSheet(afterClose) {
@@ -990,15 +1055,8 @@
   }
 
   function showWidgetSettings(trigger) {
-    const choices = [
-      { key: 'parking', name: '当前停车', meta: '显示当前车位，也可快速记录', symbol: 'square-parking' },
-      ...state.records.map((record) => ({ key: record.id, name: '', meta: modules[record.kind].label, symbol: modules[record.kind].icon, title: record.title })),
-      { key: 'none', name: '隐藏小组件', symbol: 'circle-minus' }
-    ];
-    const options = choices.map((item) => optionRow({ ...item, action: 'set-widget', selected: state.widget === item.key }));
+    const options = widgetChoices.map((item) => optionRow({ ...item, action: 'set-widget', selected: state.widget === item.key }));
     setSheet('编辑小组件', `<div class="rows">${options.join('')}</div>`, trigger);
-    const labels = sheetContent.querySelectorAll('.option-name');
-    choices.forEach((item, index) => { if (item.title) labels[index].textContent = item.title; });
   }
 
   function showAdd(trigger) {
@@ -1009,6 +1067,13 @@
   }
 
   function showCreate(kind, trigger) {
+    if (kind === 'cooking') {
+      if (overlay.dataset.open === 'true') {
+        const source = returnFocus;
+        closeSheet(() => cookingWindow.open(null, source));
+      } else if (overlay.hidden) cookingWindow.open(null, trigger);
+      return;
+    }
     const parking = kind === 'parking';
     const updatingParking = parking && state.parking;
     const module = modules[kind];
@@ -1037,6 +1102,11 @@
       return;
     }
     const record = findRecord(key);
+    if (!record) return;
+    if (record.kind === 'cooking') {
+      cookingWindow.open(record, trigger);
+      return;
+    }
     setSheet(record.title, '<div class="detail"><p></p></div>', trigger);
     sheetContent.querySelector('p').textContent = record.detail || record.summary;
   }
@@ -1054,9 +1124,7 @@
     } else {
       const detail = values.get('note').trim();
       const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
-      let id;
-      do { id = `record-${nextId++}`; } while (findRecord(id));
-      state.records.unshift({ id, kind, title: values.get('title'), summary, detail, time: timeNow() });
+      state.records.unshift({ id: nextRecordId(), kind, title: values.get('title'), summary, detail, time: timeNow() });
     }
     drafts.delete(kind);
     render();
@@ -1152,6 +1220,10 @@
     const module = modules[key];
     const entries = state.records.filter((record) => record.kind === key);
     if (modulePreference(key) === 'name') entries.sort((left, right) => left.title.localeCompare(right.title, 'zh-CN'));
+    if (key === 'cooking') {
+      cookingModule.renderList(modulePane, entries, icon);
+      return;
+    }
     modulePane.innerHTML = `
       <section class="module-feature">
         <div class="feature-header">
@@ -1389,6 +1461,13 @@
         { key: 'name', label: '按菜名排序', symbol: 'book-open' }
       ],
       releases: [{
+        version: '0.2.0',
+        date: '2026-11-23',
+        groups: [
+          ['新增', ['用料按份数换算，菜谱支持填写分步做法、火候、图片链接和小贴士。', '烹饪模式可连续滑动查看步骤，随时打开用料或小贴士。']],
+          ['修复', ['各标签页保存的菜谱独立保留。编辑同一份菜谱发生冲突时会提示并保留当前表单。']]
+        ]
+      }, {
         version: '0.1.0',
         date: '2026-11-22',
         groups: [['新增', ['支持新建、查看菜谱，记录食材和做法。', '可设置菜谱列表的排序方式。']]]
@@ -1580,8 +1659,17 @@
     target.focus({ preventScroll: true });
   });
 
-  const settingsVersion = '0.5.0';
+  const settingsVersion = '0.6.0';
   const releaseNotes = [
+    {
+      version: '0.6.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['烹饪指南 v0.2.0 支持份数换算、分步做法和可连续滑动的烹饪模式。']],
+        ['优化', ['最近页的小组件只提供当前停车和隐藏两个选项。']],
+        ['修复', ['多个标签页保存菜谱时可保留各自的记录，编辑同一菜谱会检测冲突。', '导入支持应用保存并导出的大批量备份。']]
+      ]
+    },
     {
       version: '0.5.0',
       date: '2026-11-23',
@@ -1637,9 +1725,9 @@
   ];
   const appearanceLabels = { system: '跟随系统', light: '浅色', dark: '深色' };
   const backupFormat = 'm-app-preview';
-  const backupTextLimit = 240000;
   const backupIdPattern = /^[A-Za-z0-9_-]{1,64}$/;
   let pendingBackup;
+  let importingBackup = false;
 
   function showManagedModules(trigger) {
     const groups = categoryTabs.map((tab) => {
@@ -1720,23 +1808,43 @@
   function showBackupImport(trigger, source = '') {
     pendingBackup = undefined;
     setSheet('导入数据', `<label class="field">粘贴 M_APP 的 JSON 备份
-      <textarea class="data-text" data-backup-input rows="7" maxlength="${backupTextLimit}" spellcheck="false"></textarea></label>
+      <textarea class="data-text" data-backup-input rows="7" spellcheck="false"></textarea></label>
       <p class="settings-meta" data-backup-error role="alert" hidden></p>
       <button class="primary cursor-interaction" type="button" data-action="review-settings-import">检查备份</button>`, trigger);
     sheetContent.querySelector('[data-backup-input]').value = source;
   }
 
-  function showBackupExport(trigger) {
+  function backupSheetIsOpen(element) {
+    return overlay.dataset.open === 'true' && sheetContent.contains(element);
+  }
+
+  async function showBackupExport(trigger) {
     setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、车位和麻将结算数据。选中后可复制到本地文件。</p>
-      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false"></textarea></label>
-      <button class="primary cursor-interaction" type="button" data-action="select-settings-backup">选中全部 JSON</button>`, trigger);
-    sheetContent.querySelector('[data-backup-output]').value = JSON.stringify({
-      format: backupFormat,
-      schema: 1,
-      records: state.records,
-      parking: state.parking,
-      mahjong: state.mahjong
-    }, null, 2);
+      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取最新菜谱…"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="select-settings-backup" disabled>选中全部 JSON</button>`, trigger);
+    const output = sheetContent.querySelector('[data-backup-output]');
+    const copy = sheetContent.querySelector('[data-action="select-settings-backup"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    try {
+      if (importingBackup) throw new Error('正在导入数据，请完成后再导出备份。');
+      await refreshCookingRecords();
+      if (!backupSheetIsOpen(output)) return;
+      output.value = JSON.stringify({
+        format: backupFormat,
+        schema: 1,
+        records: state.records,
+        parking: state.parking,
+        mahjong: state.mahjong
+      }, null, 2);
+      copy.disabled = false;
+    } catch (error) {
+      if (!backupSheetIsOpen(output)) return;
+      message.hidden = false;
+      message.textContent = error.message;
+    } finally {
+      if (backupSheetIsOpen(output)) output.removeAttribute('placeholder');
+    }
   }
 
   function backupString(value, field, maxLength, required = false) {
@@ -1748,7 +1856,6 @@
 
   function parseSettingsBackup(source) {
     if (!source.trim()) throw new Error('请先粘贴 JSON 备份。');
-    if (source.length > backupTextLimit) throw new Error('这份备份超出预览可导入的大小。');
     let json;
     try {
       json = JSON.parse(source);
@@ -1758,7 +1865,6 @@
     if (json?.format !== backupFormat || json.schema !== 1 || !Array.isArray(json.records)) {
       throw new Error('请选择由这个预览导出的 M_APP 备份。');
     }
-    if (json.records.length > 500) throw new Error('这个预览一次可导入最多 500 条记录。');
     const recordIds = new Set();
     const records = json.records.map((record) => {
       if (!record || !persistentKinds.includes(record.kind) || typeof record.id !== 'string'
@@ -1766,13 +1872,16 @@
         throw new Error('备份中的记录类型或编号无效。');
       }
       recordIds.add(record.id);
+      const recipe = record.kind === 'cooking' && Object.hasOwn(record, 'recipe')
+        ? cookingModel.normalizeRecipe(record.recipe, { strict: true }) : undefined;
       return {
         id: record.id,
         kind: record.kind,
         title: backupString(record.title, '标题', 30, true),
         summary: backupString(record.summary, '摘要', 180),
         time: backupString(record.time, '时间', 32, true),
-        detail: backupString(record.detail, '内容', 180)
+        detail: backupString(record.detail, '内容', 180),
+        ...(recipe && { recipe })
       };
     });
     let parking = null;
@@ -1790,41 +1899,82 @@
     const mahjong = Object.hasOwn(json, 'mahjong')
       ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
       : undefined;
-    return { records, parking, mahjong, recordIds, source };
+    return { records, parking, mahjong, source };
   }
 
-  function reviewSettingsImport(trigger) {
-    const source = sheetContent.querySelector('[data-backup-input]').value;
+  async function reviewSettingsImport(trigger) {
+    const input = sheetContent.querySelector('[data-backup-input]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    trigger.disabled = true;
+    input.readOnly = true;
+    message.hidden = true;
     try {
-      pendingBackup = parseSettingsBackup(source);
+      if (importingBackup) throw new Error('上一份备份仍在导入，请稍后检查。');
+      const backup = parseSettingsBackup(input.value);
+      await refreshCookingRecords();
+      if (!backupSheetIsOpen(input)) return;
+      backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
+      pendingBackup = backup;
+      const { records, parking, mahjong } = backup;
+      setSheet('确认导入', `<div class="detail settings-detail">
+        <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
+        <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
+        <p class="settings-meta" data-backup-error role="alert" hidden></p>
+        <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
+        <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
     } catch (error) {
-      const message = sheetContent.querySelector('[data-backup-error]');
+      if (!backupSheetIsOpen(input)) return;
       message.hidden = false;
       message.textContent = error.message;
-      return;
+    } finally {
+      if (backupSheetIsOpen(input)) {
+        input.readOnly = false;
+        trigger.disabled = false;
+      }
     }
-    const { records, parking, mahjong } = pendingBackup;
-    setSheet('确认导入', `<div class="detail settings-detail">
-      <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
-      <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
-      <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
-      <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
   }
 
-  function applySettingsImport() {
-    if (!pendingBackup) return;
-    const { records, parking, mahjong, recordIds } = pendingBackup;
-    pendingBackup = undefined;
+  async function applySettingsImport(_, trigger) {
+    if (!pendingBackup || importingBackup) return;
+    const backup = pendingBackup;
+    const { records, parking, mahjong, cookingBase } = backup;
+    const edit = sheetContent.querySelector('[data-action="edit-settings-import"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    importingBackup = true;
+    trigger.disabled = true;
+    trigger.textContent = '正在导入…';
+    edit.disabled = true;
+    message.hidden = true;
+    try {
+      await replaceCookingRecords(records, cookingBase);
+    } catch (error) {
+      if (backupSheetIsOpen(trigger)) {
+        trigger.disabled = false;
+        trigger.textContent = '确认导入';
+        edit.disabled = false;
+        message.hidden = false;
+        message.textContent = error.message;
+        trigger.focus({ preventScroll: true });
+      } else showNotice(error.message);
+      return;
+    } finally {
+      importingBackup = false;
+    }
+    if (pendingBackup === backup) pendingBackup = undefined;
     state.records = records;
     state.parking = parking;
-    if (!['parking', 'none'].includes(state.widget) && !recordIds.has(state.widget)) state.widget = 'parking';
     recentlyCompleted = undefined;
     drafts.clear();
+    cookingWindow.clearDraft();
     notice.hidden = true;
+    const previousMahjong = state.mahjong;
     if (mahjong) state.mahjong = mahjong;
     const saved = !mahjong || persistMahjong();
+    if (!saved) state.mahjong = previousMahjong;
     render();
-    closeSheet(saved ? () => showNotice('已导入数据') : undefined);
+    const announce = () => showNotice(saved ? '已导入数据' : '记录和车位已导入，麻将数据未保存');
+    if (backupSheetIsOpen(trigger)) closeSheet(announce);
+    else announce();
   }
 
   function showSettingsItem(key, trigger) {
@@ -1887,6 +2037,7 @@
     ...settingsActions,
     'widget-settings': (_, button) => showWidgetSettings(button),
     'set-widget': (key) => {
+      if (!widgetChoices.some((option) => option.key === key)) return;
       state.widget = key;
       render();
       closeSheet(() => showNotice(key === 'none' ? '小组件已隐藏' : '小组件已更新'));
@@ -2001,5 +2152,9 @@
   root.querySelector('[data-app-version]').textContent = `v${settingsVersion}`;
   renderChangelog();
   render();
+  const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
+  cookingUpdates?.addEventListener('message', syncCookingRecords);
+  window.addEventListener('focus', syncCookingRecords);
+  syncCookingRecords();
 })();
 </script>

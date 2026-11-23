@@ -1,0 +1,2160 @@
+<style>
+  #m-app-concept {
+    display: grid;
+    justify-items: center;
+    padding: 20px 8px;
+  }
+
+  #m-app-concept .app {
+    --canvas: light-dark(#f3f5fa, #111a2a);
+    --surface: light-dark(#ffffff, #19253a);
+    --ink: light-dark(#152137, #edf2ff);
+    --quiet: light-dark(#586780, #a3b1cb);
+    --line: light-dark(#e4e9f3, #2e3c56);
+    --blue: light-dark(#244eb9, #a3bfff);
+    --on-blue: light-dark(#ffffff, #142545);
+    --blue-tint: light-dark(#e8eeff, #223659);
+    --soft-violet: light-dark(#edf0fb, #293452);
+    --widget-text: #fafcff;
+    --widget-muted: #e6edff;
+    --radius: 20px;
+    --ease: cubic-bezier(.22, .78, .25, 1);
+    width: min(100%, 416px);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--ink);
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--ink) 12%, transparent);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+  }
+  #m-app-concept .app[data-appearance='light'] { color-scheme: light; }
+  #m-app-concept .app[data-appearance='dark'] { color-scheme: dark; }
+
+  #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { box-sizing: border-box; }
+  #m-app-concept [hidden] { display: none !important; }
+  #m-app-concept :is(h1,h2,h3,p,dl,dd) { margin: 0; }
+  #m-app-concept button {
+    min-height: 44px;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    transition: background-color 160ms var(--ease), transform 160ms var(--ease);
+    -webkit-tap-highlight-color: transparent;
+  }
+  #m-app-concept button:active { transform: scale(.98); }
+  #m-app-concept :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  #m-app-concept svg { width: 19px; height: 19px; display: block; stroke-width: 1.8; }
+  #m-app-concept i[data-lucide] { display: inline-grid; place-items: center; min-width: 17px; height: 19px; font: 600 17px/1 system-ui, sans-serif; }
+  #m-app-concept i[data-lucide]::before { content: var(--glyph, '·'); }
+  #m-app-concept i[data-lucide='plus'] { --glyph: '+'; }
+  #m-app-concept i[data-lucide='more-horizontal'], #m-app-concept i[data-lucide='ellipsis'] { --glyph: '···'; }
+  #m-app-concept i[data-lucide='square-parking'], #m-app-concept i[data-lucide='parking-square'] { --glyph: 'P'; }
+  #m-app-concept i[data-lucide='book-open'], #m-app-concept i[data-lucide='cooking-pot'], #m-app-concept i[data-lucide='chef-hat'] { --glyph: '食'; }
+  #m-app-concept i[data-lucide='contact-round'], #m-app-concept i[data-lucide='user-round'] { --glyph: '人'; }
+  #m-app-concept i[data-lucide='map-pin'], #m-app-concept i[data-lucide='utensils'] { --glyph: '⌖'; }
+  #m-app-concept i[data-lucide='calculator'] { --glyph: '÷'; }
+  #m-app-concept i[data-lucide='clock-3'], #m-app-concept i[data-lucide='clock'] { --glyph: '◷'; }
+  #m-app-concept i[data-lucide='layout-grid'] { --glyph: '⊞'; }
+  #m-app-concept i[data-lucide='list'] { --glyph: '≡'; }
+  #m-app-concept i[data-lucide='settings'], #m-app-concept i[data-lucide='settings-2'] { --glyph: '⚙'; }
+  #m-app-concept i[data-lucide='sliders-horizontal'] { --glyph: '≡'; }
+  #m-app-concept i[data-lucide='chevron-right'] { --glyph: '›'; }
+  #m-app-concept i[data-lucide='chevron-left'] { --glyph: '‹'; }
+  #m-app-concept i[data-lucide='arrow-up-right'] { --glyph: '↗'; }
+  #m-app-concept i[data-lucide='check'] { --glyph: '✓'; }
+  #m-app-concept i[data-lucide='eye-off'], #m-app-concept i[data-lucide='circle-minus'] { --glyph: '⊘'; }
+  #m-app-concept i[data-lucide='x'] { --glyph: '×'; }
+  #m-app-concept i[data-lucide='arrow-down-up'] { --glyph: '⇅'; }
+  #m-app-concept i[data-lucide='info'] { --glyph: 'ⓘ'; }
+  #m-app-concept i[data-lucide='history'] { --glyph: '↶'; }
+  #m-app-concept i[data-lucide='monitor'], #m-app-concept i[data-lucide='sun'], #m-app-concept i[data-lucide='moon'] { --glyph: '◐'; }
+  #m-app-concept i[data-lucide='upload'] { --glyph: '↑'; }
+  #m-app-concept i[data-lucide='download'] { --glyph: '↓'; }
+
+  #m-app-concept .shell {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 616px;
+  }
+  #m-app-concept .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 10px 21px;
+    gap: 12px;
+  }
+  #m-app-concept .top-title { font-size: 25px; font-weight: 700; letter-spacing: -.045em; line-height: 1.2; }
+  #m-app-concept .top-action, #m-app-concept .close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    flex: none;
+    border-radius: 50%;
+    color: var(--blue);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .top-action:active, #m-app-concept .close:active { background: var(--blue-tint); }
+  #m-app-concept .top-action svg { width: 22px; height: 22px; }
+  #m-app-concept .top-action i { font-size: 23px; }
+  #m-app-concept .page {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    padding: 4px 19px 18px;
+  }
+
+  #m-app-concept .widget {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius);
+    color: var(--widget-text);
+    background: linear-gradient(132deg, #15274f 0%, #1d3d82 57%, #2a51b0 100%);
+    box-shadow: 0 6px 18px rgb(35 64 134 / 17%);
+  }
+  #m-app-concept .widget-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 169px;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 17px 19px 18px;
+  }
+  #m-app-concept .widget-body:active { transform: none; background: rgb(0 14 41 / 19%); }
+  #m-app-concept .widget-body:focus-visible { outline-offset: -5px; outline-color: var(--widget-text); border-radius: inherit; }
+  #m-app-concept .widget-label { display: flex; align-items: center; gap: 7px; color: var(--widget-muted); font-size: 13px; margin-top: 2px; margin-bottom: auto; padding-right: 47px; }
+  #m-app-concept .widget-label svg { width: 15px; height: 15px; }
+  #m-app-concept .widget-label i { min-width: 15px; height: 15px; font-size: 13px; }
+  #m-app-concept .widget-title { display: block; max-width: 100%; overflow-wrap: anywhere; font-size: clamp(24px, 6vw, 34px); font-weight: 670; line-height: 1.17; letter-spacing: -.045em; }
+  #m-app-concept .widget-meta { display: block; color: var(--widget-muted); margin-top: 8px; font-size: 12px; overflow-wrap: anywhere; }
+  #m-app-concept :is(.widget-title,.widget-meta) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  #m-app-concept .widget-config {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 2;
+    top: 11px;
+    right: 11px;
+    width: 44px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--widget-text);
+    background: rgb(246 250 255 / 15%);
+    box-shadow: inset 0 0 0 1px rgb(246 250 255 / 14%);
+  }
+  #m-app-concept .widget-config:active { background: rgb(246 250 255 / 26%); }
+  #m-app-concept .widget-config:focus-visible { outline-color: var(--widget-text); }
+  #m-app-concept .widget-config i { font-size: 19px; letter-spacing: 1px; }
+  #m-app-concept .widget-decoration {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    right: -29px;
+    bottom: -86px;
+    width: 212px;
+    height: 225px;
+    border-radius: 42px;
+    border: 1px solid rgb(205 221 255 / 22%);
+    transform: rotate(-25deg);
+    background: linear-gradient(155deg, transparent, rgb(140 178 255 / 15%));
+  }
+  #m-app-concept .widget-decoration::before, #m-app-concept .widget-decoration::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border-radius: 31px;
+    border: 1px solid rgb(205 221 255 / 19%);
+  }
+  #m-app-concept .widget-decoration::after { inset: 31px; border-radius: 22px; }
+  #m-app-concept [data-widget-slot] > .secondary { width: 100%; }
+
+  #m-app-concept .section-heading { margin: 24px 2px 10px; font-size: 17px; font-weight: 690; letter-spacing: -.02em; }
+  #m-app-concept .rows { border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+  #m-app-concept [data-recent-list] { margin-bottom: 1px; }
+  #m-app-concept .record, #m-app-concept .option {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr) auto;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+  }
+  #m-app-concept .record:not(:last-child)::after, #m-app-concept .option:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 61px;
+    right: 12px;
+    height: 1px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  #m-app-concept .record:active, #m-app-concept .option:active { background: var(--blue-tint); transform: none; }
+  #m-app-concept .record:focus-visible, #m-app-concept .option:focus-visible { outline-offset: -3px; }
+  #m-app-concept .record-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: var(--blue);
+    background: var(--blue-tint);
+  }
+  #m-app-concept .record-icon:is([data-kind='people'],.people) { background: var(--soft-violet); }
+  #m-app-concept .record-info, #m-app-concept .option-text { min-width: 0; }
+  #m-app-concept .record-name, #m-app-concept .option-name { display: block; font-size: 14px; font-weight: 660; color: var(--ink); }
+  #m-app-concept .record-meta, #m-app-concept .option-meta { display: block; font-size: 12px; color: var(--quiet); margin-top: 3px; }
+  #m-app-concept .record :is(.record-name,.record-meta) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  #m-app-concept .record-time, #m-app-concept .setting-value { color: var(--quiet); font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  #m-app-concept .record-time svg, #m-app-concept .setting-value svg { width: 15px; height: 15px; }
+  #m-app-concept .setting-value { max-width: 108px; }
+  #m-app-concept .setting-value > :first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #m-app-concept .setting-value > :last-child { flex: none; }
+  #m-app-concept .option-text { overflow-wrap: anywhere; }
+  #m-app-concept .option-marker { color: var(--blue); width: 20px; }
+
+  #m-app-concept .module-tabs {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+  }
+  #m-app-concept .topbar:has(.module-tabs:not([hidden])) { gap: 8px; }
+  #m-app-concept .module-tab {
+    min-width: 0;
+    padding-inline: 7px;
+    position: relative;
+    border-radius: 11px;
+    color: var(--quiet);
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  #m-app-concept .module-tab[aria-selected='true'] {
+    color: var(--blue);
+    font-weight: 700;
+  }
+  #m-app-concept .module-tab[aria-selected='true']::after {
+    content: "";
+    position: absolute;
+    inset: auto 7px 3px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--blue);
+  }
+  #m-app-concept .module-tab:focus-visible { outline-offset: -3px; }
+  #m-app-concept .module-tab:active { background: var(--blue-tint); }
+  #m-app-concept .module-view-picker { position: relative; flex: none; }
+  #m-app-concept .module-view-picker .top-action[aria-expanded='true'] { background: var(--blue-tint); }
+  #m-app-concept .module-view-menu {
+    display: grid;
+    position: absolute;
+    inset: calc(100% + 6px) 0 auto auto;
+    min-width: 156px;
+    padding: 5px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 9px 26px color-mix(in srgb, var(--ink) 17%, transparent);
+  }
+  #m-app-concept .module-view-option {
+    display: grid;
+    grid-template-columns: 19px 1fr 19px;
+    align-items: center;
+    gap: 9px;
+    padding-inline: 9px;
+    border-radius: 11px;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  #m-app-concept .module-view-option:focus-visible { outline-offset: -2px; }
+  #m-app-concept .module-view-option[aria-checked='true'] { color: var(--blue); background: var(--blue-tint); font-weight: 650; }
+  #m-app-concept .module-view-option[aria-checked='false'] .view-check { visibility: hidden; }
+  #m-app-concept .module-view-option i[data-lucide] { font-size: 16px; }
+  #m-app-concept .view-check svg { width: 15px; height: 15px; }
+  #m-app-concept .module-entries .option {
+    min-height: 66px;
+    transition-property: transform;
+  }
+  #m-app-concept .module-entries .option:active { background: transparent; transform: scale(.985); }
+  #m-app-concept .module-entries[data-view='grid'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  #m-app-concept .module-entries[data-view='grid'] .option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    min-height: 138px;
+    padding: 13px;
+    gap: 12px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .module-entries[data-view='grid'] .option:active { background: var(--surface); }
+  #m-app-concept .module-entries[data-view='grid'] .option::after,
+  #m-app-concept .module-entries[data-view='grid'] .option-marker { display: none; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    color: #f7faff;
+    background: linear-gradient(145deg, #4b71c9, #24458d);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 3px 6px rgb(45 70 132 / 15%);
+  }
+  #m-app-concept .module-entries[data-view='grid'] [data-key='people'] .record-icon { background: linear-gradient(145deg, #6673be, #425096); }
+  #m-app-concept .module-entries[data-view='grid'] [data-key='food'] .record-icon { background: linear-gradient(145deg, #38799e, #205379); }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon svg { width: 24px; height: 24px; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon i { font-size: 21px; }
+  #m-app-concept .module-entries[data-view='grid'] .option-name { font-size: 15px; }
+  #m-app-concept .shell.module-open:not(.module-moving) > :is(.topbar, [data-page='modules'], .bottom-nav) {
+    visibility: hidden;
+  }
+  #m-app-concept .module-window {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+      env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    background: var(--canvas);
+    transform-origin: top left;
+  }
+  #m-app-concept .module-window[inert] { pointer-events: none; }
+  #m-app-concept .module-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 19px 8px;
+  }
+  #m-app-concept .module-toolbar-button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+    background: linear-gradient(var(--surface), color-mix(in srgb, var(--surface) 65%, var(--canvas)));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
+      0 2px 6px color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  #m-app-concept .module-back::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: solid currentColor;
+    border-width: 0 0 3px 3px;
+    border-radius: 1px;
+    transform: translateX(2px) rotate(45deg);
+  }
+  #m-app-concept .module-toolbar-button:active { transform: scale(.94); }
+  #m-app-concept .module-toolbar-button i[data-lucide] { font-size: 21px; font-variant-emoji: text; }
+  #m-app-concept .module-settings-view { display: grid; gap: 15px; }
+  #m-app-concept .module-settings-heading { padding-inline: 3px; font-size: 20px; font-weight: 690; }
+  #m-app-concept .module-settings-group { display: grid; gap: 6px; }
+  #m-app-concept .module-settings-group h3 { padding-inline: 3px; color: var(--quiet); font-size: 13px; font-weight: 650; }
+  #m-app-concept .module-feature {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    padding: 18px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .feature-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    color: var(--blue);
+    background: var(--blue-tint);
+  }
+  #m-app-concept .feature-icon svg { width: 22px; height: 22px; }
+  #m-app-concept .feature-header { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; }
+  #m-app-concept .feature-copy { min-width: 0; }
+  #m-app-concept .feature-title { font-size: 25px; font-weight: 710; letter-spacing: -.04em; }
+  #m-app-concept .feature-meta { font-size: 13px; color: var(--quiet); margin-top: 3px; overflow-wrap: anywhere; }
+  #m-app-concept .feature-value { font-size: 28px; font-weight: 680; letter-spacing: -.04em; color: var(--blue); overflow-wrap: anywhere; }
+  #m-app-concept .module-content, #m-app-concept .module-actions { display: grid; gap: 9px; min-width: 0; }
+  #m-app-concept .module-content .rows { background: var(--canvas); border-radius: 14px; }
+  #m-app-concept .module-actions:has(> :nth-child(2)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #m-app-concept .module-content output { font-weight: 650; color: var(--blue); }
+  #m-app-concept .settings-stack { display: grid; gap: 12px; }
+  #m-app-concept .settings-row { min-height: 58px; }
+  #m-app-concept .settings-account { min-height: 74px; }
+  #m-app-concept .settings-avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a5bc0, #193777);
+    color: #f5f8ff;
+    font-weight: 680;
+  }
+  #m-app-concept .settings-arrow { color: var(--quiet); }
+  #m-app-concept .settings-arrow svg { width: 15px; height: 15px; }
+  #m-app-concept .settings-note, #m-app-concept .settings-meta { font-size: 13px; color: var(--quiet); overflow-wrap: anywhere; }
+  #m-app-concept .settings-detail { gap: 8px; }
+  #m-app-concept .managed-groups { display: grid; gap: 14px; }
+  #m-app-concept .managed-group { display: grid; gap: 6px; }
+  #m-app-concept .managed-group h3 { padding-inline: 3px; color: var(--quiet); font-size: 13px; font-weight: 650; }
+  #m-app-concept .topbar:has(.release-back:not([hidden])) {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
+  }
+  #m-app-concept .topbar:has(.release-back:not([hidden])) .top-title {
+    font-size: 18px;
+    letter-spacing: -.02em;
+    text-align: center;
+  }
+  #m-app-concept .release-back svg { width: 21px; height: 21px; }
+  #m-app-concept .release-page { padding-top: 8px; }
+  #m-app-concept .release-list { display: grid; gap: 12px; }
+  #m-app-concept .release-card {
+    padding: 15px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .release-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding-bottom: 11px;
+    margin-bottom: 11px;
+    border-bottom: 1px solid var(--line);
+  }
+  #m-app-concept .release-heading { display: flex; align-items: center; gap: 7px; }
+  #m-app-concept .release-heading h2 { font-size: 20px; font-weight: 690; letter-spacing: -.03em; }
+  #m-app-concept .release-current {
+    padding: 3px 7px;
+    border-radius: 10px;
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  #m-app-concept .release-date { color: var(--quiet); font-size: 12px; font-variant-numeric: tabular-nums; }
+  #m-app-concept .release-revisions { display: grid; gap: 12px; }
+  #m-app-concept .release-group h3 { color: var(--blue); font-size: 13px; font-weight: 670; }
+  #m-app-concept .release-group ul { display: grid; gap: 5px; margin: 4px 0 0; padding-inline-start: 17px; }
+  #m-app-concept .release-group li { font-size: 14px; overflow-wrap: anywhere; }
+  #m-app-concept .release-group li::marker { color: var(--quiet); }
+  #m-app-concept .field .data-text { font: 13px/1.55 ui-monospace, Consolas, monospace; resize: vertical; }
+  #m-app-concept .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 5px;
+    padding: 5px;
+    margin: 4px 16px 12px;
+    border-radius: 26px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line), 0 4px 13px color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+  #m-app-concept .bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 46px;
+    border-radius: 21px;
+    color: var(--quiet);
+    font-size: 11px;
+  }
+  #m-app-concept .bottom-nav button[aria-current='page'], #m-app-concept .bottom-nav button:active {
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 680;
+  }
+
+  #m-app-concept .overlay {
+    display: grid;
+    align-items: end;
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    overflow: hidden;
+    background: rgb(11 23 47 / 0%);
+    transition: background-color 230ms ease;
+  }
+  #m-app-concept .overlay[data-open='true'] { background: rgb(11 23 47 / 38%); }
+  #m-app-concept .sheet {
+    --drag: 0px;
+    min-width: 0;
+    max-height: calc(100% - 22px);
+    overflow: auto;
+    padding: 0 17px 18px;
+    color: var(--ink);
+    background: var(--surface);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+    transition: transform 280ms var(--ease);
+    box-shadow: 0 -7px 22px rgb(11 23 47 / 13%);
+  }
+  #m-app-concept .overlay[data-open='true'] .sheet { transform: translateY(var(--drag)); }
+  #m-app-concept .sheet[data-dragging='true'] { transition: none; }
+  #m-app-concept .handle { display: grid; place-items: center; width: 100%; min-height: 44px; touch-action: none; }
+  #m-app-concept .handle:active { transform: none; }
+  #m-app-concept .handle::before { content: ""; width: 32px; height: 4px; border-radius: 99px; background: var(--line); }
+  #m-app-concept .sheet-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px 0 13px; }
+  #m-app-concept .sheet-title { font-size: 22px; font-weight: 690; letter-spacing: -.035em; overflow-wrap: anywhere; }
+  #m-app-concept .sheet-content { display: grid; gap: 10px; }
+  #m-app-concept .sheet-content .rows { background: var(--canvas); }
+  #m-app-concept .sheet-content .option + .option { margin-top: 0; }
+  #m-app-concept .detail { display: grid; gap: 8px; padding: 13px; border-radius: 14px; background: var(--canvas); overflow-wrap: anywhere; }
+  #m-app-concept .detail :is(h3,strong) { font-weight: 680; }
+  #m-app-concept .detail p, #m-app-concept .detail dt { color: var(--quiet); font-size: 13px; white-space: pre-wrap; }
+  #m-app-concept .detail dl { display: grid; gap: 8px; }
+  #m-app-concept .form { display: grid; gap: 10px; }
+  #m-app-concept .field { display: grid; gap: 4px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .field :is(input,textarea,select) {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--ink);
+    background: var(--canvas);
+    font: inherit;
+    font-size: 16px;
+  }
+  #m-app-concept :is(.primary,.secondary) { justify-self: stretch; border-radius: 13px; font-weight: 650; font-size: 14px; padding-inline: 12px; }
+  #m-app-concept .primary { color: var(--on-blue); background: var(--blue); }
+  #m-app-concept .primary:active { background: color-mix(in srgb, var(--blue) 86%, var(--ink)); }
+  #m-app-concept .secondary { color: var(--blue); background: var(--blue-tint); }
+  #m-app-concept .secondary:active { background: color-mix(in srgb, var(--blue-tint) 88%, var(--blue)); }
+  #m-app-concept .empty { padding: 13px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .notice {
+    position: absolute;
+    z-index: 2;
+    bottom: 78px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 22px);
+    padding: 5px 11px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  #m-app-concept .notice-action { min-height: 44px; padding: 0 6px; font-weight: 650; text-decoration: underline; }
+  #m-app-concept .live-status { position: absolute; inset: 0 auto auto 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  @media (max-width: 385px) {
+    #m-app-concept { padding-block: 12px; }
+    #m-app-concept .shell { height: 550px; }
+    #m-app-concept .topbar { padding-inline: 15px; }
+    #m-app-concept .page { padding-inline: 13px; }
+    #m-app-concept .module-toolbar { padding-inline: 13px; }
+    #m-app-concept .bottom-nav { margin-inline: 11px; }
+    #m-app-concept .widget-body { padding-inline: 15px; }
+    #m-app-concept .widget-title { padding-right: 26px; }
+    #m-app-concept .record, #m-app-concept .option { gap: 8px; padding-inline: 9px; }
+    #m-app-concept .module-feature { padding-inline: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { transition: none !important; }
+    #m-app-concept button:active,
+    #m-app-concept .module-toolbar-button:active,
+    #m-app-concept .module-entries .option:active { transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #m-app-concept .module-view-menu { animation: m-app-view-menu-in 140ms var(--ease); }
+  }
+  @keyframes m-app-view-menu-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+<link rel="stylesheet" href="./mahjong.css">
+<link rel="stylesheet" href="./cooking.css">
+
+<div id="m-app-concept" class="viz-dotted-background">
+  <article class="app" aria-label="M_APP · 手机界面">
+    <div class="shell">
+      <header class="topbar">
+        <button class="top-action release-back cursor-interaction" type="button" data-action="back-from-changelog" aria-label="返回设置" hidden><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+        <h1 class="top-title">最近</h1>
+        <button class="top-action cursor-interaction" type="button" id="m-app-add" data-action="add" aria-label="新增记录"><i data-lucide="plus" aria-hidden="true"></i></button>
+        <div class="module-tabs" data-module-tabs role="tablist" aria-label="模块分类" hidden>
+          <button id="m-app-module-tab-permanent" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="true" data-action="select-category" data-key="permanent">永久记录</button>
+          <button id="m-app-module-tab-temporary" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="temporary">临时记录</button>
+          <button id="m-app-module-tab-tools" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="tools">工具</button>
+        </div>
+        <div class="module-view-picker" data-module-view-picker hidden>
+          <button class="top-action cursor-interaction" type="button" data-action="toggle-module-view-menu" aria-label="视图样式" aria-haspopup="menu" aria-expanded="false" aria-controls="m-app-module-view-menu">
+            <span data-view-icon="grid"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
+            <span data-view-icon="list" hidden><i data-lucide="list" aria-hidden="true"></i></span>
+          </button>
+          <div class="module-view-menu" id="m-app-module-view-menu" role="menu" aria-label="视图样式" hidden>
+            <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="true" tabindex="-1" data-action="set-module-view" data-key="grid">
+              <i data-lucide="layout-grid" aria-hidden="true"></i><span>网格视图</span><span class="view-check"><i data-lucide="check" aria-hidden="true"></i></span>
+            </button>
+            <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" data-action="set-module-view" data-key="list">
+              <i data-lucide="list" aria-hidden="true"></i><span>列表视图</span><span class="view-check"><i data-lucide="check" aria-hidden="true"></i></span>
+            </button>
+          </div>
+        </div>
+      </header>
+      <section class="page" data-page="recent" aria-label="最近">
+        <div data-widget-slot></div>
+        <h2 class="section-heading">最近记录</h2>
+        <div class="rows" data-recent-list></div>
+      </section>
+      <section class="page" data-page="modules" aria-label="模块" hidden>
+        <div id="m-app-module-pane" data-module-pane role="tabpanel"></div>
+      </section>
+      <section class="module-window" aria-label="模块详情" hidden>
+        <div class="module-toolbar">
+          <button class="module-back module-toolbar-button cursor-interaction" type="button" aria-label="返回模块" data-action="back-to-category"></button>
+          <button class="module-toolbar-button cursor-interaction" type="button" aria-label="模块设置" data-action="open-module-settings" hidden><i data-lucide="settings" aria-hidden="true"></i></button>
+        </div>
+        <div class="page" data-module-detail></div>
+      </section>
+      <section class="page" data-page="settings" aria-label="设置" hidden>
+        <div class="settings-stack">
+          <div class="rows">
+            <button class="record settings-row settings-account cursor-interaction" type="button" data-action="settings-item" data-key="account">
+              <span class="record-icon settings-avatar" aria-hidden="true">M</span>
+              <span class="record-info"><span class="record-name">我的账号</span><span class="record-meta">示例用户</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="modules">
+              <span class="record-icon"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">模块管理</span></span>
+              <span class="setting-value"><span data-enabled-module-count></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
+              <span class="record-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">偏好设置</span><span class="record-meta">外观和小组件</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="data">
+              <span class="record-icon"><i data-lucide="arrow-down-up" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">数据导入 / 导出</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="about">
+              <span class="record-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">关于我们</span></span>
+              <span class="setting-value"><span data-app-version></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="changelog">
+              <span class="record-icon"><i data-lucide="history" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">版本日志</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <section class="page release-page" data-page="changelog" aria-label="版本内容" hidden>
+        <div class="release-list" data-release-list></div>
+      </section>
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="cursor-interaction" type="button" data-tab="recent" aria-current="page"><i data-lucide="clock-3" aria-hidden="true"></i>最近</button>
+        <button class="cursor-interaction" type="button" data-tab="modules"><i data-lucide="layout-grid" aria-hidden="true"></i>模块</button>
+        <button class="cursor-interaction" type="button" data-tab="settings"><i data-lucide="settings" aria-hidden="true"></i>设置</button>
+      </nav>
+    </div>
+    <section class="cooking-window" data-cooking-window role="dialog" aria-modal="true" aria-labelledby="cooking-title" hidden></section>
+    <div class="notice" hidden></div>
+    <div class="live-status" role="status"></div>
+    <div class="overlay" hidden>
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-app-sheet-title">
+        <button class="handle cursor-interaction" type="button" data-close-sheet aria-label="下拉或点击关闭"></button>
+        <div class="sheet-header">
+          <h2 class="sheet-title" id="m-app-sheet-title"></h2>
+          <button class="close cursor-interaction" type="button" data-close-sheet aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="sheet-content"></div>
+      </section>
+    </div>
+  </article>
+</div>
+
+<script src="./mahjong.js"></script>
+<script src="./mahjong-ui.js"></script>
+<script src="./cooking.js"></script>
+<script src="./cooking-store.js"></script>
+<script src="./cooking-ui.js" data-demo-cover="../public/scallion-noodles.jpg"></script>
+<script>
+  (() => {
+    if (!globalThis.Tweak) return;
+    const app = document.getElementById('m-app-concept').querySelector('.app');
+    const appearance = { radius: 20 };
+    const tweak = new Tweak({ container: app, onChange: () => app.style.setProperty('--radius', `${appearance.radius}px`) });
+    tweak.addSlider(appearance, 'radius', { label: '卡片圆角', min: 12, max: 32, unit: 'px', reference: '--radius' });
+  })();
+</script>
+
+<script>
+(() => {
+  const root = document.getElementById('m-app-concept');
+  const app = root.querySelector('.app');
+  const shell = root.querySelector('.shell');
+  const topbar = shell.querySelector('.topbar');
+  const pageTitle = root.querySelector('.top-title');
+  const addButton = root.querySelector('#m-app-add');
+  const releaseBack = root.querySelector('.release-back');
+  const pages = [...root.querySelectorAll('[data-page]')];
+  const mainNavigation = root.querySelector('.bottom-nav');
+  const tabs = [...mainNavigation.querySelectorAll('[data-tab]')];
+  const widgetSlot = root.querySelector('[data-widget-slot]');
+  const recentList = root.querySelector('[data-recent-list]');
+  const enabledModuleCount = root.querySelector('[data-enabled-module-count]');
+  const overlay = root.querySelector('.overlay');
+  const sheet = root.querySelector('.sheet');
+  const handle = sheet.querySelector('.handle');
+  const closeButton = sheet.querySelector('.close');
+  const sheetTitle = sheet.querySelector('.sheet-title');
+  const sheetContent = sheet.querySelector('.sheet-content');
+  const notice = root.querySelector('.notice');
+  const status = root.querySelector('.live-status');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mahjongCalculator = globalThis.MahjongCalculator;
+  const mahjongStorageKey = 'm-app-mahjong-v1';
+  const cookingModel = globalThis.CookingGuide;
+  const cookingModule = globalThis.CookingModule;
+  const legacyCookingStorageKey = 'm-app-cooking-v1';
+  const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
+  const modules = {
+    cooking: { label: '烹饪指南', item: '菜谱', icon: 'chef-hat' },
+    people: { label: '人物卡片', item: '人物卡片', icon: 'user-round', field: '姓名', note: '关系和备注' },
+    food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
+    parking: { label: '停车备忘', icon: 'square-parking' },
+    calculator: { label: '计算器', icon: 'calculator' },
+    mahjong: { label: '麻将胡结算', icon: 'mahjong' }
+  };
+  const persistentKinds = ['cooking', 'people', 'food'];
+  const widgetChoices = [
+    { key: 'parking', name: '当前停车', meta: '显示当前车位，也可快速记录', symbol: 'square-parking', view: parkingWidgetView },
+    { key: 'none', name: '隐藏小组件', symbol: 'circle-minus' }
+  ];
+  const state = {
+    page: 'recent',
+    category: 'permanent',
+    module: null,
+    moduleScreen: 'content',
+    modulePreferences: {},
+    moduleView: 'grid',
+    enabledModules: Object.keys(modules),
+    appearance: 'system',
+    widget: 'parking',
+    mahjong: loadMahjong(),
+    parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
+    records: [
+      ...loadLegacyCooking(),
+      { id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。' },
+      { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
+    ]
+  };
+  const cookingStore = globalThis.CookingStore.createStore(state.records.filter((record) => record.kind === 'cooking'));
+  const cookingUpdates = typeof BroadcastChannel === 'function' ? new BroadcastChannel('m-app-cooking-updates') : null;
+  const drafts = new Map();
+  const scrollPositions = new Map();
+  let nextId = 1;
+  let returnFocus;
+  let noticeTimer;
+  let dragStart;
+  let draggedHandle = false;
+  let recentlyCompleted;
+
+  const icon = (name) => name === 'mahjong' ? '<span aria-hidden="true">胡</span>' : `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const findRecord = (key) => state.records.find((record) => record.id === key);
+  const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+  const cookingWindow = cookingModule.createWindow(root.querySelector('[data-cooking-window]'), shell, saveRecipe, replacementFocus);
+
+  function loadLegacyCooking() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(legacyCookingStorageKey));
+      if (Array.isArray(saved)) return saved.filter((record) => record?.kind === 'cooking'
+        && typeof record.title === 'string' && typeof record.id === 'string' && record.id);
+    } catch {
+      // The sample remains available if browser storage cannot be read.
+    }
+    return [{ id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', summary: '20 分钟 · 家常快手', time: '12:18',
+      detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。', recipe: cookingModel.DEMO_RECIPE }];
+  }
+
+  function useCookingRecords(recipes) {
+    const previous = state.records.filter((record) => record.kind === 'cooking');
+    const recipeIds = new Set(recipes.map((record) => record.id));
+    const hasCollision = state.records.some((record) => record.kind !== 'cooking' && recipeIds.has(record.id));
+    if (!hasCollision && JSON.stringify(previous) === JSON.stringify(recipes)) return;
+    const previousIds = new Set(previous.map((record) => record.id));
+    const addedCount = recipes.filter((record) => !previousIds.has(record.id)).length;
+    const merged = recipes.slice(0, addedCount);
+    let index = addedCount;
+    for (const record of state.records) {
+      if (record.kind === 'cooking') {
+        if (index < recipes.length) merged.push(recipes[index++]);
+      } else {
+        merged.push(recipeIds.has(record.id) ? { ...record, id: nextRecordId(recipeIds) } : record);
+      }
+    }
+    state.records = [...merged, ...recipes.slice(index)];
+    render();
+  }
+
+  async function refreshCookingRecords() {
+    useCookingRecords(await cookingStore.read());
+  }
+
+  async function replaceCookingRecords(records, expectedRecipes) {
+    await cookingStore.replace(records.filter((record) => record.kind === 'cooking'), expectedRecipes);
+    cookingUpdates?.postMessage('changed');
+  }
+
+  function nextRecordId(reserved) {
+    let id;
+    do { id = `record-${nextId++}`; } while (findRecord(id) || reserved?.has(id));
+    return id;
+  }
+
+  async function saveRecipe({ title, summary, recipe }, previous) {
+    const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary,
+      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe };
+    useCookingRecords(await cookingStore.save(record, previous));
+    cookingUpdates?.postMessage('changed');
+    showNotice('菜谱已保存');
+    return record;
+  }
+
+  function loadMahjong() {
+    try {
+      const saved = localStorage.getItem(mahjongStorageKey) ?? localStorage.getItem('mahjong_state_v4');
+      return mahjongCalculator.normalizeState(JSON.parse(saved));
+    } catch {
+      return mahjongCalculator.normalizeState();
+    }
+  }
+
+  function persistMahjong() {
+    try {
+      localStorage.setItem(mahjongStorageKey, JSON.stringify(state.mahjong));
+      return true;
+    } catch {
+      showNotice('麻将数据未能保存到此浏览器');
+      return false;
+    }
+  }
+
+  function updateIcons() {
+    globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
+  }
+
+  function syncHeader() {
+    const hasModuleTabs = state.page === 'modules';
+    const isChangelog = state.page === 'changelog';
+    pageTitle.textContent = pageLabels[state.page];
+    pageTitle.hidden = hasModuleTabs;
+    addButton.hidden = state.page !== 'recent';
+    releaseBack.hidden = !isChangelog;
+    mainNavigation.hidden = isChangelog;
+    moduleTabs.hidden = !hasModuleTabs;
+    syncModuleViewPicker();
+    syncModuleWindow();
+  }
+
+  function applyAppearance() {
+    app.dataset.appearance = state.appearance;
+  }
+
+  function setPage(key) {
+    if (key !== state.page) stopModuleMotion();
+    const previous = pages.find((page) => page.dataset.page === state.page);
+    scrollPositions.set(state.page, previous.scrollTop);
+    state.page = key;
+    syncHeader();
+    for (const page of pages) page.hidden = page.dataset.page !== key;
+    const tabKey = key === 'changelog' ? 'settings' : key;
+    for (const tab of tabs) {
+      if (tab.dataset.tab === tabKey) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    }
+    pages.find((page) => page.dataset.page === key).scrollTop = scrollPositions.get(key) || 0;
+  }
+
+  function parkingTitle(parking) {
+    return [parking.area, parking.number].filter(Boolean).join(' · ') || parking.place;
+  }
+
+  function parkingWidgetView() {
+    return state.parking
+      ? { label: '当前停车', title: parkingTitle(state.parking), meta: `${state.parking.place} · ${state.parking.time}`, action: 'record', key: 'parking' }
+      : { label: '停车记录', title: '记录停车', meta: '保存楼层、区域和车位号', action: 'create', key: 'parking' };
+  }
+
+  function renderWidget() {
+    const choice = widgetChoices.find((option) => option.key === state.widget);
+    const item = choice?.view?.();
+    if (!item) {
+      widgetSlot.innerHTML = `<button class="secondary cursor-interaction" type="button" data-action="widget-settings">${icon('plus')}添加小组件</button>`;
+      return;
+    }
+    widgetSlot.innerHTML = `
+      <article class="widget">
+        <span class="widget-decoration" aria-hidden="true"></span>
+        <button class="widget-body cursor-interaction" type="button" data-action="${item.action}" data-key="${item.key}">
+          <span class="widget-label">${icon(choice.symbol)}<span></span></span>
+          <span class="widget-title"></span>
+          <span class="widget-meta"></span>
+        </button>
+        <button class="widget-config cursor-interaction" type="button" data-action="widget-settings" aria-label="编辑小组件">${icon('sliders-horizontal')}</button>
+      </article>`;
+    widgetSlot.querySelector('.widget-label span').textContent = item.label;
+    widgetSlot.querySelector('.widget-title').textContent = item.title;
+    widgetSlot.querySelector('.widget-meta').textContent = item.meta;
+  }
+
+  function recordRow(record) {
+    const button = document.createElement('button');
+    button.className = 'record cursor-interaction';
+    button.type = 'button';
+    button.dataset.action = 'record';
+    button.dataset.key = record.id;
+    button.innerHTML = `
+      <span class="record-icon" data-kind="${record.kind}">${icon(modules[record.kind].icon)}</span>
+      <span class="record-info"><span class="record-name"></span><span class="record-meta"></span></span>
+      <span class="record-time"></span>`;
+    button.querySelector('.record-name').textContent = record.title;
+    button.querySelector('.record-meta').textContent = [modules[record.kind].label, record.summary].filter(Boolean).join(' · ');
+    button.querySelector('.record-time').textContent = record.time;
+    return button;
+  }
+
+  function renderRecent() {
+    const rows = state.records.map(recordRow);
+    if (state.parking && state.widget !== 'parking') {
+      rows.unshift(recordRow({ id: 'parking', kind: 'parking', title: parkingTitle(state.parking), summary: state.parking.place, time: state.parking.time }));
+    }
+    if (rows.length) recentList.replaceChildren(...rows);
+    else recentList.innerHTML = '<p class="empty">还没有最近记录</p>';
+  }
+
+  function render() {
+    renderWidget();
+    renderRecent();
+    renderModules();
+    syncHeader();
+    enabledModuleCount.textContent = `${state.enabledModules.length} 个模块`;
+    updateIcons();
+  }
+
+  function toggleManagedModule(key) {
+    const wasEnabled = state.enabledModules.includes(key);
+    state.enabledModules = Object.keys(modules).filter((module) => module === key ? !wasEnabled : state.enabledModules.includes(module));
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    render();
+  }
+
+  function setSheet(label, html, trigger) {
+    if (overlay.dataset.open === 'false' && !overlay.hidden) return;
+    sheetTitle.textContent = label;
+    sheetContent.innerHTML = html;
+    sheet.scrollTop = 0;
+    if (overlay.hidden) {
+      returnFocus = trigger;
+      overlay.hidden = false;
+      shell.inert = true;
+      notice.inert = true;
+      overlay.getBoundingClientRect();
+      overlay.dataset.open = 'true';
+    }
+    closeButton.focus({ preventScroll: true });
+    updateIcons();
+  }
+
+  function replacementFocus(trigger) {
+    const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden], [inert]')
+      && button.dataset.action === trigger?.dataset.action && button.dataset.key === trigger?.dataset.key);
+    const widgetButton = trigger?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
+    const pageControl = state.page === 'modules'
+      ? (state.module ? moduleBack : moduleTabs.querySelector('[aria-selected="true"]'))
+      : tabs.find((tab) => tab.dataset.tab === state.page);
+    return replacement || widgetButton || pageControl;
+  }
+
+  function focusAfterClose() {
+    (returnFocus?.isConnected ? returnFocus : replacementFocus(returnFocus))?.focus({ preventScroll: true });
+  }
+
+  function closeSheet(afterClose) {
+    if (overlay.dataset.open !== 'true') return;
+    overlay.dataset.open = 'false';
+    sheet.style.removeProperty('--drag');
+    const finish = () => {
+      overlay.hidden = true;
+      shell.inert = false;
+      notice.inert = false;
+      focusAfterClose();
+      afterClose?.();
+    };
+    if (reducedMotion.matches) finish();
+    else setTimeout(finish, 280);
+  }
+
+  function showNotice(text, canUndo = false) {
+    clearTimeout(noticeTimer);
+    notice.innerHTML = `<span></span>${canUndo ? '<button class="notice-action cursor-interaction" type="button" data-action="undo-parking">撤销</button>' : ''}`;
+    notice.firstElementChild.textContent = text;
+    notice.hidden = false;
+    status.textContent = text;
+    noticeTimer = setTimeout(() => { notice.hidden = true; }, canUndo ? 5200 : 2300);
+  }
+
+  function optionRow({ action, key, name, meta, symbol, selected }) {
+    const marker = selected === undefined ? icon('chevron-right') : selected ? icon('check') : '';
+    const pressed = selected === undefined ? '' : ` aria-pressed="${selected}"`;
+    return `<button class="option cursor-interaction" type="button" data-action="${action}" data-key="${key}"${pressed}>
+      ${symbol ? `<span class="record-icon">${icon(symbol)}</span>` : ''}
+      <span class="option-text"><span class="option-name">${name}</span>${meta ? `<span class="option-meta">${meta}</span>` : ''}</span>
+      <span class="option-marker">${marker}</span>
+    </button>`;
+  }
+
+  function showWidgetSettings(trigger) {
+    const options = widgetChoices.map((item) => optionRow({ ...item, action: 'set-widget', selected: state.widget === item.key }));
+    setSheet('编辑小组件', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showAdd(trigger) {
+    const options = ['parking', ...persistentKinds].map((kind) => optionRow({
+      action: 'create', key: kind, name: kind === 'parking' ? (state.parking ? '更新车位' : '记录停车') : `新增${modules[kind].item}`, symbol: modules[kind].icon
+    }));
+    setSheet('新增记录', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showCreate(kind, trigger) {
+    if (kind === 'cooking') {
+      if (overlay.dataset.open === 'true') {
+        const source = returnFocus;
+        closeSheet(() => cookingWindow.open(null, source));
+      } else if (overlay.hidden) cookingWindow.open(null, trigger);
+      return;
+    }
+    const parking = kind === 'parking';
+    const updatingParking = parking && state.parking;
+    const module = modules[kind];
+    const fields = parking
+      ? '<label class="field">停车地点<input name="place" maxlength="28" required placeholder="例如环贸广场"></label><label class="field">楼层和区域<input name="area" maxlength="18" placeholder="例如 B2 · C 区"></label><label class="field">车位号<input name="number" maxlength="12" placeholder="例如 128"></label>'
+      : `<label class="field">${module.field}<input name="title" maxlength="30" required></label><label class="field">${module.note}<textarea name="note" rows="2" maxlength="180"></textarea></label>`;
+    const label = updatingParking ? '更新车位' : parking ? '记录停车' : `新增${module.item}`;
+    setSheet(label, `<form class="form" data-create="${kind}">
+      ${fields}<button class="primary cursor-interaction" type="button" data-action="save">${parking ? '保存车位' : '保存记录'}</button></form>`, trigger);
+    const draft = drafts.get(kind) || (updatingParking && Object.entries(updatingParking).filter(([name]) => name !== 'time'));
+    const form = sheetContent.querySelector('form');
+    if (draft) for (const [name, value] of draft) form.elements.namedItem(name).value = value;
+  }
+
+  function showRecord(key, trigger) {
+    if (key === 'parking') {
+      if (!state.parking) {
+        showCreate('parking', trigger);
+        return;
+      }
+      setSheet('当前停车', `<div class="detail">
+        <strong class="detail-value"></strong><p></p>
+        <button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button></div>`, trigger);
+      sheetContent.querySelector('strong').textContent = parkingTitle(state.parking);
+      sheetContent.querySelector('p').textContent = `今天 ${state.parking.time} · ${state.parking.place}`;
+      return;
+    }
+    const record = findRecord(key);
+    if (!record) return;
+    if (record.kind === 'cooking') {
+      cookingWindow.open(record, trigger);
+      return;
+    }
+    setSheet(record.title, '<div class="detail"><p></p></div>', trigger);
+    sheetContent.querySelector('p').textContent = record.detail || record.summary;
+  }
+
+  function save(form) {
+    if (overlay.dataset.open !== 'true') return;
+    const required = form.querySelector('input[required]');
+    required.value = required.value.trim();
+    if (!form.reportValidity()) return;
+    const values = new FormData(form);
+    const kind = form.dataset.create;
+    if (kind === 'parking') {
+      recentlyCompleted = undefined;
+      state.parking = { place: values.get('place'), area: values.get('area').trim(), number: values.get('number').trim(), time: timeNow() };
+    } else {
+      const detail = values.get('note').trim();
+      const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
+      state.records.unshift({ id: nextRecordId(), kind, title: values.get('title'), summary, detail, time: timeNow() });
+    }
+    drafts.delete(kind);
+    render();
+    closeSheet(() => showNotice(kind === 'parking' ? '车位已保存' : '记录已保存'));
+  }
+
+  const moduleTabs = root.querySelector('[data-module-tabs]');
+  const moduleViewPicker = root.querySelector('[data-module-view-picker]');
+  const moduleViewTrigger = moduleViewPicker.querySelector('[data-action="toggle-module-view-menu"]');
+  const moduleViewMenu = moduleViewPicker.querySelector('[role="menu"]');
+  const moduleViewOptions = [...moduleViewMenu.querySelectorAll('[role="menuitemradio"]')];
+  const moduleViewIcons = [...moduleViewTrigger.querySelectorAll('[data-view-icon]')];
+  const moduleDirectory = root.querySelector('[data-module-pane]');
+  const modulePage = moduleDirectory.closest('.page');
+  const moduleWindow = shell.querySelector('.module-window');
+  const moduleBack = moduleWindow.querySelector('.module-back');
+  const moduleSettingsButton = moduleWindow.querySelector('[data-action="open-module-settings"]');
+  const modulePane = moduleWindow.querySelector('[data-module-detail]');
+  const categoryTabs = [...moduleTabs.querySelectorAll('[role="tab"]')];
+  const moduleCategories = {
+    permanent: ['cooking', 'people', 'food'],
+    temporary: ['parking'],
+    tools: ['calculator', 'mahjong']
+  };
+  const moduleEntryNotes = {
+    cooking: '菜谱、食材和做法',
+    people: '生日、关系和备忘',
+    food: '店铺和到访笔记',
+    parking: '记录当前车位',
+    calculator: '快速计算聚餐分摊',
+    mahjong: '四人轮休，按胡数差结算'
+  };
+  const categoryScrollPositions = new Map();
+  const moduleScrollPositions = new Map();
+  const calculatorDraft = { amount: '128', people: '4' };
+  const moduleMotionTiming = { duration: 380, easing: 'cubic-bezier(.2, .75, .22, 1)', fill: 'both' };
+  const moduleReturnTiming = { duration: 220, easing: 'cubic-bezier(.32, .12, .46, 1)', fill: 'both' };
+  let moduleMotion;
+
+  function renderModuleTabs() {
+    for (const tab of categoryTabs) {
+      const selected = tab.dataset.key === state.category;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected) moduleDirectory.setAttribute('aria-labelledby', tab.id);
+    }
+  }
+
+  function setModuleViewMenu(open, restoreFocus = false) {
+    if (open && moduleViewPicker.hidden) return;
+    moduleViewMenu.hidden = !open;
+    moduleViewTrigger.setAttribute('aria-expanded', String(open));
+    if (open) moduleViewOptions.find((option) => option.dataset.key === state.moduleView).focus({ preventScroll: true });
+    else if (restoreFocus) moduleViewTrigger.focus({ preventScroll: true });
+  }
+
+  function syncModuleViewPicker() {
+    moduleViewPicker.hidden = state.page !== 'modules';
+    if (moduleViewPicker.hidden && !moduleViewMenu.hidden) setModuleViewMenu(false);
+    for (const icon of moduleViewIcons) icon.hidden = icon.dataset.viewIcon !== state.moduleView;
+    for (const option of moduleViewOptions) option.setAttribute('aria-checked', String(option.dataset.key === state.moduleView));
+  }
+
+  function selectModuleView(key) {
+    stopModuleMotion();
+    state.moduleView = key;
+    const entries = moduleDirectory.querySelector('.module-entries');
+    if (entries) entries.dataset.view = key;
+    syncModuleViewPicker();
+    setModuleViewMenu(false, true);
+  }
+
+  function renderCategoryEntries() {
+    const keys = moduleCategories[state.category].filter((key) => state.enabledModules.includes(key));
+    if (!keys.length) {
+      moduleDirectory.innerHTML = `<div class="module-feature">
+        <p class="feature-meta">此分类暂无已启用的模块。</p>
+        <button class="secondary cursor-interaction" type="button" data-action="settings-item" data-key="modules">模块管理</button>
+      </div>`;
+      return;
+    }
+
+    const entries = keys.map((key) => optionRow({
+      action: 'open-module', key, name: modules[key].label, meta: moduleEntryNotes[key], symbol: modules[key].icon
+    }));
+    moduleDirectory.innerHTML = `<div class="rows module-entries" data-view="${state.moduleView}">${entries.join('')}</div>`;
+    if (state.category === 'temporary' && state.parking) {
+      moduleDirectory.querySelector('[data-key="parking"] .option-meta').textContent = parkingTitle(state.parking);
+    }
+  }
+
+  function renderPersistentModule(key) {
+    const module = modules[key];
+    const entries = state.records.filter((record) => record.kind === key);
+    if (modulePreference(key) === 'name') entries.sort((left, right) => left.title.localeCompare(right.title, 'zh-CN'));
+    if (key === 'cooking') {
+      cookingModule.renderList(modulePane, entries, icon);
+      return;
+    }
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon(module.icon)}</span>
+          <div class="feature-copy">
+            <h2 class="feature-title">${module.label}</h2>
+            <p class="feature-meta">${entries.length} 条记录</p>
+          </div>
+        </div>
+        <div class="module-content">
+          <div class="rows"></div>
+          <button class="primary cursor-interaction" type="button" data-action="create" data-key="${key}">${icon('plus')}新增${module.item}</button>
+        </div>
+      </section>`;
+
+    const list = modulePane.querySelector('.rows');
+    if (entries.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'empty';
+      empty.textContent = `暂无${module.item}`;
+      list.append(empty);
+      return;
+    }
+
+    for (const record of entries) {
+      const row = recordRow(record);
+      const summary = row.querySelector('.record-meta');
+      summary.textContent = record.summary;
+      summary.hidden = key === 'food' && modulePreference(key) === 'hide';
+      list.append(row);
+    }
+  }
+
+  function renderParkingModule() {
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon('square-parking')}</span>
+          <div class="feature-copy">
+            <h2 class="feature-title">停车备忘</h2>
+            <p class="feature-value"></p>
+            <p class="feature-meta"></p>
+          </div>
+        </div>
+        <div class="module-actions">
+          ${state.parking ? '<button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button>' : ''}
+          <button class="${state.parking ? 'secondary' : 'primary'} cursor-interaction" type="button" data-action="create" data-key="parking">${state.parking ? '更新车位' : '记录停车'}</button>
+        </div>
+      </section>`;
+    modulePane.querySelector('.feature-value').textContent = state.parking ? parkingTitle(state.parking) : '当前没有停车记录';
+    modulePane.querySelector('.feature-meta').textContent = state.parking
+      ? [state.parking.place, ...(modulePreference('parking') === 'show' ? [state.parking.time] : [])].join(' · ')
+      : '保存地点和车位，取车后结束。';
+  }
+
+  function updateCalculatorResult(form) {
+    const amount = form.elements.amount.valueAsNumber;
+    const people = form.elements.people.valueAsNumber;
+    const digits = modulePreference('calculator') === 'whole' ? 0 : 2;
+    form.querySelector('output').textContent = form.checkValidity()
+      ? `每人 ¥${(amount / people).toFixed(digits)}`
+      : '请输入金额和人数';
+  }
+
+  function renderCalculatorModule() {
+    modulePane.innerHTML = `
+      <section class="module-feature">
+        <div class="feature-header">
+          <span class="feature-icon">${icon('calculator')}</span>
+          <div class="feature-copy"><h2 class="feature-title">聚餐分摊</h2></div>
+        </div>
+        <form class="form module-content" data-calculator>
+          <label class="field">总金额<input name="amount" type="number" min="0" step="any" inputmode="decimal" required></label>
+          <label class="field">人数<input name="people" type="number" min="1" inputmode="numeric" required></label>
+          <output class="feature-value" aria-live="polite"></output>
+        </form>
+      </section>`;
+    const form = modulePane.querySelector('[data-calculator]');
+    form.elements.amount.value = calculatorDraft.amount;
+    form.elements.people.value = calculatorDraft.people;
+    updateCalculatorResult(form);
+  }
+
+  function syncModuleWindow() {
+    const open = state.page === 'modules' && Boolean(state.module);
+    shell.classList.toggle('module-open', open);
+    topbar.inert = mainNavigation.inert = modulePage.inert = open;
+    moduleWindow.inert = !open;
+    moduleWindow.hidden = !open && !moduleMotion;
+  }
+
+  function stopModuleMotion() {
+    if (!moduleMotion) return;
+    moduleMotion.cancel();
+    moduleMotion = null;
+    shell.classList.remove('module-moving');
+    syncModuleWindow();
+  }
+
+  function playModuleMotion(iconBounds, closing = false) {
+    const paintedBounds = moduleWindow.getBoundingClientRect();
+    const style = getComputedStyle(moduleWindow);
+    const opacity = Number(style.opacity);
+    const borderRadius = style.borderRadius;
+    stopModuleMotion();
+    if (!iconBounds?.width || reducedMotion.matches || typeof moduleWindow.animate !== 'function') return;
+    const bounds = moduleWindow.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    const pageBounds = modulePage.getBoundingClientRect();
+    const scale = Math.min(iconBounds.width / bounds.width, iconBounds.height / bounds.height);
+    const iconCenterX = iconBounds.left + iconBounds.width / 2;
+    const iconCenterY = Math.max(pageBounds.top, Math.min(pageBounds.bottom, iconBounds.top + iconBounds.height / 2));
+    const x = iconCenterX - bounds.left;
+    const y = iconCenterY - bounds.top;
+    const atIcon = (size) => `translate(${x - bounds.width * size / 2}px, ${y - bounds.height * size / 2}px) scale(${size})`;
+    const current = {
+      transform: `translate(${paintedBounds.left - bounds.left}px, ${paintedBounds.top - bounds.top}px) scale(${paintedBounds.width / bounds.width})`,
+      opacity,
+      borderRadius
+    };
+    const frames = closing
+      ? [current, { transform: atIcon(0), opacity: 0, borderRadius: '32px' }]
+      : [{ transform: atIcon(scale), opacity: .45, borderRadius: '32px' }, { transform: 'none', opacity: 1, borderRadius: '0px' }];
+    shell.classList.add('module-moving');
+    const animation = moduleWindow.animate(frames, closing ? moduleReturnTiming : moduleMotionTiming);
+    moduleMotion = animation;
+    animation.onfinish = () => { if (moduleMotion === animation) stopModuleMotion(); };
+  }
+
+  function renderModules() {
+    stopModuleMotion();
+    const calculator = modulePane.querySelector('[data-calculator]');
+    if (calculator) {
+      calculatorDraft.amount = calculator.elements.amount.value;
+      calculatorDraft.people = calculator.elements.people.value;
+    }
+
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    renderModuleTabs();
+    renderCategoryEntries();
+    syncModuleWindow();
+    if (!state.module) {
+      state.moduleScreen = 'content';
+      modulePane.replaceChildren();
+      return;
+    }
+
+    if (state.moduleScreen === 'settings') renderModuleSettings(state.module);
+    else if (state.moduleScreen === 'releases') renderModuleReleases(state.module);
+    else if (state.module === 'parking') renderParkingModule();
+    else if (state.module === 'calculator') renderCalculatorModule();
+    else if (state.module === 'mahjong') globalThis.MahjongModule.render(modulePane, state.mahjong, persistMahjong);
+    else renderPersistentModule(state.module);
+    const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
+    const moduleLabel = modules[state.module].label;
+    const backLabel = state.moduleScreen === 'releases' ? '模块设置'
+      : state.moduleScreen === 'settings' ? moduleLabel : categoryLabel;
+    moduleWindow.setAttribute('aria-label', moduleLabel);
+    moduleBack.setAttribute('aria-label', `返回${backLabel}`);
+    moduleBack.dataset.action = state.moduleScreen === 'content' ? 'back-to-category' : 'back-in-module';
+    moduleSettingsButton.hidden = state.moduleScreen !== 'content';
+    moduleSettingsButton.setAttribute('aria-label', `${moduleLabel}设置`);
+  }
+
+  function selectCategory(key) {
+    if (key === state.category) return;
+    stopModuleMotion();
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.category = key;
+    renderModuleTabs();
+    renderCategoryEntries();
+    updateIcons();
+    modulePage.scrollTop = categoryScrollPositions.get(key) || 0;
+  }
+
+  function openModule(key, button) {
+    if (!state.enabledModules.includes(key) || !moduleCategories[state.category].includes(key)) return;
+    const iconBounds = button.querySelector('.record-icon').getBoundingClientRect();
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.module = key;
+    state.moduleScreen = 'content';
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = 0;
+    playModuleMotion(iconBounds);
+    moduleBack.focus({ preventScroll: true });
+  }
+
+  function backToModuleCategory() {
+    const module = state.module;
+    if (!module) return;
+    modulePage.scrollTop = categoryScrollPositions.get(state.category) || 0;
+    const entry = moduleDirectory.querySelector(`[data-action="open-module"][data-key="${module}"]`);
+    playModuleMotion(entry?.querySelector('.record-icon').getBoundingClientRect(), true);
+    state.module = null;
+    state.moduleScreen = 'content';
+    syncModuleWindow();
+    entry?.focus({ preventScroll: true });
+  }
+
+  function setModuleScreen(screen, focusTarget) {
+    moduleScrollPositions.set(`${state.module}:${state.moduleScreen}`, modulePane.scrollTop);
+    state.moduleScreen = screen;
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = moduleScrollPositions.get(`${state.module}:${screen}`) || 0;
+    const target = focusTarget ? moduleWindow.querySelector(focusTarget) : moduleBack;
+    target?.focus({ preventScroll: true });
+  }
+
+  function backInModule() {
+    if (state.moduleScreen === 'releases') setModuleScreen('settings', '[data-action="open-module-releases"]');
+    else setModuleScreen('content', '[data-action="open-module-settings"]');
+  }
+
+  function setModulePreference(key) {
+    if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
+    if (state.module === 'mahjong') {
+      state.mahjong.colorMode = key;
+      persistMahjong();
+    } else state.modulePreferences[state.module] = key;
+    const scrollTop = modulePane.scrollTop;
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = scrollTop;
+    modulePane.querySelector(`[data-action="module-preference"][data-key="${key}"]`)?.focus({ preventScroll: true });
+  }
+
+  const moduleSettings = {
+    cooking: {
+      preferenceLabel: '菜谱排序',
+      defaultPreference: 'recent',
+      options: [
+        { key: 'recent', label: '最近添加优先', symbol: 'clock-3' },
+        { key: 'name', label: '按菜名排序', symbol: 'book-open' }
+      ],
+      releases: [{
+        version: '0.2.0',
+        date: '2026-11-23',
+        groups: [
+          ['新增', ['用料按份数换算，菜谱支持填写分步做法、火候、图片链接和小贴士。', '烹饪模式可连续滑动查看步骤，随时打开用料或小贴士。']],
+          ['修复', ['各标签页保存的菜谱独立保留。编辑同一份菜谱发生冲突时会提示并保留当前表单。']]
+        ]
+      }, {
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持新建、查看菜谱，记录食材和做法。', '可设置菜谱列表的排序方式。']]]
+      }]
+    },
+    people: {
+      preferenceLabel: '人物排序',
+      defaultPreference: 'recent',
+      options: [
+        { key: 'recent', label: '最近添加优先', symbol: 'clock-3' },
+        { key: 'name', label: '按姓名排序', symbol: 'user-round' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持新建、查看人物卡片，记录关系和备注。', '可设置人物卡片的排序方式。']]]
+      }]
+    },
+    food: {
+      preferenceLabel: '列表中的到访备注',
+      defaultPreference: 'show',
+      options: [
+        { key: 'show', label: '显示备注', symbol: 'list' },
+        { key: 'hide', label: '隐藏备注', symbol: 'eye-off' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持记录到访店铺、推荐菜和口味。', '可选择在美食记录列表中显示或隐藏到访备注。']]]
+      }]
+    },
+    parking: {
+      preferenceLabel: '车位的记录时间',
+      defaultPreference: 'show',
+      options: [
+        { key: 'show', label: '显示记录时间', symbol: 'clock-3' },
+        { key: 'hide', label: '隐藏记录时间', symbol: 'eye-off' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持记录、更新和结束当前车位。', '可选择在停车备忘里显示或隐藏记录时间。']]]
+      }]
+    },
+    calculator: {
+      preferenceLabel: '分摊结果精度',
+      defaultPreference: 'decimals',
+      options: [
+        { key: 'decimals', label: '保留两位小数', symbol: 'calculator' },
+        { key: 'whole', label: '四舍五入到元', symbol: 'calculator' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['根据总金额和人数计算每人分摊金额。', '结果可保留两位小数或四舍五入到元。']]]
+      }]
+    },
+    mahjong: {
+      preferenceLabel: '输赢颜色',
+      defaultPreference: 'default',
+      options: [
+        { key: 'default', label: '绿赢、红输' },
+        { key: 'chinese', label: '红赢、绿输' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-23',
+        groups: [['新增', ['记录四人轮休对局，按三位参赛玩家的胡数差计算单局与累计输赢。', '可设置每胡金额及输赢颜色，历史记录保存在本地浏览器。']]]
+      }]
+    }
+  };
+
+  function modulePreference(key) {
+    const settings = moduleSettings[key];
+    const selected = key === 'mahjong' ? state.mahjong.colorMode : state.modulePreferences[key];
+    return settings.options.some((option) => option.key === selected) ? selected : settings.defaultPreference;
+  }
+
+  function renderModuleSettings(key) {
+    const module = modules[key];
+    const settings = moduleSettings[key];
+    const selected = modulePreference(key);
+    const choices = settings.options.map((option) => optionRow({
+      action: 'module-preference', key: option.key, name: option.label,
+      symbol: option.symbol, selected: option.key === selected
+    }));
+    const versionLink = optionRow({
+      action: 'open-module-releases', key, name: '模块更新日志',
+      meta: `当前版本 v${settings.releases[0].version}`, symbol: 'history'
+    });
+    modulePane.innerHTML = `<section class="module-settings-view">
+      <h2 class="module-settings-heading">${module.label}设置</h2>
+      ${key === 'mahjong' ? `<form class="form module-settings-group" data-mahjong-rate>
+        <label class="field">每胡金额（元）<input name="rate" type="number" min="0.01" step="0.01" inputmode="decimal" required aria-describedby="m-app-mahjong-rate-note"></label>
+        <p class="settings-meta" id="m-app-mahjong-rate-note">修改金额会重新计算所有对局的输赢。</p>
+        <button class="primary cursor-interaction" type="submit">保存每胡金额</button>
+      </form>` : ''}
+      <section class="module-settings-group" aria-labelledby="m-app-module-preference-${key}">
+        <h3 id="m-app-module-preference-${key}">${settings.preferenceLabel}</h3>
+        <div class="rows">${choices.join('')}</div>
+      </section>
+      <section class="module-settings-group" aria-labelledby="m-app-module-version-${key}">
+        <h3 id="m-app-module-version-${key}">版本</h3>
+        <div class="rows">${versionLink}</div>
+      </section>
+    </section>`;
+    if (key === 'mahjong') {
+      const form = modulePane.querySelector('[data-mahjong-rate]');
+      const input = form.elements.rate;
+      input.value = state.mahjong.rate;
+      input.addEventListener('input', () => input.setCustomValidity(''));
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rate = mahjongCalculator.parseRate(input.value);
+        if (rate === null) {
+          input.setCustomValidity('请输入大于零、精确到分的金额。');
+          input.reportValidity();
+          return;
+        }
+        state.mahjong.rate = rate;
+        input.value = rate;
+        if (persistMahjong()) showNotice('已保存每胡金额');
+      });
+    }
+  }
+
+  function renderModuleReleases(key) {
+    const releases = moduleSettings[key].releases;
+    modulePane.innerHTML = `<section class="module-settings-view">
+      <h2 class="module-settings-heading">${modules[key].label}更新日志</h2>
+      <div class="release-list">${renderReleaseCards(releases, releases[0].version, `m-app-module-release-${key}`)}</div>
+    </section>`;
+  }
+
+  const moduleActions = {
+    'select-category': selectCategory,
+    'open-module': openModule,
+    'back-to-category': backToModuleCategory,
+    'open-module-settings': () => setModuleScreen('settings'),
+    'open-module-releases': () => setModuleScreen('releases'),
+    'back-in-module': backInModule,
+    'module-preference': setModulePreference,
+    'toggle-module-view-menu': () => setModuleViewMenu(moduleViewMenu.hidden, true),
+    'set-module-view': selectModuleView
+  };
+
+  moduleViewPicker.addEventListener('keydown', (event) => {
+    const backTab = event.key === 'Tab' && event.shiftKey && moduleViewMenu.contains(event.target);
+    if (!moduleViewMenu.hidden && (event.key === 'Escape' || backTab)) {
+      event.preventDefault();
+      setModuleViewMenu(false, true);
+      return;
+    }
+    const order = moduleViewOptions.indexOf(event.target);
+    const isArrowKey = event.key === 'ArrowDown' || event.key === 'ArrowUp';
+    if (isArrowKey && event.target === moduleViewTrigger) {
+      event.preventDefault();
+      setModuleViewMenu(true);
+      return;
+    }
+    if (order < 0 || !(isArrowKey || event.key === 'Home' || event.key === 'End')) return;
+    event.preventDefault();
+    const last = moduleViewOptions.length - 1;
+    const next = isArrowKey ? last - order : event.key === 'Home' ? 0 : last;
+    moduleViewOptions[next].focus({ preventScroll: true });
+  });
+  moduleViewPicker.addEventListener('focusout', (event) => {
+    if (event.relatedTarget && !moduleViewPicker.contains(event.relatedTarget)) setModuleViewMenu(false);
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (!moduleViewMenu.hidden && !moduleViewPicker.contains(event.target)) setModuleViewMenu(false);
+  });
+
+  moduleTabs.addEventListener('keydown', (event) => {
+    const tab = event.target.closest('[role="tab"]');
+    if (!tab) return;
+    const current = categoryTabs.indexOf(tab);
+    const last = categoryTabs.length - 1;
+    let next;
+    if (event.key === 'ArrowRight') next = current === last ? 0 : current + 1;
+    else if (event.key === 'ArrowLeft') next = current === 0 ? last : current - 1;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = last;
+    else return;
+
+    event.preventDefault();
+    const target = categoryTabs[next];
+    selectCategory(target.dataset.key);
+    target.focus({ preventScroll: true });
+  });
+
+  const settingsVersion = '0.6.0';
+  const releaseNotes = [
+    {
+      version: '0.6.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['烹饪指南 v0.2.0 支持份数换算、分步做法和可连续滑动的烹饪模式。']],
+        ['优化', ['最近页的小组件只提供当前停车和隐藏两个选项。']],
+        ['修复', ['多个标签页保存菜谱时可保留各自的记录，编辑同一菜谱会检测冲突。', '导入支持应用保存并导出的大批量备份。']]
+      ]
+    },
+    {
+      version: '0.5.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['工具新增麻将胡结算 v0.1.0，支持四人轮休、单局和累计输赢、自定义每胡金额，并将历史记录纳入数据备份。']],
+        ['优化', [
+          '模块详情占满应用区域，左上角为圆形返回键，右上角为独立设置入口。',
+          '模块从入口图标展开，返回时缩回图标中心，并恢复目录的滚动位置。'
+        ]],
+        ['修复', ['模块入口按压和进出时保持背景色稳定，退出动画完全淡出以消除图标上的残影。']]
+      ]
+    },
+    {
+      version: '0.4.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', [
+          '模块页可在双列网格和列表之间切换，所选视图在各分类间通用。',
+          '烹饪指南、人物卡片、美食记录、停车备忘和计算器各自提供设置与更新日志，模块版本从 v0.1.0 起记。',
+          '可分别设置菜谱与人物排序、到访备注、停车时间和分摊结果精度。'
+        ]],
+        ['优化', [
+          '模块管理按永久记录、临时记录和工具分组。',
+          '版本日志改为独立的版本卡片页面，补录 v0.1.0 和 v0.2.0 的日期。'
+        ]]
+      ]
+    },
+    {
+      version: '0.3.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', [
+          '设置加入账号、模块管理、偏好设置、数据导入与导出、关于我们和版本日志。',
+          '偏好设置支持选择界面外观和最近页小组件。',
+          '通过 JSON 备份和恢复长期记录与当前车位。'
+        ]],
+        ['优化', ['模块按永久记录、临时记录和工具分类，功能入口放在所属分类内。', '可独立启停模块入口，并保留该模块的已有记录。']]
+      ]
+    },
+    {
+      version: '0.2.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', ['最近页的小组件支持更换内容或隐藏。', '停车备忘支持结束当前车位，并可撤销。']],
+        ['优化', ['界面采用深蓝和冰蓝灰，底部导航设为「最近」「模块」「设置」。']]
+      ]
+    },
+    {
+      version: '0.1.0',
+      date: '2026-11-22',
+      groups: [['新增', ['完成最近记录、当前车位和底部弹层的初版交互原型。']]]
+    }
+  ];
+  const appearanceLabels = { system: '跟随系统', light: '浅色', dark: '深色' };
+  const backupFormat = 'm-app-preview';
+  const backupIdPattern = /^[A-Za-z0-9_-]{1,64}$/;
+  let pendingBackup;
+  let importingBackup = false;
+
+  function showManagedModules(trigger) {
+    const groups = categoryTabs.map((tab) => {
+      const category = tab.dataset.key;
+      const headingId = `m-app-managed-${category}`;
+      const options = moduleCategories[category].map((key) => {
+        const module = modules[key];
+        const enabled = state.enabledModules.includes(key);
+        return optionRow({
+          action: 'toggle-managed-module', key, name: module.label, symbol: module.icon,
+          meta: enabled ? '已添加' : '未添加', selected: enabled
+        });
+      });
+      return `<section class="managed-group" aria-labelledby="${headingId}">
+        <h3 id="${headingId}">${tab.textContent}</h3><div class="rows">${options.join('')}</div>
+      </section>`;
+    });
+    setSheet('模块管理', `<p class="settings-meta">选择在各分类内显示的功能入口。移除入口后，原有记录仍会保留。</p>
+      <div class="managed-groups">${groups.join('')}</div>`, trigger);
+  }
+
+  function renderReleaseCards(notes, currentVersion, prefix) {
+    return notes.map(({ version, date, groups }) => {
+      const headingId = `${prefix}-${version}`;
+      const currentBadge = version === currentVersion ? '<span class="release-current">当前版本</span>' : '';
+      const releaseDate = date
+        ? `<time class="release-date" datetime="${date}">${date}</time>`
+        : '<span class="release-date">日期未记录</span>';
+      const revisions = groups.map(([label, items]) => `<section class="release-group">
+        <h3>${label}</h3><ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>
+      </section>`);
+      return `<article class="release-card" aria-labelledby="${headingId}">
+        <header class="release-header">
+          <div class="release-heading"><h2 id="${headingId}">v${version}</h2>${currentBadge}</div>
+          ${releaseDate}
+        </header>
+        <div class="release-revisions">${revisions.join('')}</div>
+      </article>`;
+    }).join('');
+  }
+
+  function renderChangelog() {
+    root.querySelector('[data-release-list]').innerHTML = renderReleaseCards(releaseNotes, settingsVersion, 'm-app-release');
+  }
+
+  function showChangelog() {
+    setPage('changelog');
+    releaseBack.focus({ preventScroll: true });
+  }
+
+  function backFromChangelog() {
+    setPage('settings');
+    root.querySelector('.settings-row[data-key="changelog"]').focus({ preventScroll: true });
+  }
+
+  function showPreferences(trigger) {
+    const widgetOption = optionRow({
+      action: 'widget-settings', key: 'recent-widget', name: '最近页小组件',
+      meta: '选择固定在上方的内容', symbol: 'layout-grid'
+    });
+    const appearanceOptions = Object.entries(appearanceLabels).map(([key, name]) => optionRow({
+      action: 'settings-appearance', key, name, symbol: { system: 'monitor', light: 'sun', dark: 'moon' }[key],
+      selected: state.appearance === key
+    }));
+    setSheet('偏好设置', `<div class="rows">${widgetOption}</div>
+      <h3 class="settings-meta">界面外观</h3><div class="rows">${appearanceOptions.join('')}</div>`, trigger);
+  }
+
+  function showDataSettings(trigger) {
+    pendingBackup = undefined;
+    const options = [
+      optionRow({ action: 'settings-backup-view', key: 'import', name: '导入数据', meta: '从 JSON 备份恢复记录', symbol: 'upload' }),
+      optionRow({ action: 'settings-backup-view', key: 'export', name: '导出数据', meta: '生成可复制的 JSON 备份', symbol: 'download' })
+    ];
+    setSheet('数据导入／导出', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showBackupImport(trigger, source = '') {
+    pendingBackup = undefined;
+    setSheet('导入数据', `<label class="field">粘贴 M_APP 的 JSON 备份
+      <textarea class="data-text" data-backup-input rows="7" spellcheck="false"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="review-settings-import">检查备份</button>`, trigger);
+    sheetContent.querySelector('[data-backup-input]').value = source;
+  }
+
+  function backupSheetIsOpen(element) {
+    return overlay.dataset.open === 'true' && sheetContent.contains(element);
+  }
+
+  async function showBackupExport(trigger) {
+    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、车位和麻将结算数据。选中后可复制到本地文件。</p>
+      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取最新菜谱…"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="select-settings-backup" disabled>选中全部 JSON</button>`, trigger);
+    const output = sheetContent.querySelector('[data-backup-output]');
+    const copy = sheetContent.querySelector('[data-action="select-settings-backup"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    try {
+      if (importingBackup) throw new Error('正在导入数据，请完成后再导出备份。');
+      await refreshCookingRecords();
+      if (!backupSheetIsOpen(output)) return;
+      output.value = JSON.stringify({
+        format: backupFormat,
+        schema: 1,
+        records: state.records,
+        parking: state.parking,
+        mahjong: state.mahjong
+      }, null, 2);
+      copy.disabled = false;
+    } catch (error) {
+      if (!backupSheetIsOpen(output)) return;
+      message.hidden = false;
+      message.textContent = error.message;
+    } finally {
+      if (backupSheetIsOpen(output)) output.removeAttribute('placeholder');
+    }
+  }
+
+  function backupString(value, field, maxLength, required = false) {
+    if (typeof value !== 'string' || value.length > maxLength || (required && !value.trim())) {
+      throw new Error(`备份中的${field}格式不正确。`);
+    }
+    return value;
+  }
+
+  function parseSettingsBackup(source) {
+    if (!source.trim()) throw new Error('请先粘贴 JSON 备份。');
+    let json;
+    try {
+      json = JSON.parse(source);
+    } catch {
+      throw new Error('没有读到有效的 JSON，请检查备份是否完整。');
+    }
+    if (json?.format !== backupFormat || json.schema !== 1 || !Array.isArray(json.records)) {
+      throw new Error('请选择由这个预览导出的 M_APP 备份。');
+    }
+    const recordIds = new Set();
+    const records = json.records.map((record) => {
+      if (!record || !persistentKinds.includes(record.kind) || typeof record.id !== 'string'
+        || !backupIdPattern.test(record.id) || ['parking', 'none'].includes(record.id) || recordIds.has(record.id)) {
+        throw new Error('备份中的记录类型或编号无效。');
+      }
+      recordIds.add(record.id);
+      const recipe = record.kind === 'cooking' && Object.hasOwn(record, 'recipe')
+        ? cookingModel.normalizeRecipe(record.recipe, { strict: true }) : undefined;
+      return {
+        id: record.id,
+        kind: record.kind,
+        title: backupString(record.title, '标题', 30, true),
+        summary: backupString(record.summary, '摘要', 180),
+        time: backupString(record.time, '时间', 32, true),
+        detail: backupString(record.detail, '内容', 180),
+        ...(recipe && { recipe })
+      };
+    });
+    let parking = null;
+    if (json.parking !== null) {
+      if (!json.parking || typeof json.parking !== 'object' || Array.isArray(json.parking)) {
+        throw new Error('备份中的停车记录格式不正确。');
+      }
+      parking = {
+        place: backupString(json.parking.place, '停车地点', 28, true),
+        area: backupString(json.parking.area, '楼层和区域', 18),
+        number: backupString(json.parking.number, '车位号', 12),
+        time: backupString(json.parking.time, '停车时间', 32, true)
+      };
+    }
+    const mahjong = Object.hasOwn(json, 'mahjong')
+      ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
+      : undefined;
+    return { records, parking, mahjong, source };
+  }
+
+  async function reviewSettingsImport(trigger) {
+    const input = sheetContent.querySelector('[data-backup-input]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    trigger.disabled = true;
+    input.readOnly = true;
+    message.hidden = true;
+    try {
+      if (importingBackup) throw new Error('上一份备份仍在导入，请稍后检查。');
+      const backup = parseSettingsBackup(input.value);
+      await refreshCookingRecords();
+      if (!backupSheetIsOpen(input)) return;
+      backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
+      pendingBackup = backup;
+      const { records, parking, mahjong } = backup;
+      setSheet('确认导入', `<div class="detail settings-detail">
+        <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
+        <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
+        <p class="settings-meta" data-backup-error role="alert" hidden></p>
+        <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
+        <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
+    } catch (error) {
+      if (!backupSheetIsOpen(input)) return;
+      message.hidden = false;
+      message.textContent = error.message;
+    } finally {
+      if (backupSheetIsOpen(input)) {
+        input.readOnly = false;
+        trigger.disabled = false;
+      }
+    }
+  }
+
+  async function applySettingsImport(_, trigger) {
+    if (!pendingBackup || importingBackup) return;
+    const backup = pendingBackup;
+    const { records, parking, mahjong, cookingBase } = backup;
+    const edit = sheetContent.querySelector('[data-action="edit-settings-import"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    importingBackup = true;
+    trigger.disabled = true;
+    trigger.textContent = '正在导入…';
+    edit.disabled = true;
+    message.hidden = true;
+    try {
+      await replaceCookingRecords(records, cookingBase);
+    } catch (error) {
+      if (backupSheetIsOpen(trigger)) {
+        trigger.disabled = false;
+        trigger.textContent = '确认导入';
+        edit.disabled = false;
+        message.hidden = false;
+        message.textContent = error.message;
+        trigger.focus({ preventScroll: true });
+      } else showNotice(error.message);
+      return;
+    } finally {
+      importingBackup = false;
+    }
+    if (pendingBackup === backup) pendingBackup = undefined;
+    state.records = records;
+    state.parking = parking;
+    recentlyCompleted = undefined;
+    drafts.clear();
+    cookingWindow.clearDraft();
+    notice.hidden = true;
+    const previousMahjong = state.mahjong;
+    if (mahjong) state.mahjong = mahjong;
+    const saved = !mahjong || persistMahjong();
+    if (!saved) state.mahjong = previousMahjong;
+    render();
+    const announce = () => showNotice(saved ? '已导入数据' : '记录和车位已导入，麻将数据未保存');
+    if (backupSheetIsOpen(trigger)) closeSheet(announce);
+    else announce();
+  }
+
+  function showSettingsItem(key, trigger) {
+    switch (key) {
+      case 'account':
+        setSheet('我的账号', `<div class="detail settings-detail">
+          <h3>M_APP 预览用户</h3><p>本地示例账号</p></div>`, trigger);
+        break;
+      case 'modules':
+        showManagedModules(trigger);
+        break;
+      case 'preferences':
+        showPreferences(trigger);
+        break;
+      case 'data':
+        showDataSettings(trigger);
+        break;
+      case 'about':
+        setSheet('关于我们', `<div class="detail settings-detail">
+          <h3>M_APP</h3><p>在一处整理菜谱、人物、美食和临时停车记录。</p><p>当前原型版本 v${settingsVersion}</p></div>`, trigger);
+        break;
+      case 'changelog':
+        showChangelog();
+        break;
+    }
+  }
+
+  const settingsActions = {
+    'settings-item': showSettingsItem,
+    'back-from-changelog': backFromChangelog,
+    'toggle-managed-module': (key, button) => {
+      const scrollTop = sheet.scrollTop;
+      toggleManagedModule(key);
+      showManagedModules(button);
+      sheet.scrollTop = scrollTop;
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-appearance': (key, button) => {
+      state.appearance = key;
+      applyAppearance();
+      showPreferences(button);
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-backup-view': (key, button) => {
+      if (key === 'import') showBackupImport(button);
+      else showBackupExport(button);
+    },
+    'select-settings-backup': () => {
+      const output = sheetContent.querySelector('[data-backup-output]');
+      output.focus();
+      output.select();
+    },
+    'review-settings-import': (_, button) => reviewSettingsImport(button),
+    'edit-settings-import': (_, button) => showBackupImport(button, pendingBackup?.source),
+    'apply-settings-import': applySettingsImport
+  };
+
+  const actions = {
+    ...moduleActions,
+    ...settingsActions,
+    'widget-settings': (_, button) => showWidgetSettings(button),
+    'set-widget': (key) => {
+      if (!widgetChoices.some((option) => option.key === key)) return;
+      state.widget = key;
+      render();
+      closeSheet(() => showNotice(key === 'none' ? '小组件已隐藏' : '小组件已更新'));
+    },
+    add: (_, button) => showAdd(button),
+    create: showCreate,
+    record: showRecord,
+    save: (_, button) => save(button.closest('[data-create]')),
+    'complete-parking': () => {
+      if (!state.parking) return;
+      recentlyCompleted = state.parking;
+      state.parking = null;
+      drafts.delete('parking');
+      render();
+      if (overlay.dataset.open === 'true') closeSheet(() => showNotice('停车记录已结束', true));
+      else {
+        modulePane.querySelector('[data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
+        showNotice('停车记录已结束', true);
+      }
+    },
+    'undo-parking': () => {
+      if (state.parking || !recentlyCompleted) return;
+      state.parking = recentlyCompleted;
+      recentlyCompleted = undefined;
+      render();
+      const pageControl = state.page === 'changelog' ? releaseBack
+        : state.page === 'modules' && state.module ? moduleBack : tabs.find((tab) => tab.dataset.tab === state.page);
+      pageControl.focus({ preventScroll: true });
+      showNotice('停车记录已恢复');
+    }
+  };
+
+  root.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (button?.dataset.tab) setPage(button.dataset.tab);
+    if (button === handle && draggedHandle && event.detail !== 0) return;
+    if (button?.hasAttribute('data-close-sheet') || event.target === overlay) closeSheet();
+    if (button?.dataset.action) actions[button.dataset.action]?.(button.dataset.key, button);
+  });
+
+  root.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !overlay.hidden || event.defaultPrevented) return;
+    if (state.page === 'changelog') {
+      event.preventDefault();
+      backFromChangelog();
+    } else if (state.page === 'modules' && state.module) {
+      event.preventDefault();
+      if (state.moduleScreen === 'content') backToModuleCategory();
+      else backInModule();
+    }
+  });
+
+  root.addEventListener('input', (event) => {
+    const form = event.target.closest('form');
+    if (!form) return;
+    if (form.dataset.create) drafts.set(form.dataset.create, new FormData(form));
+    if (form.hasAttribute('data-calculator')) updateCalculatorResult(form);
+  });
+  root.addEventListener('submit', (event) => event.preventDefault());
+
+  overlay.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeSheet();
+    }
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT' && !event.isComposing) {
+      const form = event.target.closest('[data-create]');
+      if (form) {
+        event.preventDefault();
+        save(form);
+      }
+    }
+    if (event.key !== 'Tab') return;
+    const controls = [...sheet.querySelectorAll('button, input, textarea')].filter((element) => element.getClientRects().length);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  handle.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    draggedHandle = false;
+    dragStart = event.clientY;
+    sheet.dataset.dragging = 'true';
+    handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    if (Math.abs(distance) > 6) draggedHandle = true;
+    if (!reducedMotion.matches) sheet.style.setProperty('--drag', `${Math.max(0, distance)}px`);
+  });
+  function finishDrag(event) {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    dragStart = undefined;
+    sheet.dataset.dragging = 'false';
+    if (event.type === 'pointerup' && distance > 54) closeSheet();
+    else sheet.style.removeProperty('--drag');
+  }
+  handle.addEventListener('pointerup', finishDrag);
+  handle.addEventListener('pointercancel', finishDrag);
+
+  setPage(state.page);
+  applyAppearance();
+  root.querySelector('[data-app-version]').textContent = `v${settingsVersion}`;
+  renderChangelog();
+  render();
+  const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
+  cookingUpdates?.addEventListener('message', syncCookingRecords);
+  window.addEventListener('focus', syncCookingRecords);
+  syncCookingRecords();
+})();
+</script>
