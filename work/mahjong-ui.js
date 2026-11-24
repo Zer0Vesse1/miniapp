@@ -72,6 +72,14 @@
     const historyHeading = view.querySelector('#m-app-mahjong-history');
     const clear = view.querySelector('[data-mahjong-clear]');
     const status = view.querySelector('[data-mahjong-status]');
+    let latestSave = Promise.resolve();
+    const submit = form.querySelector('[type="submit"]');
+
+    function save(changes) {
+      const pending = latestSave.then(() => onChange({ ...model, ...changes() }));
+      latestSave = pending.catch(() => false);
+      return pending;
+    }
 
     function showNames() {
       for (const element of view.querySelectorAll('[data-player-name]')) {
@@ -118,11 +126,11 @@
     for (const player of PLAYERS) {
       const name = view.querySelector(`[name="name-${player}"]`);
       name.value = model.playerNames[player];
-      name.addEventListener('change', () => {
-        model.playerNames[player] = name.value.trim() || model.playerNames[player];
+      name.addEventListener('change', async () => {
+        const value = name.value.trim() || model.playerNames[player];
+        if (value !== model.playerNames[player]) await save(() => ({ playerNames: { ...model.playerNames, [player]: value } }));
         name.value = model.playerNames[player];
         showNames();
-        onChange();
       });
       form.elements[player].addEventListener('input', (event) => {
         scores[player] = event.target.value;
@@ -130,49 +138,50 @@
       });
     }
 
-    form.addEventListener('change', (event) => {
+    form.addEventListener('change', async (event) => {
       if (event.target.name !== 'resting') return;
-      model.resting = event.target.value;
-      delete scores[model.resting];
+      const resting = event.target.value;
+      if (await save(() => ({ resting }))) delete scores[model.resting];
       showResting();
       error.hidden = true;
-      onChange();
     });
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      let round;
+      if (submit.disabled) return;
+      submit.disabled = true;
+      let saved;
       try {
-        round = createRound(scores, model.resting);
+        const input = { ...scores };
+        saved = await save(() => ({ rounds: [...model.rounds, createRound(input, model.resting)] }));
       } catch (failure) {
         error.textContent = failure.message;
         error.hidden = false;
         return;
+      } finally {
+        submit.disabled = false;
       }
-      model.rounds.push(round);
+      if (!saved) return;
       for (const player of PLAYERS) delete scores[player];
       error.hidden = true;
       showResting();
       showResults();
-      onChange();
       status.textContent = `已记录第 ${model.rounds.length} 局`;
       form.elements[PLAYERS.find((player) => player !== model.resting)].focus({ preventScroll: true });
     });
-    history.addEventListener('click', (event) => {
+    history.addEventListener('click', async (event) => {
       const button = event.target.closest('[data-remove-round]');
       if (!button) return;
-      const index = Number(button.dataset.removeRound);
-      model.rounds.splice(index, 1);
+      const round = model.rounds[Number(button.dataset.removeRound)];
+      if (!await save(() => ({ rounds: model.rounds.filter((entry) => entry !== round) }))) return;
       showResults();
-      onChange();
       status.textContent = '已删除该局记录';
-      const next = history.querySelector(`[data-remove-round="${Math.min(index, model.rounds.length - 1)}"]`);
+      const next = history.querySelector(`[data-remove-round="${Math.min(Number(button.dataset.removeRound), model.rounds.length - 1)}"]`);
       (next || historyHeading).focus({ preventScroll: true });
     });
-    clear.addEventListener('click', () => {
+    clear.addEventListener('click', async () => {
       if (!confirm('确定清除全部麻将对局记录？')) return;
-      model.rounds.length = 0;
+      if (!await save(() => ({ rounds: [] }))) return;
       showResults();
-      onChange();
       status.textContent = '已清除全部对局记录';
       historyHeading.focus({ preventScroll: true });
     });

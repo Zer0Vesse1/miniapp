@@ -846,6 +846,7 @@
 <script src="./cooking-ui.js" data-demo-cover="../public/scallion-noodles.jpg"></script>
 <script src="./people.js"></script>
 <script src="./people-ui.js"></script>
+<script src="./cloud-store.js"></script>
 <script>
   (() => {
     if (!globalThis.Tweak) return;
@@ -888,7 +889,9 @@
   const cookingModule = globalThis.CookingModule;
   const legacyCookingStorageKey = 'm-app-cooking-v1';
   const peopleModel = globalThis.PeopleCards;
-  const peopleStore = peopleModel.readStore();
+  const cloud = document.documentElement.hasAttribute('data-m-app-cloud')
+    ? globalThis.MAppCloud.createStore(applyCloudRecords) : null;
+  const peopleStore = cloud ? null : peopleModel.readStore();
   const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
   const modules = {
     cooking: { label: '烹饪指南', item: '菜谱', icon: 'cooking-module' },
@@ -915,17 +918,18 @@
     enabledModules: Object.keys(modules),
     appearance: 'system',
     widget: 'parking',
-    mahjong: loadMahjong(),
-    parking: { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
-    records: [
+    mahjong: cloud ? mahjongCalculator.normalizeState() : loadMahjong(),
+    parking: cloud ? null : { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
+    records: cloud ? [] : [
       ...loadLegacyCooking(),
       ...(peopleStore?.records ?? [{ id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。',
         person: peopleModel.normalizePerson({ birthday: '--05-18', relationships: ['朋友'], notes: '喜欢手冲咖啡。' }) }]),
       { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
     ]
   };
-  const cookingStore = globalThis.CookingStore.createStore(state.records.filter((record) => record.kind === 'cooking'));
-  const cookingUpdates = typeof BroadcastChannel === 'function' ? new BroadcastChannel('m-app-cooking-updates') : null;
+  let cookingStore = cloud ? null : globalThis.CookingStore.createStore(loadLegacyCooking());
+  const cookingUpdates = !cloud && typeof BroadcastChannel === 'function' ? new BroadcastChannel('m-app-cooking-updates') : null;
+  const cookingPanel = root.querySelector('[data-cooking-window]');
   const drafts = new Map();
   const scrollPositions = new Map();
   let nextId = 1;
@@ -943,7 +947,7 @@
   };
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
-  const cookingWindow = cookingModule.createWindow(root.querySelector('[data-cooking-window]'), shell, saveRecipe, replacementFocus);
+  const cookingWindow = cookingModule.createWindow(cookingPanel, shell, saveRecipe, replacementFocus);
   const peopleView = globalThis.PeopleCardView.create({
     setSheet, sheetContent, closeSheet, showNotice, savePerson, savePeopleSettings,
     icon, findRecord, getSettings: () => state.peopleSettings, isOpen: () => overlay.dataset.open === 'true'
@@ -983,6 +987,48 @@
 
   async function refreshCookingRecords() {
     useCookingRecords(await cookingStore.read());
+  }
+
+  function replaceRecordKind(kind, records) {
+    const previousIds = new Set(state.records.filter((record) => record.kind === kind).map((record) => record.id));
+    const incoming = new Map(records.map((record) => [record.id, record]));
+    const additions = records.filter((record) => !previousIds.has(record.id));
+    state.records = [...additions, ...state.records.flatMap((record) =>
+      record.kind === kind ? incoming.has(record.id) ? [incoming.get(record.id)] : [] : [record]
+    )];
+  }
+
+  function applyCloudRecords(scopes) {
+    if (scopes.cooking) replaceRecordKind('cooking', scopes.cooking.data);
+    if (scopes.food) replaceRecordKind('food', scopes.food.data);
+    if (scopes.people) {
+      const { records, settings, sort } = scopes.people.data;
+      replaceRecordKind('people', records);
+      state.peopleSettings = settings;
+      state.peopleSort = sort;
+    }
+    if (scopes.parking) {
+      state.parking = scopes.parking.data;
+      recentlyCompleted = undefined;
+    }
+    if (scopes.mahjong) Object.assign(state.mahjong, mahjongCalculator.normalizeState(scopes.mahjong.data));
+    render();
+  }
+
+  function cloudReadyForEdit() {
+    if (!cloud || cloud.loaded) return true;
+    cloud.refresh().catch((error) => showNotice(error.message));
+    showNotice('正在读取云端记录，请稍候再试');
+    return false;
+  }
+
+  function refreshWhenAvailable() {
+    if (!cloud || document.hidden || !overlay.hidden || !cookingPanel.hidden) return;
+    const active = document.activeElement;
+    if (state.module === 'mahjong' && !modulePane.hidden
+      && (modulePane.contains(active) && active.matches('input, select, textarea'))) return;
+    if (state.module === 'people' && state.moduleScreen === 'settings') return;
+    cloud.refresh().catch((error) => { if (!cloud.loaded) showNotice(error.message); });
   }
 
   async function replaceCookingRecords(records, expectedRecipes) {
@@ -1028,7 +1074,13 @@
     }
   }
 
-  function changePeople(makeChanges) {
+  async function changePeople(makeChanges) {
+    if (cloud) {
+      const next = makeChanges(peopleSnapshot());
+      await cloud.save('people', next);
+      updatePeopleRecords(next);
+      return next;
+    }
     return peopleModel.withStoreLock(() => {
       const next = makeChanges(peopleModel.readStore() ?? peopleSnapshot());
       writePeopleStore(next);
@@ -1048,7 +1100,8 @@
       saved = {
         id: previous?.id ?? `person-${crypto.randomUUID()}`, kind: 'people', title,
         time: previous?.time ?? timeNow(), person, summary: personSummary(person, bundle.settings),
-        detail: person.notes.slice(0, peopleModel.limits.summary)
+        detail: person.notes.slice(0, peopleModel.limits.summary),
+        ...cloudRecordTime(previous)
       };
       const records = previous ? bundle.records.map((record) => record.id === previous.id ? saved : record)
         : [saved, ...bundle.records];
@@ -1075,9 +1128,20 @@
 
   async function saveRecipe({ title, summary, durationMinutes, recipe }, previous) {
     const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary, durationMinutes,
-      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe };
-    useCookingRecords(await cookingStore.save(record, previous));
-    cookingUpdates?.postMessage('changed');
+      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe, ...cloudRecordTime(previous) };
+    if (cloud) {
+      const recipes = state.records.filter((item) => item.kind === 'cooking');
+      const current = previous && recipes.find((item) => item.id === previous.id);
+      if (previous && JSON.stringify(current) !== JSON.stringify(previous)) {
+        throw new Error('这份菜谱已更新。请保留当前输入，重新打开菜谱后再编辑。');
+      }
+      const next = previous ? recipes.map((item) => item.id === previous.id ? record : item) : [record, ...recipes];
+      await cloud.save('cooking', next);
+      useCookingRecords(next);
+    } else {
+      useCookingRecords(await cookingStore.save(record, previous));
+      cookingUpdates?.postMessage('changed');
+    }
     showNotice('菜谱已保存');
     return record;
   }
@@ -1091,18 +1155,25 @@
     }
   }
 
-  function persistMahjong() {
+  async function persistMahjong(next = state.mahjong) {
     try {
-      localStorage.setItem(mahjongStorageKey, JSON.stringify(state.mahjong));
+      if (cloud) await cloud.save('mahjong', next);
+      else localStorage.setItem(mahjongStorageKey, JSON.stringify(next));
+      Object.assign(state.mahjong, next);
       return true;
-    } catch {
-      showNotice('麻将数据未能保存到此浏览器');
+    } catch (error) {
+      showNotice(cloud ? error.message : '麻将数据未能保存到此浏览器');
       return false;
     }
   }
 
   function updateIcons() {
     globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
+  }
+
+  function cloudRecordTime(previous) {
+    const createdAt = previous ? previous.createdAt : cloud ? Date.now() : undefined;
+    return createdAt ? { createdAt } : {};
   }
 
   function syncHeader() {
@@ -1204,7 +1275,8 @@
   }
 
   function renderRecent() {
-    const rows = state.records.map((record) => recordRow(record));
+    const records = cloud ? state.records.toSorted((left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0)) : state.records;
+    const rows = records.map((record) => recordRow(record));
     if (state.parking && state.widget !== 'parking') {
       rows.unshift(recordRow({ id: 'parking', kind: 'parking', title: parkingTitle(state.parking), summary: state.parking.place, time: state.parking.time }));
     }
@@ -1293,6 +1365,14 @@
     noticeTimer = setTimeout(() => { notice.hidden = true; }, canUndo ? 5200 : 2300);
   }
 
+  function showSheetError(trigger, error) {
+    const message = sheetContent.querySelector('[data-cloud-error]');
+    if (message && backupSheetIsOpen(trigger)) {
+      message.textContent = error.message;
+      message.hidden = false;
+    } else showNotice(error.message);
+  }
+
   function optionRow({ action, key, name, meta, symbol, selected }) {
     const marker = selected === undefined ? icon('chevron-right') : selected ? icon('check') : '';
     const pressed = selected === undefined ? '' : ` aria-pressed="${selected}"`;
@@ -1316,6 +1396,7 @@
   }
 
   function showCreate(kind, trigger) {
+    if (!cloudReadyForEdit()) return;
     if (kind === 'people') {
       peopleView.showEditor(null, trigger);
       return;
@@ -1335,9 +1416,11 @@
       : `<label class="field">${module.field}<input name="title" maxlength="30" required></label><label class="field">${module.note}<textarea name="note" rows="2" maxlength="180"></textarea></label>`;
     const label = updatingParking ? '更新车位' : parking ? '记录停车' : `新增${module.item}`;
     setSheet(label, `<form class="form" data-create="${kind}">
-      ${fields}<button class="primary cursor-interaction" type="button" data-action="save">${parking ? '保存车位' : '保存记录'}</button></form>`, trigger);
+      ${fields}<p class="settings-meta" data-cloud-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="save">${parking ? '保存车位' : '保存记录'}</button></form>`, trigger);
     const draft = drafts.get(kind) || (updatingParking && Object.entries(updatingParking).filter(([name]) => name !== 'time'));
     const form = sheetContent.querySelector('form');
+    if (cloud && parking) form.dataset.cloudRevision = String(cloud.revision('parking'));
     if (draft) for (const [name, value] of draft) form.elements.namedItem(name).value = value;
   }
 
@@ -1348,10 +1431,11 @@
         return;
       }
       setSheet('当前停车', `<div class="detail">
-        <strong class="detail-value"></strong><p></p>
+        <strong class="detail-value"></strong><p></p><p class="settings-meta" data-cloud-error role="alert" hidden></p>
         <button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button></div>`, trigger);
       sheetContent.querySelector('strong').textContent = parkingTitle(state.parking);
       sheetContent.querySelector('p').textContent = `今天 ${state.parking.time} · ${state.parking.place}`;
+      if (cloud) sheetContent.querySelector('[data-action="complete-parking"]').dataset.cloudRevision = String(cloud.revision('parking'));
       return;
     }
     const record = findRecord(key);
@@ -1368,24 +1452,42 @@
     sheetContent.querySelector('p').textContent = record.detail || record.summary;
   }
 
-  function save(form) {
-    if (overlay.dataset.open !== 'true') return;
+  async function save(form) {
+    if (!form || overlay.dataset.open !== 'true') return;
+    const button = form.querySelector('[data-action="save"]');
+    if (button.disabled) return;
     const required = form.querySelector('input[required]');
     required.value = required.value.trim();
     if (!form.reportValidity()) return;
     const values = new FormData(form);
     const kind = form.dataset.create;
-    if (kind === 'parking') {
-      recentlyCompleted = undefined;
-      state.parking = { place: values.get('place'), area: values.get('area').trim(), number: values.get('number').trim(), time: timeNow() };
-    } else {
-      const detail = values.get('note').trim();
-      const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
-      state.records.unshift({ id: nextRecordId(), kind, title: values.get('title'), summary, detail, time: timeNow() });
+    button.disabled = true;
+    form.querySelector('[data-cloud-error]').hidden = true;
+    try {
+      if (kind === 'parking') {
+        const next = { place: values.get('place'), area: values.get('area').trim(), number: values.get('number').trim(), time: timeNow() };
+        if (cloud) await cloud.save('parking', next, Number(form.dataset.cloudRevision));
+        state.parking = next;
+        recentlyCompleted = undefined;
+      } else {
+        const detail = values.get('note').trim();
+        const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
+        const record = { id: cloud ? `food-${crypto.randomUUID()}` : nextRecordId(), kind, title: values.get('title'), summary, detail,
+          time: timeNow(), ...cloudRecordTime() };
+        if (cloud) await cloud.save('food', [record, ...state.records.filter((item) => item.kind === 'food')]);
+        state.records.unshift(record);
+      }
+    } catch (error) {
+      showSheetError(form, error);
+      return;
+    } finally {
+      button.disabled = false;
     }
     drafts.delete(kind);
     render();
-    closeSheet(() => showNotice(kind === 'parking' ? '车位已保存' : '记录已保存'));
+    const announce = () => showNotice(kind === 'parking' ? '车位已保存' : '记录已保存');
+    if (backupSheetIsOpen(form)) closeSheet(announce);
+    else announce();
   }
 
   const moduleTabs = root.querySelector('[data-module-tabs]');
@@ -1686,8 +1788,7 @@
     if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
     const module = state.module;
     if (state.module === 'mahjong') {
-      state.mahjong.colorMode = key;
-      persistMahjong();
+      if (!await persistMahjong({ ...state.mahjong, colorMode: key })) return;
     } else if (module === 'people') {
       try {
         await changePeople((bundle) => ({ ...bundle, sort: key }));
@@ -1855,7 +1956,7 @@
       const input = form.elements.rate;
       input.value = state.mahjong.rate;
       input.addEventListener('input', () => input.setCustomValidity(''));
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const rate = mahjongCalculator.parseRate(input.value);
         if (rate === null) {
@@ -1863,9 +1964,10 @@
           input.reportValidity();
           return;
         }
-        state.mahjong.rate = rate;
-        input.value = rate;
-        if (persistMahjong()) showNotice('已保存每胡金额');
+        if (await persistMahjong({ ...state.mahjong, rate })) {
+          input.value = rate;
+          showNotice('已保存每胡金额');
+        }
       });
     }
   }
@@ -2090,6 +2192,8 @@
       optionRow({ action: 'settings-backup-view', key: 'import', name: '导入数据', meta: '从 JSON 备份恢复记录', symbol: 'upload' }),
       optionRow({ action: 'settings-backup-view', key: 'export', name: '导出数据', meta: '生成可复制的 JSON 备份', symbol: 'download' })
     ];
+    if (cloud) options.push(optionRow({ action: 'settings-backup-view', key: 'local', name: '导出此浏览器的旧记录',
+      meta: '迁移启用云端前保存的菜谱、人物卡片和麻将记录', symbol: 'monitor-down' }));
     setSheet('数据导入／导出', `<div class="rows">${options.join('')}</div>`, trigger);
   }
 
@@ -2106,9 +2210,11 @@
     return overlay.dataset.open === 'true' && sheetContent.contains(element);
   }
 
-  async function showBackupExport(trigger) {
-    setSheet('导出数据', `<p class="settings-meta">备份包含长期记录、人物属性设置、车位和麻将结算数据。选中后可复制到本地文件。</p>
-      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取最新菜谱…"></textarea></label>
+  async function showBackupExport(trigger, local = false) {
+    const description = local ? '备份包含这个浏览器已保存的菜谱、人物卡片和麻将记录。'
+      : '备份包含长期记录、人物属性设置、车位和麻将结算数据。';
+    setSheet(local ? '导出旧记录' : '导出数据', `<p class="settings-meta">${description}选中后可复制到本地文件。</p>
+      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取记录…"></textarea></label>
       <p class="settings-meta" data-backup-error role="alert" hidden></p>
       <button class="primary cursor-interaction" type="button" data-action="select-settings-backup" disabled>选中全部 JSON</button>`, trigger);
     const output = sheetContent.querySelector('[data-backup-output]');
@@ -2116,21 +2222,31 @@
     const message = sheetContent.querySelector('[data-backup-error]');
     try {
       if (importingBackup) throw new Error('正在导入数据，请完成后再导出备份。');
-      await refreshCookingRecords();
-      await peopleModel.withStoreLock(() => {
-        const bundle = peopleModel.readStore();
-        if (bundle) updatePeopleRecords(bundle);
-      });
+      let data;
+      if (local) {
+        cookingStore ??= globalThis.CookingStore.createStore(loadLegacyCooking());
+        const recipes = await cookingStore.read();
+        const people = peopleModel.readStore();
+        data = {
+          records: [...recipes, ...(people?.records ?? [])], peopleSettings: people?.settings, peopleSort: people?.sort,
+          parking: null, mahjong: loadMahjong()
+        };
+      } else {
+        if (cloud) await cloud.refresh();
+        else {
+          await refreshCookingRecords();
+          await peopleModel.withStoreLock(() => {
+            const bundle = peopleModel.readStore();
+            if (bundle) updatePeopleRecords(bundle);
+          });
+        }
+        data = {
+          records: state.records, peopleSettings: state.peopleSettings, peopleSort: state.peopleSort,
+          parking: state.parking, mahjong: state.mahjong
+        };
+      }
       if (!backupSheetIsOpen(output)) return;
-      output.value = JSON.stringify({
-        format: backupFormat,
-        schema: 1,
-        records: state.records,
-        peopleSettings: state.peopleSettings,
-        peopleSort: state.peopleSort,
-        parking: state.parking,
-        mahjong: state.mahjong
-      }, null, 2);
+      output.value = JSON.stringify({ format: backupFormat, schema: 1, ...data }, null, 2);
       copy.disabled = false;
     } catch (error) {
       if (!backupSheetIsOpen(output)) return;
@@ -2182,7 +2298,8 @@
         detail: backupString(record.detail, '内容', 180),
         ...duration,
         ...(recipe && { recipe }),
-        ...(person && { person })
+        ...(person && { person }),
+        ...(Number.isSafeInteger(record.createdAt) && record.createdAt > 0 && { createdAt: record.createdAt })
       };
     });
     let parking = null;
@@ -2217,15 +2334,20 @@
     try {
       if (importingBackup) throw new Error('上一份备份仍在导入，请稍后检查。');
       const backup = parseSettingsBackup(input.value);
-      await refreshCookingRecords();
+      if (cloud) {
+        await cloud.refresh();
+        backup.cloudRevisions = cloud.revisions();
+      } else {
+        await refreshCookingRecords();
+        backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
+        backup.peopleBase = peopleModel.readStore() ?? peopleSnapshot();
+      }
       if (!backupSheetIsOpen(input)) return;
-      backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
-      backup.peopleBase = peopleModel.readStore() ?? peopleSnapshot();
       pendingBackup = backup;
       const { records, parking, mahjong } = backup;
       setSheet('确认导入', `<div class="detail settings-detail">
         <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
-        <p>确认后，备份将替换当前预览中的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
+        <p>确认后，备份将替换${cloud ? '云端' : '当前预览中'}的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
         <p class="settings-meta" data-backup-error role="alert" hidden></p>
         <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
         <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
@@ -2253,7 +2375,16 @@
     edit.disabled = true;
     message.hidden = true;
     try {
-      await peopleModel.withStoreLock(async () => {
+      if (cloud) {
+        const people = { records: records.filter((record) => record.kind === 'people'),
+          settings: peopleSettings ?? state.peopleSettings, sort: peopleSort ?? state.peopleSort };
+        await cloud.replace({
+          people, parking, cooking: records.filter((record) => record.kind === 'cooking'),
+          food: records.filter((record) => record.kind === 'food'), ...(mahjong && { mahjong })
+        }, backup.cloudRevisions);
+        state.peopleSettings = people.settings;
+        state.peopleSort = people.sort;
+      } else await peopleModel.withStoreLock(async () => {
         const stored = peopleModel.readStore();
         const previous = stored ?? peopleSnapshot();
         if (JSON.stringify(previous) !== JSON.stringify(peopleBase)) {
@@ -2296,10 +2427,8 @@
     cookingWindow.clearDraft();
     peopleView.clearDrafts();
     notice.hidden = true;
-    const previousMahjong = state.mahjong;
-    if (mahjong) state.mahjong = mahjong;
-    const saved = !mahjong || persistMahjong();
-    if (!saved) state.mahjong = previousMahjong;
+    if (cloud && mahjong) Object.assign(state.mahjong, mahjong);
+    const saved = !mahjong || cloud || await persistMahjong(mahjong);
     render();
     const announce = () => showNotice(saved ? '已导入数据' : '记录和车位已导入，麻将数据未保存');
     if (backupSheetIsOpen(trigger)) closeSheet(announce);
@@ -2309,8 +2438,15 @@
   function showSettingsItem(key, trigger) {
     switch (key) {
       case 'account':
-        setSheet('我的账号', `<div class="detail settings-detail">
-          <h3>M_APP 预览用户</h3><p>本地示例账号</p></div>`, trigger);
+        if (cloud) {
+          setSheet('访问与同步', `<div class="rows">
+            ${optionRow({ action: 'sync-cloud', name: '立即同步', meta: '读取其他设备在云端保存的记录', symbol: 'refresh-cw' })}
+            ${optionRow({ action: 'logout', name: '退出登录', symbol: 'log-out' })}
+            <p class="settings-meta" data-cloud-error role="alert" hidden></p></div>`, trigger);
+        } else {
+          setSheet('我的账号', `<div class="detail settings-detail">
+            <h3>M_APP 预览用户</h3><p>本地示例账号</p></div>`, trigger);
+        }
         break;
       case 'modules':
         showManagedModules(trigger);
@@ -2349,7 +2485,19 @@
     },
     'settings-backup-view': (key, button) => {
       if (key === 'import') showBackupImport(button);
-      else showBackupExport(button);
+      else showBackupExport(button, key === 'local');
+    },
+    'sync-cloud': async (_, button) => {
+      try {
+        await cloud.refresh();
+        closeSheet(() => showNotice('已读取最新云端记录'));
+      } catch (error) { showSheetError(button, error); }
+    },
+    logout: async (_, button) => {
+      try {
+        await cloud.logout();
+        location.reload();
+      } catch (error) { showSheetError(button, error); }
     },
     'select-settings-backup': () => {
       const output = sheetContent.querySelector('[data-backup-output]');
@@ -2375,21 +2523,35 @@
     create: showCreate,
     record: showRecord,
     save: (_, button) => save(button.closest('[data-create]')),
-    'complete-parking': () => {
+    'complete-parking': async (_, button) => {
       if (!state.parking) return;
-      recentlyCompleted = state.parking;
+      const current = state.parking;
+      try {
+        if (cloud) await cloud.save('parking', null, Number(button.dataset.cloudRevision ?? cloud.revision('parking')));
+      } catch (error) {
+        showSheetError(button, error);
+        return;
+      }
+      recentlyCompleted = current;
       state.parking = null;
       drafts.delete('parking');
       render();
-      if (overlay.dataset.open === 'true') closeSheet(() => showNotice('停车记录已结束', true));
+      if (backupSheetIsOpen(button)) closeSheet(() => showNotice('停车记录已结束', true));
       else {
         modulePane.querySelector('[data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
         showNotice('停车记录已结束', true);
       }
     },
-    'undo-parking': () => {
+    'undo-parking': async () => {
       if (state.parking || !recentlyCompleted) return;
-      state.parking = recentlyCompleted;
+      const previous = recentlyCompleted;
+      try {
+        if (cloud) await cloud.save('parking', previous);
+      } catch (error) {
+        showNotice(error.message);
+        return;
+      }
+      state.parking = previous;
       recentlyCompleted = undefined;
       render();
       const pageControl = state.page === 'changelog' ? releaseBack
@@ -2483,16 +2645,24 @@
   root.querySelector('[data-app-version]').textContent = `v${settingsVersion}`;
   renderChangelog();
   render();
-  const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
-  cookingUpdates?.addEventListener('message', syncCookingRecords);
-  window.addEventListener('focus', syncCookingRecords);
-  window.addEventListener('storage', (event) => {
-    if (event.key !== peopleModel.storageKey) return;
-    peopleModel.withStoreLock(() => {
-      const bundle = peopleModel.readStore();
-      if (bundle) updatePeopleRecords(bundle);
-    }).catch(() => {});
-  });
-  syncCookingRecords();
+  if (cloud) {
+    window.addEventListener('focus', refreshWhenAvailable);
+    window.addEventListener('pageshow', refreshWhenAvailable);
+    document.addEventListener('visibilitychange', refreshWhenAvailable);
+    refreshWhenAvailable();
+    root.querySelector('[data-key="account"] .record-name').textContent = '访问与同步';
+  } else {
+    const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
+    cookingUpdates?.addEventListener('message', syncCookingRecords);
+    window.addEventListener('focus', syncCookingRecords);
+    window.addEventListener('storage', (event) => {
+      if (event.key !== peopleModel.storageKey) return;
+      peopleModel.withStoreLock(() => {
+        const bundle = peopleModel.readStore();
+        if (bundle) updatePeopleRecords(bundle);
+      }).catch(() => {});
+    });
+    syncCookingRecords();
+  }
 })();
 </script>
