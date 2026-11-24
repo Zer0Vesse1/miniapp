@@ -1,6 +1,6 @@
 import {
   authIsConfigured, clearSession, consumeLoginAttempt, createSession,
-  hasSession, passwordMatches, readPassword, resetLoginAttempts
+  hasSession, passwordMatches, readPassword, resetLoginAttempts, usesCustomPassword
 } from '../server/auth.js';
 import { loginPage } from '../server/login-page.js';
 
@@ -13,12 +13,13 @@ function error(status, message, headers) {
 }
 
 async function login(request, env, origin) {
+  const custom = usesCustomPassword(env);
   const password = await readPassword(request);
-  if (password === null) return loginPage(400, 'invalidRequest');
+  if (password === null) return loginPage(400, 'invalidRequest', { custom });
   const attempt = await consumeLoginAttempt(request, env);
-  if (attempt.retryAfter) return loginPage(429, 'retryLater', { 'Retry-After': String(attempt.retryAfter) });
-  if (!await passwordMatches(env, password)) return loginPage(401, 'wrongPassword');
-  await resetLoginAttempts(env, attempt.scope);
+  if (attempt.retryAfter) return loginPage(429, 'retryLater', { custom, headers: { 'Retry-After': String(attempt.retryAfter) } });
+  if (!await passwordMatches(env, password)) return loginPage(401, 'wrongPassword', { custom });
+  await resetLoginAttempts(env, attempt.scopes);
   return new Response(null, {
     status: 303,
     headers: { Location: '/', 'Set-Cookie': await createSession(env, origin) }
@@ -42,7 +43,7 @@ async function authorize(context) {
       ? error(503, '网站访问暂时不可用。') : loginPage(503, 'unavailable');
   }
   if (!navigation && request.headers.get('Origin') !== origin) {
-    return path === loginPath ? loginPage(403, 'invalidRequest') : error(403, '请求来源无效。');
+    return path === loginPath ? loginPage(403, 'invalidRequest', { custom: usesCustomPassword(env) }) : error(403, '请求来源无效。');
   }
   if (path === loginPath || path === logoutPath) {
     if (request.method !== 'POST') return error(405, '不支持此请求方式。', { Allow: 'POST' });
@@ -51,7 +52,7 @@ async function authorize(context) {
   }
   if (!await hasSession(request, env, origin)) {
     if (api) return error(401, '请先输入网站访问密码。');
-    return loginPage(401);
+    return loginPage(401, undefined, { custom: usesCustomPassword(env) });
   }
 
   const response = await context.next();

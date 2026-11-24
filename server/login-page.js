@@ -1,3 +1,5 @@
+import { maxCustomPasswordLength } from './auth.js';
+
 const messages = {
   wrongPassword: '密码有误，请重新输入。',
   retryLater: '尝试次数过多，请稍后再试。',
@@ -5,10 +7,11 @@ const messages = {
   invalidRequest: '无法处理此请求，请在当前站点重新输入密码。'
 };
 
-export function loginPage(status, message, additionalHeaders = {}) {
+export function loginPage(status, message, { headers = {}, custom = false } = {}) {
   const notice = messages[message];
   const hint = notice ? `<p id="login-message" role="alert">${notice}</p>` : '';
   const passwordAttributes = notice ? ' aria-describedby="login-message"' : '';
+  const passwordLength = custom ? maxCustomPasswordLength : 43;
   return new Response(`<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -35,7 +38,7 @@ export function loginPage(status, message, additionalHeaders = {}) {
     <h1>访问 M_APP</h1>
     <form action="/api/auth/login" method="post">
       <label for="site-password">网站访问密码</label>
-      <input id="site-password" name="password" type="password" autocomplete="current-password" maxlength="43" required${passwordAttributes}>
+      <input id="site-password" name="password" type="password" autocomplete="current-password" maxlength="${passwordLength}" required${passwordAttributes}>
       ${hint}
       <button type="submit">进入</button>
     </form>
@@ -47,7 +50,7 @@ export function loginPage(status, message, additionalHeaders = {}) {
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
       'Referrer-Policy': 'same-origin',
-      ...additionalHeaders
+      ...headers
     }
   });
 }

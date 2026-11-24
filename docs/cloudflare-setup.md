@@ -23,9 +23,18 @@
 | 名称 | 用途 |
 | --- | --- |
 | `M_APP_PASSWORD_HASH` | 网站登录密码的摘要 |
-| `M_APP_SESSION_SECRET` | 用于签发会话的独立随机密钥 |
+| `M_APP_SESSION_SECRET` | 用于签发会话的随机密钥，也用于验证自选密码 |
 
 在 **Settings → Runtime → Fail open / closed** 选择 **Fail closed**。这样 Functions 超出配额时，Cloudflare 会暂停应用访问并返回错误页。[Pages Functions 配额行为](https://developers.cloudflare.com/pages/functions/routing/#fail-open--closed)
+
+### 将已部署的网站改为自选密码
+
+1. 先部署支持自选密码的版本，并用现有密码验证登录。旧密码可继续使用，直到替换密钥。
+2. 在本地终端运行 `node scripts/generate-site-secrets.mjs --custom`，输入并确认自己选定的密码。输入不会显示，脚本只输出两个 Cloudflare 加密变量的值。
+3. 在 `miniapp` 项目生产环境的 **Settings → Variables and Secrets** 中，一起更新 `M_APP_PASSWORD_HASH` 和 `M_APP_SESSION_SECRET`，并将两项均设为 **Encrypt**。保存这一对值后重新部署以使新配置生效。[Pages 密钥设置](https://developers.cloudflare.com/pages/functions/bindings/#secrets)
+4. 部署完成后，在隐私窗口打开 `ve1.xyz`，在原来的密码输入框中输入新密码。旧会话随密钥更新失效，手机和电脑需要各登录一次。
+
+使用自选密码时，15 分钟内同一个 IP 最多可输错 8 次，全站合计最多可输错 12 次。达到限制时，登录页面会提示等待。
 
 ## 4. 部署与验收
 
