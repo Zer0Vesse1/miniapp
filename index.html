@@ -589,6 +589,169 @@
   #m-app-concept .sheet-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px 0 13px; }
   #m-app-concept .sheet-title { font-size: 22px; font-weight: 690; letter-spacing: -.035em; overflow-wrap: anywhere; }
   #m-app-concept .sheet-content { display: grid; gap: 10px; }
+  #m-app-concept .experience-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 4px 1px;
+    border-top: 1px solid var(--line);
+    color: var(--quiet);
+    text-align: start;
+    font-size: 13px;
+  }
+  #m-app-concept .cooking-hero-content .experience-entry { margin-top: 10px; }
+  #m-app-concept .cooking-hero-content:has(.experience-entry) { padding-bottom: 1px; }
+  #m-app-concept .experience-chevron {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    margin-inline-end: 4px;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(-45deg);
+    transition: transform 180ms var(--ease);
+  }
+  #m-app-concept .experience-page {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  #m-app-concept .experience-title { font-size: 24px; font-weight: 700; letter-spacing: -.035em; }
+  #m-app-concept .experience-summary { margin-top: 2px; font-size: 13px; color: var(--quiet); }
+  #m-app-concept .experience-controls { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+  #m-app-concept .experience-controls button { padding-inline: 10px; border-radius: 12px; font-size: 14px; }
+  #m-app-concept .experience-controls .experience-quick { background: var(--blue-tint); color: var(--blue); font-weight: 650; }
+  #m-app-concept .experience-controls :is(.experience-important, .experience-undo) { border: 1px solid var(--line); color: var(--quiet); }
+  #m-app-concept .experience-controls .experience-undo { width: 44px; margin-inline-start: auto; font-size: 20px; }
+  #m-app-concept :is(.experience-page, .sheet-header, .cooking-bar) [aria-disabled="true"],
+  #m-app-concept .experience-undo:disabled { opacity: .52; }
+  #m-app-concept .experience-events { margin: 0; padding: 0; list-style: none; }
+  #m-app-concept .experience-events li { border-top: 1px solid var(--line); }
+  #m-app-concept .experience-events summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding-inline: 2px;
+    list-style: none;
+  }
+  #m-app-concept .experience-events summary::-webkit-details-marker { display: none; }
+  #m-app-concept .experience-events summary > span:first-child { flex: 1; }
+  #m-app-concept .experience-events details[open] .experience-chevron { transform: rotate(45deg); }
+  #m-app-concept .experience-events small { color: var(--quiet); }
+  #m-app-concept .experience-note { padding: 0 2px 4px; }
+  #m-app-concept .experience-note p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; }
+  #m-app-concept .experience-note .experience-text { color: var(--blue); font-size: 13px; padding-inline: 0; }
+  #m-app-concept .experience-form { display: grid; gap: 12px; }
+  #m-app-concept .experience-precision { display: flex; gap: 8px; min-height: 44px; align-items: center; font-size: 14px; }
+  #m-app-concept .experience-precision input { width: 18px; height: 18px; accent-color: var(--blue); }
+  #m-app-concept :is(.experience-error, .experience-status) { margin-bottom: 8px; font-size: 13px; color: var(--quiet); }
+  #m-app-concept .experience-error { color: light-dark(#b22d42, #ff9aa9); }
+  #m-app-concept .experience-status:empty { margin: 0; }
+  #m-app-concept .record-actions {
+    --danger: light-dark(#b22d42, #ff9aa9);
+    position: relative;
+    z-index: 2;
+    flex: none;
+  }
+  #m-app-concept .record-action-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 174px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-7px);
+    transition: opacity 170ms var(--ease), transform 170ms var(--ease), visibility 0s 170ms;
+    filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--ink) 16%, transparent));
+  }
+  #m-app-concept .record-action-menu-inner {
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--surface) 93%, transparent);
+    backdrop-filter: blur(18px) saturate(1.25);
+    clip-path: inset(0 0 100% round 17px);
+    transition: clip-path 170ms var(--ease);
+  }
+  #m-app-concept .record-action-menu[data-open] {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 230ms var(--ease), transform 230ms var(--ease);
+  }
+  #m-app-concept .record-action-menu[data-open] .record-action-menu-inner {
+    clip-path: inset(0 round 17px);
+    transition-duration: 230ms;
+  }
+  #m-app-concept .record-action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 14px;
+  }
+  #m-app-concept .record-action-row + .record-action-row { border-top: 1px solid var(--line); }
+  #m-app-concept .record-action-row:is(:hover, :focus-visible) { background: var(--canvas); }
+  #m-app-concept .record-action-row:focus-visible { outline-offset: -2px; }
+  #m-app-concept .record-action-row[data-record-action='delete'] { color: var(--danger); }
+  #m-app-concept .record-delete-layer {
+    --danger: light-dark(#b22d42, #ff9aa9);
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    display: grid;
+    align-items: end;
+    padding: 0 max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+    background: rgb(11 23 47 / 28%);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms var(--ease), visibility 0s 180ms;
+  }
+  #m-app-concept .record-delete-layer[data-open] {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 230ms var(--ease);
+  }
+  #m-app-concept .record-delete-panel {
+    display: grid;
+    gap: 8px;
+    max-height: calc(100% - 12px);
+    overflow: auto;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    color: var(--ink);
+    transform: translateY(24px);
+    transition: transform 180ms var(--ease);
+    box-shadow: 0 10px 28px rgb(11 23 47 / 20%);
+  }
+  #m-app-concept .record-delete-layer[data-open] .record-delete-panel {
+    transform: translateY(0);
+    transition-duration: 230ms;
+  }
+  #m-app-concept .record-delete-panel h2 { font-size: 19px; overflow-wrap: anywhere; }
+  #m-app-concept .record-delete-description { font-size: 14px; color: var(--quiet); }
+  #m-app-concept .record-delete-error { font-size: 13px; color: var(--danger); }
+  #m-app-concept .record-delete-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  #m-app-concept .record-delete-buttons [data-record-delete-confirm] {
+    background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+    color: var(--danger);
+  }
+  #m-app-concept .record-delete-buttons button:disabled { opacity: .58; }
   #m-app-concept .sheet-content .rows { background: var(--canvas); }
   #m-app-concept .sheet-content .option + .option { margin-top: 0; }
   #m-app-concept .detail { display: grid; gap: 8px; padding: 13px; border-radius: 14px; background: var(--canvas); overflow-wrap: anywhere; }
@@ -1050,7 +1213,7 @@
   --person-danger: light-dark(#a62d49, #ff9aae);
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet {
   --person-left: max(16px, env(safe-area-inset-left, 0px));
   --person-right: max(16px, env(safe-area-inset-right, 0px));
   height: 100%;
@@ -1063,8 +1226,9 @@
   box-shadow: none;
 }
 
-#m-app-concept .overlay[data-mode='people'] .handle { display: none; }
-#m-app-concept .overlay[data-mode='people'] .sheet-header {
+#m-app-concept .overlay[data-mode='record'] .sheet { --person-canvas: var(--canvas); --person-line: var(--line); }
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .handle { display: none; }
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-header {
   position: sticky;
   z-index: 1;
   top: 0;
@@ -1076,14 +1240,14 @@
   background: var(--person-canvas);
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet-title {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-title {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: normal;
   margin-inline-end: auto;
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet-content {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-content {
   padding: 12px var(--person-right) calc(24px + env(safe-area-inset-bottom, 0px)) var(--person-left);
 }
 
@@ -1091,15 +1255,6 @@
   display: grid;
   min-width: 0;
   gap: 12px;
-}
-
-#m-app-concept .person-edit-button {
-  padding-inline: 14px;
-  border-radius: 12px;
-  color: var(--person-accent);
-  background: var(--person-tint);
-  font-size: 14px;
-  font-weight: 680;
 }
 
 #m-app-concept .person-hero {
@@ -1545,10 +1700,22 @@
         <div class="sheet-header">
           <button class="page-back cursor-interaction" type="button" data-sheet-back aria-label="返回" hidden></button>
           <h2 class="sheet-title" id="m-app-sheet-title"></h2>
-          <button class="person-edit-button cursor-interaction" type="button" data-person-edit hidden>编辑</button>
+          <div data-sheet-record-actions hidden></div>
           <button class="close cursor-interaction" type="button" data-close-sheet aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
         </div>
         <div class="sheet-content"></div>
+      </section>
+    </div>
+    <div class="record-delete-layer" data-record-delete inert aria-hidden="true">
+      <section class="record-delete-panel" role="alertdialog" aria-modal="true" tabindex="-1"
+        aria-labelledby="m-app-record-delete-title" aria-describedby="m-app-record-delete-description">
+        <h2 id="m-app-record-delete-title"></h2>
+        <p class="record-delete-description" id="m-app-record-delete-description"></p>
+        <p class="record-delete-error" data-record-delete-error role="alert" hidden></p>
+        <div class="record-delete-buttons">
+          <button class="secondary cursor-interaction" type="button" data-record-delete-cancel>取消</button>
+          <button class="secondary cursor-interaction" type="button" data-record-delete-confirm>删除</button>
+        </div>
       </section>
     </div>
   </article>
@@ -2097,6 +2264,18 @@
       });
     }
 
+    function remove(previous) {
+      return run('readwrite', (store, rows) => {
+        const index = rows.findIndex((row) => row.record.id === previous?.id);
+        if (index < 0 || JSON.stringify(rows[index].record) !== JSON.stringify(previous)) {
+          throw new Error('这份菜谱已在另一个页面被修改或移除。请重新打开菜谱后再删除。');
+        }
+        store.delete(previous.id);
+        rows.splice(index, 1);
+        return rows.map((row) => row.record);
+      });
+    }
+
     function replace(records, expectedRecords) {
       return run('readwrite', (store, rows) => {
         if (JSON.stringify(rows.map(({ record }) => record)) !== JSON.stringify(expectedRecords)) {
@@ -2107,7 +2286,7 @@
       });
     }
 
-    return { read, save, replace };
+    return { read, save, remove, replace };
   }
 
   globalThis.CookingStore = { createStore };
@@ -2141,12 +2320,14 @@
     pane.innerHTML = cards ? `<div class="module-record-list">${cards}</div>` : '<p class="module-record-empty">还没有菜谱</p>';
   }
 
-  function createWindow(windowElement, shell, saveRecord, fallbackFocus) {
+  function createWindow(windowElement, shell, saveRecord, fallbackFocus, recordActions, deleteRecord, saveExperiences) {
+    const experienceView = globalThis.RecordExperienceView;
     let session;
     let screen;
     let draft;
     let overlayTrigger;
     let saving = false;
+    let experiences;
 
     const button = (action, label, className = '', attributes = '') =>
       `<button class="cooking-button ${className} cursor-interaction" type="button" data-cooking-action="${action}" ${attributes}>${label}</button>`;
@@ -2187,15 +2368,17 @@
     function detailView() {
       const { record, recipe } = session;
       const meta = formatRecipeMeta(record);
-      return `<header class="cooking-bar">${backButton('返回')}
+      const returnTarget = session.trigger?.closest('[data-module-detail]') ? '烹饪指南' : '最近记录';
+      return `<header class="cooking-bar">${backButton(`返回${returnTarget}`)}
         <span class="cooking-bar-title">烹饪指南</span>
-        <div class="cooking-bar-actions">${button('edit', '编辑')}</div>
+        <div class="cooking-bar-actions">${recordActions.markup('cooking')}</div>
       </header>
       <div class="cooking-scroll" tabindex="0" aria-label="菜谱内容">
         <section class="cooking-hero">
           ${recipeImage(recipe.coverImage, 'cooking-cover', `${record.title}成品`)}
           <div class="cooking-hero-content"><h2 id="cooking-title" tabindex="-1">${escapeHtml(record.title)}</h2>
             ${meta ? `<p class="cooking-meta">${escapeHtml(meta)}</p>` : ''}
+            ${experienceView.entry('cooking')}
           </div>
         </section>
         <section class="cooking-section">
@@ -2354,14 +2537,44 @@
       syncDuration(input);
     }
 
-    function render(nextScreen, focusAction) {
+    function render(nextScreen, focusSelector) {
+      recordActions.dismiss(windowElement);
       screen = nextScreen;
       windowElement.dataset.screen = screen;
+      if (screen === 'experiences') {
+        const { record } = session;
+        windowElement.innerHTML = `<header class="cooking-bar">${backButton('返回菜谱详情')}
+          <h2 id="cooking-title" class="cooking-bar-title">${escapeHtml(record.title)}</h2></header>
+          <div class="cooking-scroll"><section class="experience-page" data-experience-page></section></div>`;
+        experiences = experienceView.mount(windowElement.querySelector('[data-experience-page]'), record, {
+          save: saveExperiences,
+          backButton: windowElement.querySelector('[data-cooking-action="back"]'),
+          onBack: (latest) => {
+            session.record = latest;
+            render('detail', '[data-open-experiences]');
+          }
+        });
+        return;
+      }
+      experiences = undefined;
       windowElement.innerHTML = screen === 'mode' ? modeView() : screen === 'editor' ? editorView() : detailView();
-      if (screen === 'detail') scroll().scrollTop = session.detailScroll;
+      if (screen === 'detail') {
+        scroll().scrollTop = session.detailScroll;
+        const { record } = session;
+        recordActions.bind(windowElement, {
+          onEdit: () => {
+            session.detailScroll = scroll().scrollTop;
+            render('editor');
+          },
+          onDelete: () => deleteRecord(record),
+          record,
+          owner: windowElement,
+          onDeleted: close
+        });
+      }
       if (screen === 'editor') syncDuration(windowElement.querySelector('#cooking-duration'));
       syncServings();
-      const focusTarget = focusAction && windowElement.querySelector(`[data-cooking-action="${focusAction}"]`);
+      const focusTarget = focusSelector && windowElement.querySelector(focusSelector);
       (focusTarget || windowElement.querySelector('#cooking-title')).focus({ preventScroll: true });
     }
 
@@ -2375,6 +2588,7 @@
 
     function close() {
       const { trigger } = session;
+      recordActions.dismiss(windowElement);
       windowElement.hidden = true;
       windowElement.replaceChildren();
       shell.inert = false;
@@ -2431,8 +2645,9 @@
 
     function goBack() {
       if (saving) return;
-      if (screen === 'mode') return render('detail', 'mode');
-      if (screen === 'editor' && session.record) return render('detail', 'edit');
+      if (screen === 'experiences') return experiences.back();
+      if (screen === 'mode') return render('detail', '[data-cooking-action="mode"]');
+      if (screen === 'editor' && session.record) return render('detail', '[data-record-action="toggle"]');
       if (screen === 'editor') draft = readEditor(windowElement.querySelector('form'));
       close();
     }
@@ -2473,13 +2688,17 @@
         return;
       }
       if (event.target.matches('.cooking-panel-overlay')) closePanel();
+      if (event.target.closest('[data-open-experiences]')) {
+        session.detailScroll = scroll().scrollTop;
+        render('experiences');
+        return;
+      }
       const trigger = event.target.closest('[data-cooking-action]');
       switch (trigger?.dataset.cookingAction) {
         case 'back': goBack(); break;
-        case 'edit':
         case 'mode':
           session.detailScroll = scroll().scrollTop;
-          render(trigger.dataset.cookingAction === 'edit' ? 'editor' : 'mode');
+          render('mode');
           break;
         case 'less':
         case 'more': {
@@ -2536,6 +2755,7 @@
     }
 
     windowElement.addEventListener('submit', async (event) => {
+      if (screen !== 'editor') return;
       event.preventDefault();
       if (saving) return;
       const form = event.target;
@@ -2581,7 +2801,7 @@
       }
       if (event.key !== 'Tab') return;
       const region = windowElement.querySelector('.cooking-panel-overlay:not([hidden])') ?? windowElement;
-      const controls = [...region.querySelectorAll('button, input, textarea, summary, [tabindex="0"]')]
+      const controls = [...region.querySelectorAll('button, input, textarea, select, summary, [tabindex="0"]')]
         .filter((element) => !element.disabled && !element.closest('[hidden], [inert], details:not([open]) > :not(summary)'));
       if (event.shiftKey && (document.activeElement === controls[0] || !controls.includes(document.activeElement))) {
         event.preventDefault();
@@ -2822,7 +3042,10 @@
         return {
           id: record.id, kind: 'people', title, time, person,
           summary: textValue(record.summary, limits.summary, '摘要', true),
-          detail: textValue(record.detail, limits.notes, '内容', true)
+          detail: textValue(record.detail, limits.notes, '内容', true),
+          ...(Object.hasOwn(record, 'experiences') && {
+            experiences: globalThis.RecordExperiences.normalize(record.experiences, 'people')
+          })
         };
       });
       return { records: normalizedRecords, settings: normalizeSettings(settings, { strict: true }), sort: sort === 'name' ? 'name' : 'recent' };
@@ -2976,10 +3199,12 @@
     (next?.querySelector('input[type="text"], input[name="contact-label"]') ?? fallback).focus();
   }
 
-  function create({ setSheet, sheetContent, closeSheet, showNotice, savePerson, savePeopleSettings, icon, findRecord, getSettings, isOpen }) {
+  function create({ setSheet, sheetContent, sheetBack, closeSheet, showNotice, savePerson, savePeopleSettings,
+    saveExperiences, icon, findRecord, getSettings, isOpen }) {
     const drafts = new Map();
+    const experienceView = globalThis.RecordExperienceView;
 
-    function showDetails(record, trigger) {
+    function showDetails(record, trigger, focusMore = false) {
       const person = model.personFor(record);
       const settings = getSettings();
       const has = (key) => settings.fields.includes(key);
@@ -2998,14 +3223,31 @@
           .map(({ id, label }) => detailRow(label, escape(person.custom[id])))),
         has('notes') ? section([detailRow('备注', escape(person.notes), 'person-notes')]) : ''
       ].join('');
-      setSheet('人物卡片', `<article class="person-card">
+      if (!setSheet('人物卡片', `<article class="person-card">
         <header class="person-hero">
           ${has('avatar') ? avatarMarkup(person.avatar, record.title) : ''}
           <h3 class="person-name">${escape(record.title)}</h3>
           ${has('nickname') && person.nickname ? `<p class="person-nickname">${escape(person.nickname)}</p>` : ''}
         </header>
+        ${experienceView.entry('people')}
         <div class="person-groups">${groups || '<p class="person-empty">打开编辑可补充人物资料。</p>'}</div>
-      </article>`, trigger, { onBack: closeSheet, onEdit: () => showEditor(record) });
+      </article>`, trigger, { record, onBack: closeSheet, onEdit: () => showEditor(record), focusMore })) return;
+      sheetContent.querySelector('[data-open-experiences]').onclick = () => showExperiences(record);
+    }
+
+    function showExperiences(record) {
+      let screen;
+      if (!setSheet(record.title, '<section class="experience-page" data-experience-page></section>', undefined, {
+        onBack: () => screen.back(), backLabel: `返回${record.title}详情`
+      })) return;
+      screen = experienceView.mount(sheetContent.querySelector('[data-experience-page]'), record, {
+        save: saveExperiences,
+        backButton: sheetBack,
+        onBack: (latest) => {
+          showDetails(latest);
+          sheetContent.querySelector('[data-open-experiences]')?.focus({ preventScroll: true });
+        }
+      });
     }
 
     function showEditor(record, trigger) {
@@ -3024,7 +3266,7 @@
       const goBack = () => {
         if (saving) return;
         const current = record && findRecord(record.id);
-        if (current) showDetails(current);
+        if (current) showDetails(current, undefined, true);
         else closeSheet();
       };
       if (!setSheet(record ? '编辑人物卡片' : '新增人物卡片', `<form class="person-form">
@@ -3205,7 +3447,7 @@
           const enteredAge = manualAge === '' || manualAge === null ? null : Number(manualAge);
           const saved = await savePerson(name, model.normalizePerson({ ...values, birthday, manualAge: enteredAge }), record);
           drafts.delete(key);
-          if (active()) showDetails(saved);
+          if (active()) showDetails(saved, undefined, Boolean(record));
           showNotice('人物卡片已保存');
         } catch (error) {
           if (active()) setError(form, error.message);
@@ -3448,6 +3690,275 @@
 })();
 </script>
 <script>
+(() => {
+  const kinds = {
+    cooking: ['做了一次', '重要烹饪'],
+    people: ['见面', '初识', '纪念日', '其他经历']
+  };
+  const noteLimit = 300;
+  const exact = /^\d{4}-\d{2}-\d{2}$/;
+  const approximate = /^([1-9]\d{3})\s*年(?:\s*(春天|夏天|秋天|冬天|(?:1[0-2]|[1-9])\s*月))?$/;
+
+  function dateValue(input, kind) {
+    const value = input.trim();
+    if (exact.test(value)) {
+      const date = new Date(value);
+      if (value.slice(0, 4) !== '0000' && Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value) return value;
+    }
+    if (kind === 'people') {
+      const parts = approximate.exec(value);
+      if (parts) return parts[1] + ' 年' + (parts[2] ? parts[2].replace(/\s*月$/, ' 月') : '');
+    }
+    throw new Error(kind === 'people' ? '请输入日期，例如 2022 年秋天。' : '请选择有效的烹饪日期。');
+  }
+
+  function normalize(entries, kind) {
+    const types = kinds[kind];
+    if (!types || !Array.isArray(entries)) throw new Error('经历记录格式不正确。');
+    const ids = new Set();
+    return entries.map((entry) => {
+      if (!entry || typeof entry.id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(entry.id) || ids.has(entry.id)
+        || typeof entry.date !== 'string' || entry.date.length > 24 || !types.includes(entry.type)
+        || typeof entry.note !== 'string' || entry.note.length > noteLimit || typeof entry.quick !== 'boolean'
+        || (entry.quick && (entry.type !== types[0] || entry.note || !exact.test(entry.date)))) {
+        throw new Error('经历记录格式不正确。');
+      }
+      ids.add(entry.id);
+      const date = dateValue(entry.date, kind);
+      return { id: entry.id, date, type: entry.type, note: entry.note, quick: entry.quick };
+    });
+  }
+
+  function dateLabel(value, showYear = true) {
+    if (!exact.test(value)) return value;
+    const [year, month, day] = value.split('-').map(Number);
+    return (showYear ? year + ' 年 ' : '') + month + ' 月 ' + day + ' 日';
+  }
+
+  function sortKey(date) {
+    if (exact.test(date)) return date;
+    const parts = approximate.exec(date);
+    if (!parts) return '';
+    const season = { 春天: '03', 夏天: '06', 秋天: '09', 冬天: '12' };
+    const detail = parts[2] || '';
+    const month = season[detail] ?? String(parseInt(detail, 10) || 0).padStart(2, '0');
+    return parts[1] + '-' + month + '-00';
+  }
+
+  globalThis.RecordExperiences = { kinds, exact, noteLimit, dateValue, normalize, dateLabel, sortKey };
+})();
+</script>
+<script>
+(() => {
+  const model = globalThis.RecordExperiences;
+  const copy = {
+    cooking: { title: '我的烹饪', quick: '次数 +1', action: '记重要烹饪', undo: '撤回最近一次快速计数', note: '心得', added: '已记下这次烹饪' },
+    people: { title: '我们的交集', quick: '记一次见面', action: '记重要经历', undo: '撤回最近一次快速见面记录', note: '经历', added: '已记下今天的见面' }
+  };
+  const escape = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[character]);
+
+  function today() {
+    const now = new Date();
+    const pad = (value) => String(value).padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }
+
+  function entry(kind) {
+    return `<button class="experience-entry cursor-interaction" type="button" data-open-experiences>
+      ${copy[kind].title}<span class="experience-chevron" aria-hidden="true"></span>
+    </button>`;
+  }
+
+  function mount(container, initialRecord, { save, backButton, onBack }) {
+    let record = initialRecord;
+    const { kind } = record;
+    const words = copy[kind];
+    const [quickType, importantType] = model.kinds[kind];
+    const cooking = kind === 'cooking';
+    let editor;
+    let pending = false;
+    const entries = () => record.experiences ?? [];
+    const sorted = () => [...entries()].reverse().sort((a, b) => model.sortKey(b.date).localeCompare(model.sortKey(a.date)));
+    const lastQuick = () => entries().findLast((item) => item.quick);
+    const openRows = () => [...container.querySelectorAll('details[open]')].map((row) => row.dataset.experienceId);
+    const quickSelector = '[data-experience-action="quick"]';
+    const rowSelector = (id) => `[data-experience-id="${CSS.escape(id)}"] summary`;
+
+    function summary(ordered) {
+      const latest = ordered[0];
+      if (cooking) return latest ? `做过 ${ordered.length} 次 · 上次 ${model.dateLabel(latest.date, false)}` : '还没有烹饪记录';
+      const first = ordered.findLast((item) => item.type === '初识');
+      const meetings = ordered.filter((item) => item.type === quickType);
+      const parts = [];
+      if (first) parts.push(`${model.dateLabel(first.date)}相识`);
+      if (meetings.length) parts.push(`已记 ${meetings.length} 次见面`, `上次 ${model.dateLabel(meetings[0].date, false)}`);
+      return parts.join(' · ') || (latest ? '还没有见面记录' : '还没有交集记录');
+    }
+
+    function rows(ordered, expanded) {
+      return ordered.map((item) => {
+        const date = model.dateLabel(item.date);
+        const label = cooking ? date : item.type;
+        const meta = cooking ? (item.type === importantType ? importantType : item.note ? '有心得' : '') : date;
+        return `<li><details data-experience-id="${escape(item.id)}"${expanded.includes(item.id) ? ' open' : ''}>
+          <summary class="cursor-interaction"><span>${escape(label)}</span><small>${escape(meta)}</small>
+            <span class="experience-chevron" aria-hidden="true"></span></summary>
+          <div class="experience-note">${item.note ? `<p>${escape(item.note)}</p>` : ''}
+            <button class="experience-text cursor-interaction" type="button" data-experience-action="edit">
+              ${item.note ? '编辑' : '补充'}${words.note}</button></div>
+        </details></li>`;
+      }).join('');
+    }
+
+    function updateTimeline(expanded, message = '') {
+      const ordered = sorted();
+      container.querySelector('.experience-summary').textContent = summary(ordered);
+      container.querySelector('.experience-events').innerHTML = rows(ordered, expanded);
+      const undo = container.querySelector('[data-experience-action="undo"]');
+      if (!lastQuick() && document.activeElement === undo) container.querySelector(quickSelector).focus();
+      undo.disabled = !lastQuick();
+      container.querySelector('[role="status"]').textContent = message;
+    }
+
+    function showTimeline({ expanded = [], focus = quickSelector, message = '' } = {}) {
+      editor = undefined;
+      backButton.setAttribute('aria-label', `返回${record.title}详情`);
+      container.innerHTML = `<h3 class="experience-title">${words.title}</h3>
+        <p class="experience-summary"></p>
+        <div class="experience-controls">
+          <button class="experience-quick cursor-interaction" type="button" data-experience-action="quick">${words.quick}</button>
+          <button class="experience-important cursor-interaction" type="button" data-experience-action="important">${words.action}</button>
+          <button class="experience-undo cursor-interaction" type="button" data-experience-action="undo"
+            aria-label="${words.undo}" title="${words.undo}"><span aria-hidden="true">↶</span></button>
+        </div>
+        <p class="experience-status" role="status"></p>
+        <p class="experience-error" role="alert" hidden></p>
+        <ol class="experience-events"></ol>`;
+      updateTimeline(expanded, message);
+      container.querySelector(focus)?.focus({ preventScroll: true });
+    }
+
+    function showEditor(item) {
+      const date = item?.date ?? today();
+      const approximate = !model.exact.test(date);
+      const type = item?.type ?? (cooking ? importantType : quickType);
+      editor = { item, id: item?.id ?? crypto.randomUUID(), expanded: openRows() };
+      backButton.setAttribute('aria-label', `返回${words.title}`);
+      container.innerHTML = `<form class="experience-form">
+        <h3 class="experience-title">${item ? `编辑${words.note}` : words.action}</h3>
+        <label class="field" data-experience-exact${approximate ? ' hidden' : ''}>日期
+          <input name="date" type="date" value="${approximate ? today() : escape(date)}" required${approximate ? ' disabled' : ''}>
+        </label>
+        ${cooking ? '' : `<label class="experience-precision">
+          <input type="checkbox" name="approximate"${approximate ? ' checked' : ''}>只记得大概日期
+        </label>
+        <label class="field" data-experience-approximate${approximate ? '' : ' hidden'}>大概日期
+          <input type="text" name="date" maxlength="24" placeholder="例如 2022 年秋天" required
+            value="${approximate ? escape(date) : ''}"${approximate ? '' : ' disabled'}>
+        </label>
+        <div class="field"><label for="m-app-experience-type">类型</label>
+          <select id="m-app-experience-type" name="type">${model.kinds.people.map((option) =>
+            `<option${option === type ? ' selected' : ''}>${option}</option>`).join('')}</select></div>`}
+        <div class="field"><label for="m-app-experience-note">${cooking ? '心得' : '经历内容'}（选填）</label>
+          <textarea id="m-app-experience-note" name="note" rows="4" maxlength="${model.noteLimit}">${escape(item?.note ?? '')}</textarea>
+        </div>
+        <p class="experience-error" role="alert" hidden></p>
+        <button class="primary cursor-interaction" type="submit">保存</button>
+      </form>`;
+      container.querySelector('[name="date"]:enabled').focus({ preventScroll: true });
+    }
+
+    function back() {
+      if (pending) return;
+      if (!editor) {
+        onBack(record);
+        return;
+      }
+      const { item, expanded } = editor;
+      showTimeline({ expanded, focus: item ? rowSelector(item.id) : '[data-experience-action="important"]' });
+    }
+
+    function showError(error) {
+      const message = container.querySelector('[role="alert"]');
+      message.textContent = error.message;
+      message.hidden = false;
+    }
+
+    async function commit(next, after) {
+      const controls = [...container.querySelectorAll('button:not(:disabled)')];
+      pending = true;
+      backButton.setAttribute('aria-disabled', 'true');
+      for (const control of controls) control.setAttribute('aria-disabled', 'true');
+      container.querySelector('[role="alert"]').hidden = true;
+      try {
+        record = await save(record, next);
+      } catch (error) {
+        showError(error);
+        return;
+      } finally {
+        pending = false;
+        backButton.removeAttribute('aria-disabled');
+        for (const control of controls) control.removeAttribute('aria-disabled');
+      }
+      after();
+    }
+
+    container.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-experience-action]');
+      if (!button || pending) return;
+      const action = button.dataset.experienceAction;
+      if (action === 'important' || action === 'edit') {
+        const id = button.closest('details')?.dataset.experienceId;
+        showEditor(entries().find((item) => item.id === id));
+        return;
+      }
+      const expanded = openRows();
+      if (action === 'quick') {
+        const item = { id: crypto.randomUUID(), date: today(), type: quickType, note: '', quick: true };
+        commit([...entries(), item], () => updateTimeline(expanded, words.added));
+      } else if (action === 'undo') {
+        const recent = lastQuick();
+        if (!recent) return;
+        commit(entries().filter((item) => item.id !== recent.id), () => updateTimeline(expanded, '已撤回最近一次快速记录'));
+      }
+    });
+
+    container.addEventListener('change', (event) => {
+      if (event.target.name !== 'approximate') return;
+      const approximate = event.target.checked;
+      const exact = container.querySelector('[data-experience-exact]');
+      const estimate = container.querySelector('[data-experience-approximate]');
+      exact.hidden = exact.querySelector('input').disabled = approximate;
+      estimate.hidden = estimate.querySelector('input').disabled = !approximate;
+    });
+
+    container.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (pending || !editor) return;
+      const fields = new FormData(event.target);
+      const { item, id, expanded } = editor;
+      let date;
+      try {
+        date = model.dateValue(fields.get('date'), kind);
+      } catch (error) {
+        showError(error);
+        return;
+      }
+      const saved = { id, date, type: cooking ? item?.type ?? importantType : fields.get('type'), note: fields.get('note').trim(), quick: false };
+      const next = item ? entries().map((existing) => existing.id === id ? saved : existing) : [...entries(), saved];
+      commit(next, () => showTimeline({ expanded: [...expanded, id], focus: rowSelector(id), message: '经历已保存' }));
+    });
+
+    showTimeline();
+    return { back };
+  }
+
+  globalThis.RecordExperienceView = { entry, mount };
+})();
+</script>
+<script>
   (() => {
     if (!globalThis.Tweak) return;
     const app = document.getElementById('m-app-concept').querySelector('.app');
@@ -3477,7 +3988,7 @@
   const handle = sheet.querySelector('.handle');
   const closeButton = sheet.querySelector('.close');
   const sheetBack = sheet.querySelector('[data-sheet-back]');
-  const sheetEdit = sheet.querySelector('[data-person-edit]');
+  const sheetActions = sheet.querySelector('[data-sheet-record-actions]');
   const sheetTitle = sheet.querySelector('.sheet-title');
   const sheetContent = sheet.querySelector('.sheet-content');
   const notice = root.querySelector('.notice');
@@ -3485,6 +3996,9 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const mahjongCalculator = globalThis.MahjongCalculator;
   const mahjongStorageKey = 'm-app-mahjong-v1';
+  const foodStorageKey = 'm-app-food-v1';
+  const sampleFood = { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨',
+    time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' };
   const cookingModel = globalThis.CookingGuide;
   const cookingModule = globalThis.CookingModule;
   const legacyCookingStorageKey = 'm-app-cooking-v1';
@@ -3524,7 +4038,7 @@
       ...loadLegacyCooking(),
       ...(peopleStore?.records ?? [{ id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。',
         person: peopleModel.normalizePerson({ birthday: '--05-18', relationships: ['朋友'], notes: '喜欢手冲咖啡。' }) }]),
-      { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨', time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' }
+      ...loadFoodRecords()
     ]
   };
   let cookingStore = cloud ? null : globalThis.CookingStore.createStore(loadLegacyCooking());
@@ -3547,9 +4061,10 @@
   };
   const findRecord = (key) => state.records.find((record) => record.id === key);
   const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
-  const cookingWindow = cookingModule.createWindow(cookingPanel, shell, saveRecipe, replacementFocus);
+  const recordActions = createRecordActions();
+  const cookingWindow = cookingModule.createWindow(cookingPanel, shell, saveRecipe, replacementFocus, recordActions, deleteRecord, saveExperiences);
   const peopleView = globalThis.PeopleCardView.create({
-    setSheet, sheetContent, closeSheet, showNotice, savePerson, savePeopleSettings,
+    setSheet, sheetContent, sheetBack, closeSheet, showNotice, savePerson, savePeopleSettings, saveExperiences,
     icon, findRecord, getSettings: () => state.peopleSettings, isOpen: () => overlay.dataset.open === 'true'
   });
 
@@ -3642,6 +4157,48 @@
     return id;
   }
 
+  function readFoodRecords() {
+    try {
+      const raw = localStorage.getItem(foodStorageKey);
+      if (raw === null) return null;
+      const records = JSON.parse(raw);
+      if (Array.isArray(records) && records.every((record) => record?.kind === 'food'
+        && ['id', 'title', 'summary', 'time', 'detail'].every((key) => typeof record[key] === 'string'))) return records;
+    } catch {
+      // Keep unreadable storage in place so a subsequent write cannot overwrite it.
+    }
+    throw new Error('无法读取本地美食记录，请检查浏览器存储设置。');
+  }
+
+  function loadFoodRecords() {
+    try {
+      return readFoodRecords() ?? [sampleFood];
+    } catch {
+      return [sampleFood];
+    }
+  }
+
+  function writeFoodRecords(records) {
+    try {
+      localStorage.setItem(foodStorageKey, JSON.stringify(records));
+    } catch {
+      throw new Error('无法保存美食记录到此浏览器。请检查存储设置或可用空间后再试。');
+    }
+  }
+
+  async function changeFood(makeChanges) {
+    const current = () => state.records.filter((record) => record.kind === 'food');
+    if (cloud) {
+      const next = makeChanges(current());
+      await cloud.save('food', next);
+      replaceRecordKind('food', next);
+    } else await peopleModel.withStoreLock(() => {
+      const next = makeChanges(readFoodRecords() ?? current());
+      writeFoodRecords(next);
+      replaceRecordKind('food', next);
+    });
+  }
+
   function peopleSnapshot() {
     return { records: state.records.filter((record) => record.kind === 'people'), settings: state.peopleSettings, sort: state.peopleSort };
   }
@@ -3701,6 +4258,7 @@
         id: previous?.id ?? `person-${crypto.randomUUID()}`, kind: 'people', title,
         time: previous?.time ?? timeNow(), person, summary: personSummary(person, bundle.settings),
         detail: person.notes.slice(0, peopleModel.limits.summary),
+        ...(current?.experiences && { experiences: current.experiences }),
         ...cloudRecordTime(previous)
       };
       const records = previous ? bundle.records.map((record) => record.id === previous.id ? saved : record)
@@ -3728,7 +4286,14 @@
 
   async function saveRecipe({ title, summary, durationMinutes, recipe }, previous) {
     const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary, durationMinutes,
-      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe, ...cloudRecordTime(previous) };
+      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe,
+      ...(previous?.experiences && { experiences: previous.experiences }), ...cloudRecordTime(previous) };
+    await persistRecipe(record, previous);
+    showNotice('菜谱已保存');
+    return record;
+  }
+
+  async function persistRecipe(record, previous) {
     if (cloud) {
       const recipes = state.records.filter((item) => item.kind === 'cooking');
       const current = previous && recipes.find((item) => item.id === previous.id);
@@ -3742,8 +4307,57 @@
       useCookingRecords(await cookingStore.save(record, previous));
       cookingUpdates?.postMessage('changed');
     }
-    showNotice('菜谱已保存');
-    return record;
+  }
+
+  async function saveExperiences(previous, entries) {
+    const experiences = globalThis.RecordExperiences.normalize(entries, previous.kind);
+    if (previous.kind === 'cooking') {
+      const saved = { ...previous, experiences };
+      await persistRecipe(saved, previous);
+      return saved;
+    }
+    let saved;
+    await changePeople((bundle) => {
+      const current = bundle.records.find((record) => record.id === previous.id);
+      if (!current || JSON.stringify(current.experiences ?? []) !== JSON.stringify(previous.experiences ?? [])) {
+        throw new Error('这张人物卡片的经历已更新，请重新打开后再记录。');
+      }
+      saved = { ...current, experiences };
+      return { ...bundle, records: bundle.records.map((record) => record.id === saved.id ? saved : record) };
+    });
+    return saved;
+  }
+
+  async function deleteRecord(record) {
+    const { id, kind } = record;
+    const stale = () => new Error('这条记录已被修改或删除。请返回列表并查看最新记录。');
+    const withoutRecord = (records) => {
+      if (JSON.stringify(records.find((item) => item.id === id)) !== JSON.stringify(record)) throw stale();
+      return records.filter((item) => item.id !== id);
+    };
+
+    if (kind === 'people') {
+      await changePeople((bundle) => {
+        const current = bundle.records.find((item) => item.id === id);
+        if (!current || current.title !== record.title || current.time !== record.time
+          || JSON.stringify(peopleModel.personFor(current)) !== JSON.stringify(peopleModel.personFor(record))
+          || JSON.stringify(current.experiences ?? []) !== JSON.stringify(record.experiences ?? [])) throw stale();
+        return { ...bundle, records: bundle.records.filter((item) => item.id !== id) };
+      });
+    } else if (kind === 'cooking') {
+      if (cloud) {
+        const next = withoutRecord(state.records.filter((item) => item.kind === 'cooking'));
+        await cloud.save('cooking', next);
+        replaceRecordKind('cooking', next);
+        render();
+      } else {
+        useCookingRecords(await cookingStore.remove(record));
+        cookingUpdates?.postMessage('changed');
+      }
+    } else if (kind === 'food') {
+      await changeFood(withoutRecord);
+      render();
+    }
   }
 
   function loadMahjong() {
@@ -3900,21 +4514,168 @@
     render();
   }
 
-  function setSheet(label, html, trigger, { onBack, onEdit, backLabel } = {}) {
+  function createRecordActions() {
+    const layer = root.querySelector('[data-record-delete]');
+    const panel = layer.querySelector('.record-delete-panel');
+    const title = layer.querySelector('#m-app-record-delete-title');
+    const description = layer.querySelector('#m-app-record-delete-description');
+    const errorMessage = layer.querySelector('[data-record-delete-error]');
+    const cancel = layer.querySelector('[data-record-delete-cancel]');
+    const confirm = layer.querySelector('[data-record-delete-confirm]');
+    let activeMenu;
+    let confirmation;
+    let pending = false;
+
+    const lineIcon = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths}"/></svg>`;
+    const actionRow = (action, label, paths) => `<button class="record-action-row cursor-interaction" type="button"
+      data-record-action="${action}">${lineIcon(paths)}${label}</button>`;
+
+    function markup(key, editable = true) {
+      const menuId = `m-app-${key}-record-menu`;
+      return `<div class="record-actions">
+        <button class="module-toolbar-button cursor-interaction" type="button" data-record-action="toggle"
+          aria-label="更多操作" aria-expanded="false" aria-controls="${menuId}">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="1.65"/><circle cx="12" cy="12" r="1.65"/><circle cx="19" cy="12" r="1.65"/>
+          </svg>
+        </button>
+        <div class="record-action-menu" id="${menuId}" role="group" aria-label="记录操作" aria-hidden="true" inert>
+          <div class="record-action-menu-inner">
+            ${editable ? actionRow('edit', '编辑', 'M14 5l5 5M4 20l1-5L16 4a2 2 0 0 1 3 0l1 1a2 2 0 0 1 0 3L9 19l-5 1Z') : ''}
+            ${actionRow('delete', '删除记录', 'M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6m4-6v6')}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function closeMenu(restoreFocus = false) {
+      if (!activeMenu) return;
+      const { menu, toggle } = activeMenu;
+      activeMenu = undefined;
+      if (restoreFocus || menu.contains(document.activeElement)) toggle.focus({ preventScroll: true });
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.inert = true;
+      menu.setAttribute('aria-hidden', 'true');
+      menu.removeAttribute('data-open');
+    }
+
+    function dismiss(owner) {
+      if (activeMenu?.owner === owner) closeMenu();
+    }
+
+    function ask(options, toggle) {
+      closeMenu();
+      confirmation = { ...options, toggle };
+      title.textContent = `删除「${options.record.title}」？`;
+      description.textContent = cloud ? '这条记录也会从已同步的设备上移除。' : '删除后，这条记录将从列表和「最近」移除。';
+      errorMessage.hidden = true;
+      options.owner.inert = true;
+      layer.inert = false;
+      layer.removeAttribute('aria-hidden');
+      layer.setAttribute('data-open', '');
+      cancel.focus({ preventScroll: true });
+    }
+
+    function closeConfirmation(restoreFocus) {
+      if (!confirmation || pending) return;
+      const { owner, toggle } = confirmation;
+      confirmation = undefined;
+      owner.inert = false;
+      if (restoreFocus) toggle.focus({ preventScroll: true });
+      else if (layer.contains(document.activeElement)) document.activeElement.blur();
+      layer.inert = true;
+      layer.setAttribute('aria-hidden', 'true');
+      layer.removeAttribute('data-open');
+    }
+
+    function bind(container, options) {
+      const anchor = container.querySelector('.record-actions');
+      const toggle = anchor.querySelector('[data-record-action="toggle"]');
+      const menu = anchor.querySelector('.record-action-menu');
+      toggle.onclick = (event) => {
+        if (activeMenu?.anchor === anchor) {
+          closeMenu(true);
+          return;
+        }
+        closeMenu();
+        activeMenu = { anchor, menu, toggle, owner: options.owner };
+        menu.inert = false;
+        menu.removeAttribute('aria-hidden');
+        menu.setAttribute('data-open', '');
+        toggle.setAttribute('aria-expanded', 'true');
+        if (event.detail === 0) menu.querySelector('button').focus({ preventScroll: true });
+      };
+      const edit = menu.querySelector('[data-record-action="edit"]');
+      if (edit) edit.onclick = () => { closeMenu(); options.onEdit(); };
+      menu.querySelector('[data-record-action="delete"]').onclick = () => ask(options, toggle);
+      anchor.addEventListener('focusout', (event) => {
+        if (activeMenu?.anchor === anchor && !anchor.contains(event.relatedTarget)) closeMenu();
+      });
+    }
+
+    cancel.onclick = () => closeConfirmation(true);
+    layer.addEventListener('click', (event) => { if (event.target === layer) closeConfirmation(true); });
+    confirm.onclick = async () => {
+      if (!confirmation || pending) return;
+      const { onDelete, onDeleted } = confirmation;
+      pending = true;
+      panel.focus({ preventScroll: true });
+      confirm.disabled = cancel.disabled = true;
+      confirm.textContent = '正在删除…';
+      errorMessage.hidden = true;
+      try {
+        await onDelete();
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.hidden = false;
+        cloud?.refresh().catch(() => {});
+        return;
+      } finally {
+        pending = false;
+        confirm.disabled = cancel.disabled = false;
+        confirm.textContent = '删除';
+        if (!errorMessage.hidden) cancel.focus({ preventScroll: true });
+      }
+      closeConfirmation(false);
+      onDeleted();
+      showNotice('记录已删除');
+    };
+
+    document.addEventListener('pointerdown', (event) => {
+      if (activeMenu && !activeMenu.anchor.contains(event.target)) closeMenu();
+    }, true);
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && (confirmation || activeMenu)) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (confirmation) closeConfirmation(true);
+        else closeMenu(true);
+      } else if (event.key === 'Tab' && confirmation) {
+        event.preventDefault();
+        if (!pending) (document.activeElement === cancel ? confirm : cancel).focus();
+      }
+    }, true);
+    return { markup, bind, dismiss };
+  }
+
+  function setSheet(label, html, trigger, { onBack, onEdit, record, backLabel, focusMore } = {}) {
     if (overlay.dataset.open === 'false' && !overlay.hidden) return false;
-    overlay.dataset.mode = onBack ? 'people' : '';
+    recordActions.dismiss(overlay);
+    overlay.dataset.mode = record?.kind === 'food' ? 'record' : onBack ? 'people' : '';
     sheetBack.hidden = !onBack;
     sheetBack.setAttribute('aria-label', backLabel ?? (state.page === 'modules' ? '返回人物列表' : '返回最近'));
     sheetBack.onclick = onBack ? () => onBack() : null;
-    sheetEdit.hidden = !onEdit;
-    sheetEdit.onclick = onEdit ?? null;
+    sheetActions.hidden = !record;
+    sheetActions.innerHTML = record ? recordActions.markup('sheet', Boolean(onEdit)) : '';
+    if (record) recordActions.bind(sheetActions, { record, owner: overlay, onEdit, onDelete: () => deleteRecord(record), onDeleted: closeSheet });
     closeButton.hidden = Boolean(onBack);
     sheetTitle.classList.toggle('live-status', Boolean(onEdit));
     sheetTitle.textContent = label;
     sheetContent.innerHTML = html;
     sheet.scrollTop = 0;
     if (overlay.hidden) {
-      overlay.dataset.motion = onEdit ? 'horizontal' : '';
+      overlay.dataset.motion = record ? 'horizontal' : '';
       returnFocus = trigger;
       overlay.hidden = false;
       shell.inert = true;
@@ -3922,7 +4683,8 @@
       overlay.getBoundingClientRect();
       overlay.dataset.open = 'true';
     }
-    (onBack ? sheetBack : closeButton).focus({ preventScroll: true });
+    const focus = focusMore ? sheetActions.querySelector('[data-record-action="toggle"]') : onBack ? sheetBack : closeButton;
+    focus.focus({ preventScroll: true });
     updateIcons();
     return true;
   }
@@ -3943,6 +4705,7 @@
 
   function closeSheet(afterClose) {
     if (overlay.dataset.open !== 'true') return;
+    recordActions.dismiss(overlay);
     overlay.dataset.open = 'false';
     sheet.style.removeProperty('--drag');
     const finish = () => {
@@ -4048,7 +4811,9 @@
       peopleView.showDetails(record, trigger);
       return;
     }
-    setSheet(record.title, '<div class="detail"><p></p></div>', trigger);
+    if (!setSheet(record.title, '<div class="detail"><p></p></div>', trigger, {
+      record, onBack: closeSheet, backLabel: state.page === 'modules' ? '返回美食记录' : '返回最近记录'
+    })) return;
     sheetContent.querySelector('p').textContent = record.detail || record.summary;
   }
 
@@ -4072,10 +4837,9 @@
       } else {
         const detail = values.get('note').trim();
         const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
-        const record = { id: cloud ? `food-${crypto.randomUUID()}` : nextRecordId(), kind, title: values.get('title'), summary, detail,
+        const record = { id: `food-${crypto.randomUUID()}`, kind, title: values.get('title'), summary, detail,
           time: timeNow(), ...cloudRecordTime() };
-        if (cloud) await cloud.save('food', [record, ...state.records.filter((item) => item.kind === 'food')]);
-        state.records.unshift(record);
+        await changeFood((records) => [record, ...records]);
       }
     } catch (error) {
       showSheetError(form, error);
@@ -4421,6 +5185,13 @@
         { key: 'name', label: '按菜名排序', symbol: 'book-open' }
       ],
       releases: [{
+        version: '0.4.0',
+        date: '2026-11-24',
+        groups: [['新增', [
+          '菜谱详情新增「我的烹饪」。可一键记录烹饪次数、撤回快速记录，也可补写重要烹饪的日期和心得。',
+          '详情可以通过「⋯」编辑或删除菜谱。烹饪经历随菜谱同步和备份。'
+        ]]]
+      }, {
         version: '0.3.0',
         date: '2026-11-24',
         groups: [['变更', [
@@ -4449,6 +5220,13 @@
         { key: 'name', label: '按姓名排序', symbol: 'user-round' }
       ],
       releases: [{
+        version: '0.3.0',
+        date: '2026-11-24',
+        groups: [['新增', [
+          '详情新增「我们的交集」。可快速记见面、撤回快速记录，或记录初识、纪念日等经历，支持大概日期。',
+          '详情可以通过「⋯」编辑或删除人物卡片。交集随人物卡片同步和备份。'
+        ]]]
+      }, {
         version: '0.2.0',
         date: '2026-11-23',
         groups: [
@@ -4469,6 +5247,13 @@
         { key: 'hide', label: '隐藏备注', symbol: 'eye-off' }
       ],
       releases: [{
+        version: '0.2.0',
+        date: '2026-11-24',
+        groups: [
+          ['新增', ['详情右上角「⋯」可以删除记录，确认后同步更新列表和「最近」。']],
+          ['修复', ['本地新增和删除在浏览器刷新后仍然生效。']]
+        ]
+      }, {
         version: '0.1.0',
         date: '2026-11-22',
         groups: [['新增', ['支持记录到访店铺、推荐菜和口味。', '可选择在美食记录列表中显示或隐藏到访备注。']]]
@@ -4641,8 +5426,21 @@
     target.focus({ preventScroll: true });
   });
 
-  const settingsVersion = '0.8.0';
+  const settingsVersion = '0.9.0';
   const releaseNotes = [
+    {
+      version: '0.9.0',
+      date: '2026-11-24',
+      groups: [
+        ['新增', [
+          '烹饪指南 v0.4.0 新增「我的烹饪」，支持快速加次数、记录重要烹饪和心得，以及撤回快速记录。',
+          '人物卡片 v0.3.0 新增「我们的交集」，支持快记见面、撤回、记录初识和纪念日，并支持大概日期。',
+          '菜谱、人物卡片和美食记录的详情新增「⋯」菜单，删除前显示记录名称并二次确认。'
+        ]],
+        ['修复', ['美食记录 v0.2.0 将本地新增和删除保存在浏览器中，刷新后仍然生效。']],
+        ['维护', ['冻结 v0.9.0 源码和独立入口，经历记录随菜谱和人物卡片同步及备份。']]
+      ]
+    },
     {
       version: '0.8.0',
       date: '2026-11-24',
@@ -4827,7 +5625,7 @@
   }
 
   async function showBackupExport(trigger, local = false) {
-    const description = local ? '备份包含这个浏览器已保存的菜谱、人物卡片和麻将记录。'
+    const description = local ? '备份包含这个浏览器已保存的菜谱、人物卡片、美食和麻将记录。'
       : '备份包含长期记录、人物属性设置、车位和麻将结算数据。';
     setSheet(local ? '导出旧记录' : '导出数据', `<p class="settings-meta">${description}选中后可复制到本地文件。</p>
       <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取记录…"></textarea></label>
@@ -4844,7 +5642,8 @@
         const recipes = await cookingStore.read();
         const people = peopleModel.readStore();
         data = {
-          records: [...recipes, ...(people?.records ?? [])], peopleSettings: people?.settings, peopleSort: people?.sort,
+          records: [...recipes, ...(people?.records ?? []), ...(readFoodRecords() ?? [])],
+          peopleSettings: people?.settings, peopleSort: people?.sort,
           parking: null, mahjong: loadMahjong()
         };
       } else {
@@ -4854,6 +5653,7 @@
           await peopleModel.withStoreLock(() => {
             const bundle = peopleModel.readStore();
             if (bundle) updatePeopleRecords(bundle);
+            replaceRecordKind('food', readFoodRecords() ?? [sampleFood]);
           });
         }
         data = {
@@ -4905,6 +5705,8 @@
       const person = record.kind === 'people'
         ? (Object.hasOwn(record, 'person') ? peopleModel.normalizePerson(record.person, { strict: true }) : peopleModel.personFor(record))
         : undefined;
+      const experiences = Object.hasOwn(record, 'experiences')
+        ? globalThis.RecordExperiences.normalize(record.experiences, record.kind) : undefined;
       return {
         id: record.id,
         kind: record.kind,
@@ -4915,6 +5717,7 @@
         ...duration,
         ...(recipe && { recipe }),
         ...(person && { person }),
+        ...(experiences && { experiences }),
         ...(Number.isSafeInteger(record.createdAt) && record.createdAt > 0 && { createdAt: record.createdAt })
       };
     });
@@ -4957,6 +5760,7 @@
         await refreshCookingRecords();
         backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
         backup.peopleBase = peopleModel.readStore() ?? peopleSnapshot();
+        backup.foodBase = readFoodRecords();
       }
       if (!backupSheetIsOpen(input)) return;
       pendingBackup = backup;
@@ -5006,6 +5810,10 @@
         if (JSON.stringify(previous) !== JSON.stringify(peopleBase)) {
           throw new Error('其他页面更新了人物卡片。请重新检查备份后再确认导入。');
         }
+        const previousFood = readFoodRecords();
+        if (JSON.stringify(previousFood) !== JSON.stringify(backup.foodBase)) {
+          throw new Error('其他页面更新了美食记录。请重新检查备份后再确认导入。');
+        }
         const imported = {
           records: records.filter((record) => record.kind === 'people'),
           settings: peopleSettings ?? previous.settings,
@@ -5013,7 +5821,14 @@
         };
         writePeopleStore(imported);
         try {
-          await replaceCookingRecords(records, cookingBase);
+          writeFoodRecords(records.filter((record) => record.kind === 'food'));
+          try {
+            await replaceCookingRecords(records, cookingBase);
+          } catch (error) {
+            if (previousFood) writeFoodRecords(previousFood);
+            else localStorage.removeItem(foodStorageKey);
+            throw error;
+          }
         } catch (error) {
           if (stored) writePeopleStore(stored);
           else localStorage.removeItem(peopleModel.storageKey);
@@ -5219,8 +6034,9 @@
       }
     }
     if (event.key !== 'Tab') return;
-    const controls = [...sheet.querySelectorAll('button, input, textarea, select, a[href]')]
-      .filter((element) => !element.matches(':disabled') && element.getClientRects().length);
+    const controls = [...sheet.querySelectorAll('button, input, textarea, select, a[href], summary')]
+      .filter((element) => !element.matches(':disabled')
+        && !element.closest('[inert], [hidden], details:not([open]) > :not(summary)') && element.getClientRects().length);
     const first = controls[0];
     const last = controls[controls.length - 1];
     if (event.shiftKey && document.activeElement === first) {
@@ -5272,6 +6088,13 @@
     cookingUpdates?.addEventListener('message', syncCookingRecords);
     window.addEventListener('focus', syncCookingRecords);
     window.addEventListener('storage', (event) => {
+      if (event.key === foodStorageKey) {
+        peopleModel.withStoreLock(() => {
+          replaceRecordKind('food', readFoodRecords() ?? [sampleFood]);
+          render();
+        }).catch(() => {});
+        return;
+      }
       if (event.key !== peopleModel.storageKey) return;
       peopleModel.withStoreLock(() => {
         const bundle = peopleModel.readStore();

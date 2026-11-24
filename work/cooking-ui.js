@@ -25,12 +25,14 @@
     pane.innerHTML = cards ? `<div class="module-record-list">${cards}</div>` : '<p class="module-record-empty">还没有菜谱</p>';
   }
 
-  function createWindow(windowElement, shell, saveRecord, fallbackFocus) {
+  function createWindow(windowElement, shell, saveRecord, fallbackFocus, recordActions, deleteRecord, saveExperiences) {
+    const experienceView = globalThis.RecordExperienceView;
     let session;
     let screen;
     let draft;
     let overlayTrigger;
     let saving = false;
+    let experiences;
 
     const button = (action, label, className = '', attributes = '') =>
       `<button class="cooking-button ${className} cursor-interaction" type="button" data-cooking-action="${action}" ${attributes}>${label}</button>`;
@@ -71,15 +73,17 @@
     function detailView() {
       const { record, recipe } = session;
       const meta = formatRecipeMeta(record);
-      return `<header class="cooking-bar">${backButton('返回')}
+      const returnTarget = session.trigger?.closest('[data-module-detail]') ? '烹饪指南' : '最近记录';
+      return `<header class="cooking-bar">${backButton(`返回${returnTarget}`)}
         <span class="cooking-bar-title">烹饪指南</span>
-        <div class="cooking-bar-actions">${button('edit', '编辑')}</div>
+        <div class="cooking-bar-actions">${recordActions.markup('cooking')}</div>
       </header>
       <div class="cooking-scroll" tabindex="0" aria-label="菜谱内容">
         <section class="cooking-hero">
           ${recipeImage(recipe.coverImage, 'cooking-cover', `${record.title}成品`)}
           <div class="cooking-hero-content"><h2 id="cooking-title" tabindex="-1">${escapeHtml(record.title)}</h2>
             ${meta ? `<p class="cooking-meta">${escapeHtml(meta)}</p>` : ''}
+            ${experienceView.entry('cooking')}
           </div>
         </section>
         <section class="cooking-section">
@@ -238,14 +242,44 @@
       syncDuration(input);
     }
 
-    function render(nextScreen, focusAction) {
+    function render(nextScreen, focusSelector) {
+      recordActions.dismiss(windowElement);
       screen = nextScreen;
       windowElement.dataset.screen = screen;
+      if (screen === 'experiences') {
+        const { record } = session;
+        windowElement.innerHTML = `<header class="cooking-bar">${backButton('返回菜谱详情')}
+          <h2 id="cooking-title" class="cooking-bar-title">${escapeHtml(record.title)}</h2></header>
+          <div class="cooking-scroll"><section class="experience-page" data-experience-page></section></div>`;
+        experiences = experienceView.mount(windowElement.querySelector('[data-experience-page]'), record, {
+          save: saveExperiences,
+          backButton: windowElement.querySelector('[data-cooking-action="back"]'),
+          onBack: (latest) => {
+            session.record = latest;
+            render('detail', '[data-open-experiences]');
+          }
+        });
+        return;
+      }
+      experiences = undefined;
       windowElement.innerHTML = screen === 'mode' ? modeView() : screen === 'editor' ? editorView() : detailView();
-      if (screen === 'detail') scroll().scrollTop = session.detailScroll;
+      if (screen === 'detail') {
+        scroll().scrollTop = session.detailScroll;
+        const { record } = session;
+        recordActions.bind(windowElement, {
+          onEdit: () => {
+            session.detailScroll = scroll().scrollTop;
+            render('editor');
+          },
+          onDelete: () => deleteRecord(record),
+          record,
+          owner: windowElement,
+          onDeleted: close
+        });
+      }
       if (screen === 'editor') syncDuration(windowElement.querySelector('#cooking-duration'));
       syncServings();
-      const focusTarget = focusAction && windowElement.querySelector(`[data-cooking-action="${focusAction}"]`);
+      const focusTarget = focusSelector && windowElement.querySelector(focusSelector);
       (focusTarget || windowElement.querySelector('#cooking-title')).focus({ preventScroll: true });
     }
 
@@ -259,6 +293,7 @@
 
     function close() {
       const { trigger } = session;
+      recordActions.dismiss(windowElement);
       windowElement.hidden = true;
       windowElement.replaceChildren();
       shell.inert = false;
@@ -315,8 +350,9 @@
 
     function goBack() {
       if (saving) return;
-      if (screen === 'mode') return render('detail', 'mode');
-      if (screen === 'editor' && session.record) return render('detail', 'edit');
+      if (screen === 'experiences') return experiences.back();
+      if (screen === 'mode') return render('detail', '[data-cooking-action="mode"]');
+      if (screen === 'editor' && session.record) return render('detail', '[data-record-action="toggle"]');
       if (screen === 'editor') draft = readEditor(windowElement.querySelector('form'));
       close();
     }
@@ -357,13 +393,17 @@
         return;
       }
       if (event.target.matches('.cooking-panel-overlay')) closePanel();
+      if (event.target.closest('[data-open-experiences]')) {
+        session.detailScroll = scroll().scrollTop;
+        render('experiences');
+        return;
+      }
       const trigger = event.target.closest('[data-cooking-action]');
       switch (trigger?.dataset.cookingAction) {
         case 'back': goBack(); break;
-        case 'edit':
         case 'mode':
           session.detailScroll = scroll().scrollTop;
-          render(trigger.dataset.cookingAction === 'edit' ? 'editor' : 'mode');
+          render('mode');
           break;
         case 'less':
         case 'more': {
@@ -420,6 +460,7 @@
     }
 
     windowElement.addEventListener('submit', async (event) => {
+      if (screen !== 'editor') return;
       event.preventDefault();
       if (saving) return;
       const form = event.target;
@@ -465,7 +506,7 @@
       }
       if (event.key !== 'Tab') return;
       const region = windowElement.querySelector('.cooking-panel-overlay:not([hidden])') ?? windowElement;
-      const controls = [...region.querySelectorAll('button, input, textarea, summary, [tabindex="0"]')]
+      const controls = [...region.querySelectorAll('button, input, textarea, select, summary, [tabindex="0"]')]
         .filter((element) => !element.disabled && !element.closest('[hidden], [inert], details:not([open]) > :not(summary)'));
       if (event.shiftKey && (document.activeElement === controls[0] || !controls.includes(document.activeElement))) {
         event.preventDefault();

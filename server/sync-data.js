@@ -1,4 +1,5 @@
 import '../work/cooking.js';
+import '../work/experiences.js';
 import '../work/mahjong.js';
 import '../work/people.js';
 
@@ -34,6 +35,9 @@ function validRecords(records, kind) {
       || !isText(record.title, 30, true) || !isText(record.summary, 180)
       || !isText(record.detail, 1000) || !isText(record.time, 32, true)) return false;
     ids.add(record.id);
+    if (Object.hasOwn(record, 'experiences')) {
+      globalThis.RecordExperiences.normalize(record.experiences, kind);
+    }
     if (kind === 'people' && Object.hasOwn(record, 'person')) {
       globalThis.PeopleCards.normalizePerson(record.person, { strict: true });
     }

@@ -127,10 +127,12 @@
     (next?.querySelector('input[type="text"], input[name="contact-label"]') ?? fallback).focus();
   }
 
-  function create({ setSheet, sheetContent, closeSheet, showNotice, savePerson, savePeopleSettings, icon, findRecord, getSettings, isOpen }) {
+  function create({ setSheet, sheetContent, sheetBack, closeSheet, showNotice, savePerson, savePeopleSettings,
+    saveExperiences, icon, findRecord, getSettings, isOpen }) {
     const drafts = new Map();
+    const experienceView = globalThis.RecordExperienceView;
 
-    function showDetails(record, trigger) {
+    function showDetails(record, trigger, focusMore = false) {
       const person = model.personFor(record);
       const settings = getSettings();
       const has = (key) => settings.fields.includes(key);
@@ -149,14 +151,31 @@
           .map(({ id, label }) => detailRow(label, escape(person.custom[id])))),
         has('notes') ? section([detailRow('备注', escape(person.notes), 'person-notes')]) : ''
       ].join('');
-      setSheet('人物卡片', `<article class="person-card">
+      if (!setSheet('人物卡片', `<article class="person-card">
         <header class="person-hero">
           ${has('avatar') ? avatarMarkup(person.avatar, record.title) : ''}
           <h3 class="person-name">${escape(record.title)}</h3>
           ${has('nickname') && person.nickname ? `<p class="person-nickname">${escape(person.nickname)}</p>` : ''}
         </header>
+        ${experienceView.entry('people')}
         <div class="person-groups">${groups || '<p class="person-empty">打开编辑可补充人物资料。</p>'}</div>
-      </article>`, trigger, { onBack: closeSheet, onEdit: () => showEditor(record) });
+      </article>`, trigger, { record, onBack: closeSheet, onEdit: () => showEditor(record), focusMore })) return;
+      sheetContent.querySelector('[data-open-experiences]').onclick = () => showExperiences(record);
+    }
+
+    function showExperiences(record) {
+      let screen;
+      if (!setSheet(record.title, '<section class="experience-page" data-experience-page></section>', undefined, {
+        onBack: () => screen.back(), backLabel: `返回${record.title}详情`
+      })) return;
+      screen = experienceView.mount(sheetContent.querySelector('[data-experience-page]'), record, {
+        save: saveExperiences,
+        backButton: sheetBack,
+        onBack: (latest) => {
+          showDetails(latest);
+          sheetContent.querySelector('[data-open-experiences]')?.focus({ preventScroll: true });
+        }
+      });
     }
 
     function showEditor(record, trigger) {
@@ -175,7 +194,7 @@
       const goBack = () => {
         if (saving) return;
         const current = record && findRecord(record.id);
-        if (current) showDetails(current);
+        if (current) showDetails(current, undefined, true);
         else closeSheet();
       };
       if (!setSheet(record ? '编辑人物卡片' : '新增人物卡片', `<form class="person-form">
@@ -356,7 +375,7 @@
           const enteredAge = manualAge === '' || manualAge === null ? null : Number(manualAge);
           const saved = await savePerson(name, model.normalizePerson({ ...values, birthday, manualAge: enteredAge }), record);
           drafts.delete(key);
-          if (active()) showDetails(saved);
+          if (active()) showDetails(saved, undefined, Boolean(record));
           showNotice('人物卡片已保存');
         } catch (error) {
           if (active()) setError(form, error.message);

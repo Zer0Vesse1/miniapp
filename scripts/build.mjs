@@ -3,12 +3,13 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 const root = new URL('../', import.meta.url);
 const readSource = async (name) => (await readFile(new URL(`work/${name}`, root), 'utf8'))
   .replace(/\r\n/g, '\n').trim();
-const [fragment, mahjongStyle, mahjongCalculator, mahjongModule, cookingStyle, cookingModel, cookingStore, cookingModule, peopleStyle, peopleModel, peopleView, cloudStore, demoCover] = await Promise.all([
+const [fragment, mahjongStyle, mahjongCalculator, mahjongModule, cookingStyle, cookingModel, cookingStore, cookingModule, peopleStyle, peopleModel, peopleView, cloudStore, experiences, experienceView, demoCover] = await Promise.all([
   readSource('m-app-concept.html'), readSource('mahjong.css'),
   readSource('mahjong.js'), readSource('mahjong-ui.js'),
   readSource('cooking.css'), readSource('cooking.js'), readSource('cooking-store.js'), readSource('cooking-ui.js'),
   readSource('people.css'), readSource('people.js'), readSource('people-ui.js'),
   readSource('cloud-store.js'),
+  readSource('experiences.js'), readSource('experiences-ui.js'),
   readFile(new URL('public/scallion-noodles.jpg', root)),
 ]);
 const styleEnd = fragment.indexOf('</style>');
@@ -31,6 +32,8 @@ const app = fragment.slice(styleEnd + '</style>'.length)
   .replace('<script src="./people.js"></script>', () => `<script>\n${peopleModel}\n</script>`)
   .replace('<script src="./people-ui.js"></script>', () => `<script>\n${peopleView}\n</script>`)
   .replace('<script src="./cloud-store.js"></script>', () => `<script>\n${cloudStore}\n</script>`)
+  .replace('<script src="./experiences.js"></script>', () => `<script>\n${experiences}\n</script>`)
+  .replace('<script src="./experiences-ui.js"></script>', () => `<script>\n${experienceView}\n</script>`)
   .trim();
 const html = `<!doctype html>
 <!-- Generated from work/m-app-concept.html by npm run build. -->

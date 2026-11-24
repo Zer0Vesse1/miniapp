@@ -6,7 +6,7 @@
   --person-danger: light-dark(#a62d49, #ff9aae);
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet {
   --person-left: max(16px, env(safe-area-inset-left, 0px));
   --person-right: max(16px, env(safe-area-inset-right, 0px));
   height: 100%;
@@ -19,8 +19,9 @@
   box-shadow: none;
 }
 
-#m-app-concept .overlay[data-mode='people'] .handle { display: none; }
-#m-app-concept .overlay[data-mode='people'] .sheet-header {
+#m-app-concept .overlay[data-mode='record'] .sheet { --person-canvas: var(--canvas); --person-line: var(--line); }
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .handle { display: none; }
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-header {
   position: sticky;
   z-index: 1;
   top: 0;
@@ -32,14 +33,14 @@
   background: var(--person-canvas);
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet-title {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-title {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: normal;
   margin-inline-end: auto;
 }
 
-#m-app-concept .overlay[data-mode='people'] .sheet-content {
+#m-app-concept .overlay:is([data-mode='people'], [data-mode='record']) .sheet-content {
   padding: 12px var(--person-right) calc(24px + env(safe-area-inset-bottom, 0px)) var(--person-left);
 }
 
@@ -47,15 +48,6 @@
   display: grid;
   min-width: 0;
   gap: 12px;
-}
-
-#m-app-concept .person-edit-button {
-  padding-inline: 14px;
-  border-radius: 12px;
-  color: var(--person-accent);
-  background: var(--person-tint);
-  font-size: 14px;
-  font-weight: 680;
 }
 
 #m-app-concept .person-hero {

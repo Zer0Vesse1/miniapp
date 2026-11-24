@@ -63,6 +63,18 @@
       });
     }
 
+    function remove(previous) {
+      return run('readwrite', (store, rows) => {
+        const index = rows.findIndex((row) => row.record.id === previous?.id);
+        if (index < 0 || JSON.stringify(rows[index].record) !== JSON.stringify(previous)) {
+          throw new Error('这份菜谱已在另一个页面被修改或移除。请重新打开菜谱后再删除。');
+        }
+        store.delete(previous.id);
+        rows.splice(index, 1);
+        return rows.map((row) => row.record);
+      });
+    }
+
     function replace(records, expectedRecords) {
       return run('readwrite', (store, rows) => {
         if (JSON.stringify(rows.map(({ record }) => record)) !== JSON.stringify(expectedRecords)) {
@@ -73,7 +85,7 @@
       });
     }
 
-    return { read, save, replace };
+    return { read, save, remove, replace };
   }
 
   globalThis.CookingStore = { createStore };

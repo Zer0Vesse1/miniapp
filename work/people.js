@@ -221,7 +221,10 @@
         return {
           id: record.id, kind: 'people', title, time, person,
           summary: textValue(record.summary, limits.summary, '摘要', true),
-          detail: textValue(record.detail, limits.notes, '内容', true)
+          detail: textValue(record.detail, limits.notes, '内容', true),
+          ...(Object.hasOwn(record, 'experiences') && {
+            experiences: globalThis.RecordExperiences.normalize(record.experiences, 'people')
+          })
         };
       });
       return { records: normalizedRecords, settings: normalizeSettings(settings, { strict: true }), sort: sort === 'name' ? 'name' : 'recent' };

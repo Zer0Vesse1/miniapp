@@ -1,0 +1,3173 @@
+<style>
+  #m-app-concept {
+    display: grid;
+    justify-items: center;
+    padding: 20px 8px;
+  }
+
+  #m-app-concept .app {
+    --canvas: light-dark(#f3f5fa, #111a2a);
+    --surface: light-dark(#ffffff, #19253a);
+    --ink: light-dark(#152137, #edf2ff);
+    --quiet: light-dark(#586780, #a3b1cb);
+    --line: light-dark(#e4e9f3, #2e3c56);
+    --blue: light-dark(#244eb9, #a3bfff);
+    --on-blue: light-dark(#ffffff, #142545);
+    --blue-tint: light-dark(#e8eeff, #223659);
+    --soft-violet: light-dark(#edf0fb, #293452);
+    --widget-text: #fafcff;
+    --widget-muted: #e6edff;
+    --radius: 20px;
+    --ease: cubic-bezier(.22, .78, .25, 1);
+    width: min(100%, 416px);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--ink);
+    background: var(--canvas);
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    box-shadow: 0 18px 44px color-mix(in srgb, var(--ink) 12%, transparent);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", system-ui, sans-serif;
+  }
+  #m-app-concept .app[data-appearance='light'] { color-scheme: light; }
+  #m-app-concept .app[data-appearance='dark'] { color-scheme: dark; }
+
+  #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { box-sizing: border-box; }
+  #m-app-concept [hidden] { display: none !important; }
+  #m-app-concept :is(h1,h2,h3,p,dl,dd) { margin: 0; }
+  #m-app-concept button {
+    min-height: 44px;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    transition: background-color 160ms var(--ease), transform 160ms var(--ease);
+    -webkit-tap-highlight-color: transparent;
+  }
+  #m-app-concept button:active { transform: scale(.98); }
+  #m-app-concept :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  #m-app-concept svg { width: 19px; height: 19px; display: block; stroke-width: 1.8; }
+  #m-app-concept .icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
+  #m-app-concept i[data-lucide] { display: inline-grid; place-items: center; min-width: 17px; height: 19px; font: 600 17px/1 system-ui, sans-serif; }
+  #m-app-concept i[data-lucide]::before { content: var(--glyph, '·'); }
+  #m-app-concept i[data-lucide='plus'] { --glyph: '+'; }
+  #m-app-concept i[data-lucide='more-horizontal'], #m-app-concept i[data-lucide='ellipsis'] { --glyph: '···'; }
+  #m-app-concept i[data-lucide='square-parking'], #m-app-concept i[data-lucide='parking-square'] { --glyph: 'P'; }
+  #m-app-concept i[data-lucide='book-open'], #m-app-concept i[data-lucide='cooking-pot'] { --glyph: '食'; }
+  #m-app-concept i[data-lucide='contact-round'], #m-app-concept i[data-lucide='user-round'] { --glyph: '人'; }
+  #m-app-concept i[data-lucide='map-pin'], #m-app-concept i[data-lucide='utensils'] { --glyph: '⌖'; }
+  #m-app-concept i[data-lucide='calculator'] { --glyph: '÷'; }
+  #m-app-concept i[data-lucide='clock-3'], #m-app-concept i[data-lucide='clock'] { --glyph: '◷'; }
+  #m-app-concept i[data-lucide='layout-grid'] { --glyph: '⊞'; }
+  #m-app-concept i[data-lucide='list'] { --glyph: '≡'; }
+  #m-app-concept i[data-lucide='sliders-horizontal'] { --glyph: '≡'; }
+  #m-app-concept i[data-lucide='chevron-right'] { --glyph: '›'; }
+  #m-app-concept i[data-lucide='chevron-left'] { --glyph: '‹'; }
+  #m-app-concept i[data-lucide='arrow-up-right'] { --glyph: '↗'; }
+  #m-app-concept i[data-lucide='check'] { --glyph: '✓'; }
+  #m-app-concept i[data-lucide='eye-off'], #m-app-concept i[data-lucide='circle-minus'] { --glyph: '⊘'; }
+  #m-app-concept i[data-lucide='x'] { --glyph: '×'; }
+  #m-app-concept i[data-lucide='arrow-down-up'] { --glyph: '⇅'; }
+  #m-app-concept i[data-lucide='info'] { --glyph: 'ⓘ'; }
+  #m-app-concept i[data-lucide='history'] { --glyph: '↶'; }
+  #m-app-concept i[data-lucide='monitor'], #m-app-concept i[data-lucide='sun'], #m-app-concept i[data-lucide='moon'] { --glyph: '◐'; }
+  #m-app-concept i[data-lucide='upload'] { --glyph: '↑'; }
+  #m-app-concept i[data-lucide='download'] { --glyph: '↓'; }
+
+  #m-app-concept .shell {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 616px;
+  }
+  #m-app-concept .topbar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 10px 21px;
+    gap: 12px;
+  }
+  #m-app-concept .top-title { font-size: 25px; font-weight: 700; letter-spacing: -.045em; line-height: 1.2; }
+  #m-app-concept .top-action, #m-app-concept .close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    flex: none;
+    border-radius: 50%;
+    color: var(--blue);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .top-action:active, #m-app-concept .close:active { background: var(--blue-tint); }
+  #m-app-concept .top-action svg { width: 22px; height: 22px; }
+  #m-app-concept .top-action i { font-size: 23px; }
+  #m-app-concept .page {
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    padding: 4px 19px 18px;
+  }
+
+  #m-app-concept .widget {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius);
+    color: var(--widget-text);
+    background: linear-gradient(132deg, #15274f 0%, #1d3d82 57%, #2a51b0 100%);
+    box-shadow: 0 6px 18px rgb(35 64 134 / 17%);
+  }
+  #m-app-concept .widget-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 169px;
+    justify-content: flex-end;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 17px 19px 18px;
+  }
+  #m-app-concept .widget-body:active { transform: none; background: rgb(0 14 41 / 19%); }
+  #m-app-concept .widget-body:focus-visible { outline-offset: -5px; outline-color: var(--widget-text); border-radius: inherit; }
+  #m-app-concept .widget-label { display: flex; align-items: center; gap: 7px; color: var(--widget-muted); font-size: 13px; margin-top: 2px; margin-bottom: auto; padding-right: 47px; }
+  #m-app-concept .widget-label svg { width: 15px; height: 15px; }
+  #m-app-concept .widget-label i { min-width: 15px; height: 15px; font-size: 13px; }
+  #m-app-concept .widget-title { display: block; max-width: 100%; overflow-wrap: anywhere; font-size: clamp(24px, 6vw, 34px); font-weight: 670; line-height: 1.17; letter-spacing: -.045em; }
+  #m-app-concept .widget-meta { display: block; color: var(--widget-muted); margin-top: 8px; font-size: 12px; overflow-wrap: anywhere; }
+  #m-app-concept :is(.widget-title,.widget-meta) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  #m-app-concept .widget-config {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    z-index: 2;
+    top: 11px;
+    right: 11px;
+    width: 44px;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--widget-text);
+    background: rgb(246 250 255 / 15%);
+    box-shadow: inset 0 0 0 1px rgb(246 250 255 / 14%);
+  }
+  #m-app-concept .widget-config:active { background: rgb(246 250 255 / 26%); }
+  #m-app-concept .widget-config:focus-visible { outline-color: var(--widget-text); }
+  #m-app-concept .widget-decoration {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    right: -29px;
+    bottom: -86px;
+    width: 212px;
+    height: 225px;
+    border-radius: 42px;
+    border: 1px solid rgb(205 221 255 / 22%);
+    transform: rotate(-25deg);
+    background: linear-gradient(155deg, transparent, rgb(140 178 255 / 15%));
+  }
+  #m-app-concept .widget-decoration::before, #m-app-concept .widget-decoration::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+    border-radius: 31px;
+    border: 1px solid rgb(205 221 255 / 19%);
+  }
+  #m-app-concept .widget-decoration::after { inset: 31px; border-radius: 22px; }
+  #m-app-concept [data-widget-slot] > .secondary { width: 100%; }
+
+  #m-app-concept .section-heading { margin: 24px 2px 10px; font-size: 17px; font-weight: 690; letter-spacing: -.02em; }
+  #m-app-concept .rows { border-radius: var(--radius); background: var(--surface); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+  #m-app-concept [data-recent-list] { margin-bottom: 1px; }
+  #m-app-concept .record, #m-app-concept .option {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr) auto;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+  }
+  #m-app-concept .record:not(:last-child)::after, #m-app-concept .option:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 61px;
+    right: 12px;
+    height: 1px;
+    background: var(--line);
+    pointer-events: none;
+  }
+  #m-app-concept .record:active, #m-app-concept .option:active { background: var(--blue-tint); transform: none; }
+  #m-app-concept .record:focus-visible, #m-app-concept .option:focus-visible { outline-offset: -3px; }
+  #m-app-concept .record-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: var(--blue);
+    background: var(--blue-tint);
+  }
+  #m-app-concept .record-icon:is([data-kind='people'],.people) { background: var(--soft-violet); }
+  #m-app-concept svg:is(.people-module-icon, .cooking-module-icon) { width: 26px; height: 26px; }
+  #m-app-concept .record-info, #m-app-concept .option-text { min-width: 0; }
+  #m-app-concept .record-name, #m-app-concept .option-name { display: block; font-size: 14px; font-weight: 660; color: var(--ink); }
+  #m-app-concept .record-meta, #m-app-concept .option-meta { display: block; font-size: 12px; color: var(--quiet); margin-top: 3px; }
+  #m-app-concept .record :is(.record-name,.record-meta) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  #m-app-concept .record-time, #m-app-concept .setting-value { color: var(--quiet); font-size: 12px; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  #m-app-concept .record-time svg, #m-app-concept .setting-value svg { width: 15px; height: 15px; }
+  #m-app-concept .setting-value { max-width: 108px; }
+  #m-app-concept .setting-value > :first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  #m-app-concept .setting-value > :last-child { flex: none; }
+  #m-app-concept .option-text { overflow-wrap: anywhere; }
+  #m-app-concept .option-marker { color: var(--blue); width: 20px; }
+
+  #m-app-concept .module-tabs {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+  }
+  #m-app-concept .topbar:has(.module-tabs:not([hidden])) { gap: 8px; }
+  #m-app-concept .module-tab {
+    min-width: 0;
+    padding-inline: 7px;
+    position: relative;
+    border-radius: 11px;
+    color: var(--quiet);
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  #m-app-concept .module-tab[aria-selected='true'] {
+    color: var(--blue);
+    font-weight: 700;
+  }
+  #m-app-concept .module-tab[aria-selected='true']::after {
+    content: "";
+    position: absolute;
+    inset: auto 7px 3px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--blue);
+  }
+  #m-app-concept .module-tab:focus-visible { outline-offset: -3px; }
+  #m-app-concept .module-tab:active { background: var(--blue-tint); }
+  #m-app-concept .module-view-picker { position: relative; flex: none; }
+  #m-app-concept .module-view-picker .top-action[aria-expanded='true'] { background: var(--blue-tint); }
+  #m-app-concept .module-view-menu {
+    display: grid;
+    position: absolute;
+    inset: calc(100% + 8px) 0 auto auto;
+    min-width: 174px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: 20px;
+    box-shadow: 0 9px 28px color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    #m-app-concept .module-view-menu {
+      background: color-mix(in srgb, var(--surface) 80%, transparent);
+      -webkit-backdrop-filter: blur(16px) saturate(1.25);
+      backdrop-filter: blur(16px) saturate(1.25);
+    }
+  }
+  #m-app-concept .module-view-option {
+    display: grid;
+    grid-template-columns: 15px 20px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 9px;
+    border-radius: 12px;
+    font-size: 14px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  #m-app-concept .module-view-option:focus-visible { outline-offset: -2px; }
+  #m-app-concept .module-view-option:active { background: var(--blue-tint); }
+  #m-app-concept .module-view-option .view-icon { color: var(--blue); }
+  #m-app-concept .module-view-option[aria-checked='false'] .view-check { visibility: hidden; }
+  #m-app-concept svg.view-check { width: 15px; height: 15px; }
+  #m-app-concept .module-entries .option {
+    min-height: 66px;
+    transition-property: transform;
+  }
+  #m-app-concept .module-entries .option:active { background: transparent; transform: scale(.985); }
+  #m-app-concept .module-entries[data-view='grid'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  #m-app-concept .module-entries[data-view='grid'] .option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    min-height: 138px;
+    padding: 13px;
+    gap: 12px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .module-entries[data-view='grid'] .option:active { background: var(--surface); }
+  #m-app-concept .module-entries[data-view='grid'] .option::after,
+  #m-app-concept .module-entries[data-view='grid'] .option-marker { display: none; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    color: #f7faff;
+    background: linear-gradient(145deg, #4b71c9, #24458d);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 3px 6px rgb(45 70 132 / 15%);
+  }
+  #m-app-concept .module-entries[data-view='grid'] [data-key='people'] .record-icon { background: linear-gradient(145deg, #6673be, #425096); }
+  #m-app-concept .module-entries[data-view='grid'] [data-key='food'] .record-icon { background: linear-gradient(145deg, #38799e, #205379); }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon svg { width: 24px; height: 24px; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon :is(.people-module-icon, .cooking-module-icon) { width: 34px; height: 34px; }
+  #m-app-concept .module-entries[data-view='grid'] .record-icon i { font-size: 21px; }
+  #m-app-concept .module-entries[data-view='grid'] .option-name { font-size: 15px; }
+  #m-app-concept .shell.module-open:not(.module-moving) > :is(.topbar, [data-page='modules'], .bottom-nav) {
+    visibility: hidden;
+  }
+  #m-app-concept .module-window {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+      env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    background: var(--canvas);
+    transform-origin: top left;
+  }
+  #m-app-concept .module-window[inert] { pointer-events: none; }
+  #m-app-concept .module-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 19px 8px;
+  }
+  #m-app-concept :is(.module-toolbar-button, .page-back) {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    flex: none;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+    background: linear-gradient(var(--surface), color-mix(in srgb, var(--surface) 65%, var(--canvas)));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
+      0 2px 6px color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  #m-app-concept .page-back::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: solid currentColor;
+    border-width: 0 0 3px 3px;
+    border-radius: 1px;
+    transform: translateX(2px) rotate(45deg);
+  }
+  #m-app-concept :is(.module-toolbar-button, .page-back):active { transform: scale(.94); }
+  #m-app-concept .module-toolbar-button svg { width: 21px; height: 21px; }
+  #m-app-concept .module-home { display: grid; gap: 11px; }
+  #m-app-concept .module-home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #m-app-concept .module-home-header h1 { font-size: 24px; font-weight: 740; line-height: 1.2; }
+  #m-app-concept .module-home-header .primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-block: 7px;
+  }
+  #m-app-concept .module-record-list { display: grid; gap: 8px; }
+  #m-app-concept .module-record-card {
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    align-items: center;
+    min-width: 0;
+    min-height: 76px;
+    gap: 11px;
+    padding: 9px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    text-align: left;
+    background: var(--surface);
+  }
+  #m-app-concept .module-record-card:active { background: color-mix(in srgb, var(--surface) 80%, var(--blue-tint)); }
+  #m-app-concept .module-record-card .record-info { display: grid; gap: 2px; overflow-wrap: anywhere; }
+  #m-app-concept .module-record-card .record-name { font-size: 16px; font-weight: 720; }
+  #m-app-concept .module-record-card .record-meta { margin: 0; font-size: 13px; }
+  #m-app-concept .module-record-thumbnail {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 680;
+  }
+  #m-app-concept .module-record-thumbnail.person-list-avatar {
+    width: 48px;
+    height: 48px;
+    justify-self: center;
+    background: var(--soft-violet);
+  }
+  #m-app-concept .module-record-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+  #m-app-concept .module-record-end { display: inline-flex; align-items: center; gap: 4px; color: var(--quiet); }
+  #m-app-concept .module-record-end i { min-width: 12px; }
+  #m-app-concept .module-record-empty { padding-block: 8px; font-size: 14px; color: var(--quiet); }
+  #m-app-concept .module-settings-view { display: grid; gap: 15px; }
+  #m-app-concept .module-settings-heading { padding-inline: 3px; font-size: 20px; font-weight: 690; }
+  #m-app-concept .module-settings-group { display: grid; gap: 6px; }
+  #m-app-concept .module-settings-group h3 { padding-inline: 3px; color: var(--quiet); font-size: 13px; font-weight: 650; }
+  #m-app-concept .module-feature {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    padding: 18px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .module-feature h2 { font-size: 17px; font-weight: 680; }
+  #m-app-concept .feature-meta { font-size: 13px; color: var(--quiet); margin-top: 3px; overflow-wrap: anywhere; }
+  #m-app-concept .feature-value { font-size: 28px; font-weight: 680; letter-spacing: -.04em; color: var(--blue); overflow-wrap: anywhere; }
+  #m-app-concept .settings-stack { display: grid; gap: 12px; }
+  #m-app-concept .settings-row { min-height: 58px; }
+  #m-app-concept .settings-account { min-height: 74px; }
+  #m-app-concept .settings-avatar {
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2a5bc0, #193777);
+    color: #f5f8ff;
+    font-weight: 680;
+  }
+  #m-app-concept .settings-arrow { color: var(--quiet); }
+  #m-app-concept .settings-arrow svg { width: 15px; height: 15px; }
+  #m-app-concept .settings-note, #m-app-concept .settings-meta { font-size: 13px; color: var(--quiet); overflow-wrap: anywhere; }
+  #m-app-concept .settings-detail { gap: 8px; }
+  #m-app-concept .managed-groups { display: grid; gap: 14px; }
+  #m-app-concept .managed-group { display: grid; gap: 6px; }
+  #m-app-concept .managed-group h3 { padding-inline: 3px; color: var(--quiet); font-size: 13px; font-weight: 650; }
+  #m-app-concept .topbar:has(.release-back:not([hidden])) {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 10px;
+  }
+  #m-app-concept .topbar:has(.release-back:not([hidden])) .top-title {
+    font-size: 18px;
+    letter-spacing: -.02em;
+    text-align: center;
+  }
+  #m-app-concept .release-page { padding-top: 8px; }
+  #m-app-concept .release-list { display: grid; gap: 12px; }
+  #m-app-concept .release-card {
+    padding: 15px;
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  #m-app-concept .release-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding-bottom: 11px;
+    margin-bottom: 11px;
+    border-bottom: 1px solid var(--line);
+  }
+  #m-app-concept .release-heading { display: flex; align-items: center; gap: 7px; }
+  #m-app-concept .release-heading h2 { font-size: 20px; font-weight: 690; letter-spacing: -.03em; }
+  #m-app-concept .release-current {
+    padding: 3px 7px;
+    border-radius: 10px;
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+  #m-app-concept .release-date { color: var(--quiet); font-size: 12px; font-variant-numeric: tabular-nums; }
+  #m-app-concept .release-revisions { display: grid; gap: 12px; }
+  #m-app-concept .release-group h3 { color: var(--blue); font-size: 13px; font-weight: 670; }
+  #m-app-concept .release-group ul { display: grid; gap: 5px; margin: 4px 0 0; padding-inline-start: 17px; }
+  #m-app-concept .release-group li { font-size: 14px; overflow-wrap: anywhere; }
+  #m-app-concept .release-group li::marker { color: var(--quiet); }
+  #m-app-concept .field .data-text { font: 13px/1.55 ui-monospace, Consolas, monospace; resize: vertical; }
+  #m-app-concept .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 5px;
+    padding: 5px;
+    margin: 4px 16px 12px;
+    border-radius: 26px;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--line), 0 4px 13px color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+  #m-app-concept .bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 46px;
+    border-radius: 21px;
+    color: var(--quiet);
+    font-size: 11px;
+  }
+  #m-app-concept .bottom-nav button[aria-current='page'], #m-app-concept .bottom-nav button:active {
+    background: var(--blue-tint);
+    color: var(--blue);
+    font-weight: 680;
+  }
+  #m-app-concept .bottom-nav svg { width: 20px; height: 20px; stroke-width: 1.85; }
+
+  #m-app-concept .overlay {
+    display: grid;
+    align-items: end;
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    overflow: hidden;
+    background: rgb(11 23 47 / 0%);
+    transition: background-color 230ms ease;
+  }
+  #m-app-concept .overlay[data-open='true'] { background: rgb(11 23 47 / 38%); }
+  #m-app-concept .sheet {
+    --drag: 0px;
+    min-width: 0;
+    max-height: calc(100% - 22px);
+    overflow: auto;
+    padding: 0 17px 18px;
+    color: var(--ink);
+    background: var(--surface);
+    border-radius: var(--radius) var(--radius) 0 0;
+    transform: translateY(100%);
+    transition: transform 280ms var(--ease);
+    box-shadow: 0 -7px 22px rgb(11 23 47 / 13%);
+  }
+  #m-app-concept .overlay[data-open='true'] .sheet { transform: translateY(var(--drag)); }
+  #m-app-concept .overlay[data-motion='horizontal'] .sheet { transform: translateX(100%); }
+  #m-app-concept .overlay[data-motion='horizontal'][data-open='true'] .sheet { transform: translateX(0); }
+  #m-app-concept .sheet[data-dragging='true'] { transition: none; }
+  #m-app-concept .handle { display: grid; place-items: center; width: 100%; min-height: 44px; touch-action: none; }
+  #m-app-concept .handle:active { transform: none; }
+  #m-app-concept .handle::before { content: ""; width: 32px; height: 4px; border-radius: 99px; background: var(--line); }
+  #m-app-concept .sheet-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -6px 0 13px; }
+  #m-app-concept .sheet-title { font-size: 22px; font-weight: 690; letter-spacing: -.035em; overflow-wrap: anywhere; }
+  #m-app-concept .sheet-content { display: grid; gap: 10px; }
+  #m-app-concept .experience-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 4px 1px;
+    border-top: 1px solid var(--line);
+    color: var(--quiet);
+    text-align: start;
+    font-size: 13px;
+  }
+  #m-app-concept .cooking-hero-content .experience-entry { margin-top: 10px; }
+  #m-app-concept .cooking-hero-content:has(.experience-entry) { padding-bottom: 1px; }
+  #m-app-concept .experience-chevron {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    margin-inline-end: 4px;
+    border: solid currentColor;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(-45deg);
+    transition: transform 180ms var(--ease);
+  }
+  #m-app-concept .experience-page {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  #m-app-concept .experience-title { font-size: 24px; font-weight: 700; letter-spacing: -.035em; }
+  #m-app-concept .experience-summary { margin-top: 2px; font-size: 13px; color: var(--quiet); }
+  #m-app-concept .experience-controls { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+  #m-app-concept .experience-controls button { padding-inline: 10px; border-radius: 12px; font-size: 14px; }
+  #m-app-concept .experience-controls .experience-quick { background: var(--blue-tint); color: var(--blue); font-weight: 650; }
+  #m-app-concept .experience-controls :is(.experience-important, .experience-undo) { border: 1px solid var(--line); color: var(--quiet); }
+  #m-app-concept .experience-controls .experience-undo { width: 44px; margin-inline-start: auto; font-size: 20px; }
+  #m-app-concept :is(.experience-page, .sheet-header, .cooking-bar) [aria-disabled="true"],
+  #m-app-concept .experience-undo:disabled { opacity: .52; }
+  #m-app-concept .experience-events { margin: 0; padding: 0; list-style: none; }
+  #m-app-concept .experience-events li { border-top: 1px solid var(--line); }
+  #m-app-concept .experience-events summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 46px;
+    padding-inline: 2px;
+    list-style: none;
+  }
+  #m-app-concept .experience-events summary::-webkit-details-marker { display: none; }
+  #m-app-concept .experience-events summary > span:first-child { flex: 1; }
+  #m-app-concept .experience-events details[open] .experience-chevron { transform: rotate(45deg); }
+  #m-app-concept .experience-events small { color: var(--quiet); }
+  #m-app-concept .experience-note { padding: 0 2px 4px; }
+  #m-app-concept .experience-note p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; }
+  #m-app-concept .experience-note .experience-text { color: var(--blue); font-size: 13px; padding-inline: 0; }
+  #m-app-concept .experience-form { display: grid; gap: 12px; }
+  #m-app-concept .experience-precision { display: flex; gap: 8px; min-height: 44px; align-items: center; font-size: 14px; }
+  #m-app-concept .experience-precision input { width: 18px; height: 18px; accent-color: var(--blue); }
+  #m-app-concept :is(.experience-error, .experience-status) { margin-bottom: 8px; font-size: 13px; color: var(--quiet); }
+  #m-app-concept .experience-error { color: light-dark(#b22d42, #ff9aa9); }
+  #m-app-concept .experience-status:empty { margin: 0; }
+  #m-app-concept .record-actions {
+    --danger: light-dark(#b22d42, #ff9aa9);
+    position: relative;
+    z-index: 2;
+    flex: none;
+  }
+  #m-app-concept .record-action-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 174px;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-7px);
+    transition: opacity 170ms var(--ease), transform 170ms var(--ease), visibility 0s 170ms;
+    filter: drop-shadow(0 8px 14px color-mix(in srgb, var(--ink) 16%, transparent));
+  }
+  #m-app-concept .record-action-menu-inner {
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: color-mix(in srgb, var(--surface) 93%, transparent);
+    backdrop-filter: blur(18px) saturate(1.25);
+    clip-path: inset(0 0 100% round 17px);
+    transition: clip-path 170ms var(--ease);
+  }
+  #m-app-concept .record-action-menu[data-open] {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 230ms var(--ease), transform 230ms var(--ease);
+  }
+  #m-app-concept .record-action-menu[data-open] .record-action-menu-inner {
+    clip-path: inset(0 round 17px);
+    transition-duration: 230ms;
+  }
+  #m-app-concept .record-action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 14px;
+  }
+  #m-app-concept .record-action-row + .record-action-row { border-top: 1px solid var(--line); }
+  #m-app-concept .record-action-row:is(:hover, :focus-visible) { background: var(--canvas); }
+  #m-app-concept .record-action-row:focus-visible { outline-offset: -2px; }
+  #m-app-concept .record-action-row[data-record-action='delete'] { color: var(--danger); }
+  #m-app-concept .record-delete-layer {
+    --danger: light-dark(#b22d42, #ff9aa9);
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    display: grid;
+    align-items: end;
+    padding: 0 max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+    background: rgb(11 23 47 / 28%);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms var(--ease), visibility 0s 180ms;
+  }
+  #m-app-concept .record-delete-layer[data-open] {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 230ms var(--ease);
+  }
+  #m-app-concept .record-delete-panel {
+    display: grid;
+    gap: 8px;
+    max-height: calc(100% - 12px);
+    overflow: auto;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    color: var(--ink);
+    transform: translateY(24px);
+    transition: transform 180ms var(--ease);
+    box-shadow: 0 10px 28px rgb(11 23 47 / 20%);
+  }
+  #m-app-concept .record-delete-layer[data-open] .record-delete-panel {
+    transform: translateY(0);
+    transition-duration: 230ms;
+  }
+  #m-app-concept .record-delete-panel h2 { font-size: 19px; overflow-wrap: anywhere; }
+  #m-app-concept .record-delete-description { font-size: 14px; color: var(--quiet); }
+  #m-app-concept .record-delete-error { font-size: 13px; color: var(--danger); }
+  #m-app-concept .record-delete-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  #m-app-concept .record-delete-buttons [data-record-delete-confirm] {
+    background: color-mix(in srgb, var(--danger) 12%, var(--surface));
+    color: var(--danger);
+  }
+  #m-app-concept .record-delete-buttons button:disabled { opacity: .58; }
+  #m-app-concept .sheet-content .rows { background: var(--canvas); }
+  #m-app-concept .sheet-content .option + .option { margin-top: 0; }
+  #m-app-concept .detail { display: grid; gap: 8px; padding: 13px; border-radius: 14px; background: var(--canvas); overflow-wrap: anywhere; }
+  #m-app-concept .detail :is(h3,strong) { font-weight: 680; }
+  #m-app-concept .detail p, #m-app-concept .detail dt { color: var(--quiet); font-size: 13px; white-space: pre-wrap; }
+  #m-app-concept .detail dl { display: grid; gap: 8px; }
+  #m-app-concept .form { display: grid; gap: 10px; }
+  #m-app-concept .field { display: grid; gap: 4px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .field :is(input,textarea,select) {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--ink);
+    background: var(--canvas);
+    font: inherit;
+    font-size: 16px;
+  }
+  #m-app-concept :is(.primary,.secondary) { justify-self: stretch; border-radius: 13px; font-weight: 650; font-size: 14px; padding-inline: 12px; }
+  #m-app-concept .primary { color: var(--on-blue); background: var(--blue); }
+  #m-app-concept .primary:active { background: color-mix(in srgb, var(--blue) 86%, var(--ink)); }
+  #m-app-concept .secondary { color: var(--blue); background: var(--blue-tint); }
+  #m-app-concept .secondary:active { background: color-mix(in srgb, var(--blue-tint) 88%, var(--blue)); }
+  #m-app-concept .empty { padding: 13px; color: var(--quiet); font-size: 13px; }
+  #m-app-concept .notice {
+    position: absolute;
+    z-index: 2;
+    bottom: 78px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 22px);
+    padding: 5px 11px;
+    border-radius: 18px;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  #m-app-concept .notice-action { min-height: 44px; padding: 0 6px; font-weight: 650; text-decoration: underline; }
+  #m-app-concept .live-status { position: absolute; inset: 0 auto auto 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  @media (max-width: 385px) {
+    #m-app-concept { padding-block: 12px; }
+    #m-app-concept .shell { height: 550px; }
+    #m-app-concept .topbar { padding-inline: 15px; }
+    #m-app-concept .page { padding-inline: 13px; }
+    #m-app-concept .module-toolbar { padding-inline: 13px; }
+    #m-app-concept .bottom-nav { margin-inline: 11px; }
+    #m-app-concept .widget-body { padding-inline: 15px; }
+    #m-app-concept .widget-title { padding-right: 26px; }
+    #m-app-concept .record, #m-app-concept .option { gap: 8px; padding-inline: 9px; }
+    #m-app-concept .module-feature { padding-inline: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #m-app-concept *, #m-app-concept *::before, #m-app-concept *::after { transition: none !important; }
+    #m-app-concept button:active,
+    #m-app-concept :is(.module-toolbar-button, .page-back):active,
+    #m-app-concept .module-entries .option:active { transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #m-app-concept .module-view-menu { animation: m-app-view-menu-in 140ms var(--ease); }
+  }
+  @keyframes m-app-view-menu-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+<link rel="stylesheet" href="./mahjong.css">
+<link rel="stylesheet" href="./cooking.css">
+<link rel="stylesheet" href="./people.css">
+
+<div id="m-app-concept" class="viz-dotted-background">
+  <!--
+    Navigation icons: Lucide 1.17.0, ISC License
+    Copyright (c) 2026 Lucide Icons and Contributors
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  -->
+  <svg class="icon-definitions" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="m-app-people-medallion" x2="100%" y2="100%">
+        <stop offset="0" stop-color="#7586d1"/>
+        <stop offset="1" stop-color="#354581"/>
+      </linearGradient>
+    </defs>
+    <symbol id="m-app-icon-people" viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="14" fill="url(#m-app-people-medallion)"/>
+      <circle cx="16" cy="16" r="13.35" fill="none" stroke="#d9e1ff" stroke-opacity=".65" stroke-width="1.3"/>
+      <circle cx="16" cy="11.2" r="4.3" fill="#f7f8ff"/>
+      <path d="M7.25 22.25c1.5-3.1 4.45-5.05 8.75-5.05s7.25 1.95 8.75 5.05a11.2 11.2 0 0 1-17.5 0Z" fill="#f7f8ff"/>
+    </symbol>
+    <symbol id="m-app-icon-cooking" viewBox="0 0 32 32">
+      <path d="M3.5 16.15 21.4 13.15c.6 5.45-2.85 10.45-7.95 11.3-5.05.85-9.2-2.5-9.95-8.3Z"
+        fill="currentColor" fill-opacity=".16" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="m21.45 13.15 7.1-3.65" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M7.1 10.4 8.7 8.75a.5.5 0 0 1 .72 0l1.42 1.4a.5.5 0 0 1 0 .72l-1.58 1.62a.5.5 0 0 1-.72.02L7.1 11.1a.5.5 0 0 1 0-.7Z
+        M13.6 9.45c.4-1.7 1.75-2.76 3.55-2.8-.1 1.67-1.29 3.12-3.05 3.58a.46.46 0 0 1-.5-.78Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="m-app-icon-recent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 6v6h4"/>
+    </symbol>
+    <symbol id="m-app-icon-modules" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <circle cx="17.5" cy="17.5" r="3.5"/>
+    </symbol>
+    <symbol id="m-app-icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033
+        2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0
+        2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051
+        a2.34 2.34 0 0 0 3.319-1.915"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="m-app-icon-view-grid" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </g>
+    </symbol>
+    <symbol id="m-app-icon-view-list" viewBox="0 0 24 24">
+      <path d="M8.5 5H21m-12.5 7H21m-12.5 7H21" fill="none" stroke="currentColor" stroke-linecap="round"/>
+      <g fill="currentColor">
+        <circle cx="3.25" cy="5" r="1.3"/>
+        <circle cx="3.25" cy="12" r="1.3"/>
+        <circle cx="3.25" cy="19" r="1.3"/>
+      </g>
+    </symbol>
+    <symbol id="m-app-icon-view-check" viewBox="0 0 24 24">
+      <path d="m4.5 12.5 5 5L19.5 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+  <article class="app" aria-label="M_APP · 手机界面">
+    <div class="shell">
+      <header class="topbar">
+        <button class="release-back page-back cursor-interaction" type="button" data-action="back-from-changelog" aria-label="返回设置" hidden></button>
+        <h1 class="top-title">最近</h1>
+        <button class="top-action cursor-interaction" type="button" id="m-app-add" data-action="add" aria-label="新增记录"><i data-lucide="plus" aria-hidden="true"></i></button>
+        <div class="module-tabs" data-module-tabs role="tablist" aria-label="模块分类" hidden>
+          <button id="m-app-module-tab-permanent" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="true" data-action="select-category" data-key="permanent">永久记录</button>
+          <button id="m-app-module-tab-temporary" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="temporary">临时记录</button>
+          <button id="m-app-module-tab-tools" class="module-tab cursor-interaction" type="button" role="tab" aria-controls="m-app-module-pane" aria-selected="false" tabindex="-1" data-action="select-category" data-key="tools">工具</button>
+        </div>
+        <div class="module-view-picker" data-module-view-picker hidden>
+          <button class="top-action cursor-interaction" type="button" data-action="toggle-module-view-menu" aria-label="视图样式" aria-haspopup="menu" aria-expanded="false" aria-controls="m-app-module-view-menu">
+            <span data-view-icon="grid" aria-hidden="true"><svg><use href="#m-app-icon-view-grid"/></svg></span>
+            <span data-view-icon="list" aria-hidden="true" hidden><svg><use href="#m-app-icon-view-list"/></svg></span>
+          </button>
+          <div class="module-view-menu" id="m-app-module-view-menu" role="menu" aria-label="视图样式" hidden>
+            <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="true" tabindex="-1" data-action="set-module-view" data-key="grid">
+              <svg class="view-check" aria-hidden="true"><use href="#m-app-icon-view-check"/></svg>
+              <svg class="view-icon" aria-hidden="true"><use href="#m-app-icon-view-grid"/></svg><span>网格视图</span>
+            </button>
+            <button class="module-view-option cursor-interaction" type="button" role="menuitemradio" aria-checked="false" tabindex="-1" data-action="set-module-view" data-key="list">
+              <svg class="view-check" aria-hidden="true"><use href="#m-app-icon-view-check"/></svg>
+              <svg class="view-icon" aria-hidden="true"><use href="#m-app-icon-view-list"/></svg><span>列表视图</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      <section class="page" data-page="recent" aria-label="最近">
+        <div data-widget-slot></div>
+        <h2 class="section-heading">最近记录</h2>
+        <div class="rows" data-recent-list></div>
+      </section>
+      <section class="page" data-page="modules" aria-label="模块" hidden>
+        <div id="m-app-module-pane" data-module-pane role="tabpanel"></div>
+      </section>
+      <section class="module-window" aria-label="模块详情" hidden>
+        <div class="module-toolbar">
+          <button class="module-back page-back cursor-interaction" type="button" aria-label="返回模块" data-action="back-to-category"></button>
+          <button class="module-toolbar-button cursor-interaction" type="button" aria-label="模块设置" data-action="open-module-settings" hidden><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></button>
+        </div>
+        <div class="page" data-module-detail></div>
+      </section>
+      <section class="page" data-page="settings" aria-label="设置" hidden>
+        <div class="settings-stack">
+          <div class="rows">
+            <button class="record settings-row settings-account cursor-interaction" type="button" data-action="settings-item" data-key="account">
+              <span class="record-icon settings-avatar" aria-hidden="true">M</span>
+              <span class="record-info"><span class="record-name">我的账号</span><span class="record-meta">示例用户</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="modules">
+              <span class="record-icon"><i data-lucide="layout-grid" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">模块管理</span></span>
+              <span class="setting-value"><span data-enabled-module-count></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="preferences">
+              <span class="record-icon"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></span>
+              <span class="record-info"><span class="record-name">偏好设置</span><span class="record-meta">外观和小组件</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="data">
+              <span class="record-icon"><i data-lucide="arrow-down-up" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">数据导入 / 导出</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+          <div class="rows">
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="about">
+              <span class="record-icon"><i data-lucide="info" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">关于我们</span></span>
+              <span class="setting-value"><span data-app-version></span><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+            <button class="record settings-row cursor-interaction" type="button" data-action="settings-item" data-key="changelog">
+              <span class="record-icon"><i data-lucide="history" aria-hidden="true"></i></span>
+              <span class="record-info"><span class="record-name">版本日志</span></span>
+              <span class="settings-arrow"><i data-lucide="chevron-right" aria-hidden="true"></i></span>
+            </button>
+          </div>
+        </div>
+      </section>
+      <section class="page release-page" data-page="changelog" aria-label="版本内容" hidden>
+        <div class="release-list" data-release-list></div>
+      </section>
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="cursor-interaction" type="button" data-tab="recent" aria-current="page"><svg aria-hidden="true"><use href="#m-app-icon-recent"/></svg>最近</button>
+        <button class="cursor-interaction" type="button" data-tab="modules"><svg aria-hidden="true"><use href="#m-app-icon-modules"/></svg>模块</button>
+        <button class="cursor-interaction" type="button" data-tab="settings"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg>设置</button>
+      </nav>
+    </div>
+    <section class="cooking-window" data-cooking-window role="dialog" aria-modal="true" aria-labelledby="cooking-title" hidden></section>
+    <div class="notice" hidden></div>
+    <div class="live-status" role="status"></div>
+    <div class="overlay" hidden>
+      <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="m-app-sheet-title">
+        <button class="handle cursor-interaction" type="button" data-close-sheet aria-label="下拉或点击关闭"></button>
+        <div class="sheet-header">
+          <button class="page-back cursor-interaction" type="button" data-sheet-back aria-label="返回" hidden></button>
+          <h2 class="sheet-title" id="m-app-sheet-title"></h2>
+          <div data-sheet-record-actions hidden></div>
+          <button class="close cursor-interaction" type="button" data-close-sheet aria-label="关闭"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="sheet-content"></div>
+      </section>
+    </div>
+    <div class="record-delete-layer" data-record-delete inert aria-hidden="true">
+      <section class="record-delete-panel" role="alertdialog" aria-modal="true" tabindex="-1"
+        aria-labelledby="m-app-record-delete-title" aria-describedby="m-app-record-delete-description">
+        <h2 id="m-app-record-delete-title"></h2>
+        <p class="record-delete-description" id="m-app-record-delete-description"></p>
+        <p class="record-delete-error" data-record-delete-error role="alert" hidden></p>
+        <div class="record-delete-buttons">
+          <button class="secondary cursor-interaction" type="button" data-record-delete-cancel>取消</button>
+          <button class="secondary cursor-interaction" type="button" data-record-delete-confirm>删除</button>
+        </div>
+      </section>
+    </div>
+  </article>
+</div>
+
+<script src="./mahjong.js"></script>
+<script src="./mahjong-ui.js"></script>
+<script src="./cooking.js"></script>
+<script src="./cooking-store.js"></script>
+<script src="./cooking-ui.js" data-demo-cover="../public/scallion-noodles.jpg"></script>
+<script src="./people.js"></script>
+<script src="./people-ui.js"></script>
+<script src="./cloud-store.js"></script>
+<script src="./experiences.js"></script>
+<script src="./experiences-ui.js"></script>
+<script>
+  (() => {
+    if (!globalThis.Tweak) return;
+    const app = document.getElementById('m-app-concept').querySelector('.app');
+    const appearance = { radius: 20 };
+    const tweak = new Tweak({ container: app, onChange: () => app.style.setProperty('--radius', `${appearance.radius}px`) });
+    tweak.addSlider(appearance, 'radius', { label: '卡片圆角', min: 12, max: 32, unit: 'px', reference: '--radius' });
+  })();
+</script>
+
+<script>
+(() => {
+  const root = document.getElementById('m-app-concept');
+  const app = root.querySelector('.app');
+  const shell = root.querySelector('.shell');
+  const topbar = shell.querySelector('.topbar');
+  const pageTitle = root.querySelector('.top-title');
+  const addButton = root.querySelector('#m-app-add');
+  const releaseBack = root.querySelector('.release-back');
+  const pages = [...root.querySelectorAll('[data-page]')];
+  const mainNavigation = root.querySelector('.bottom-nav');
+  const tabs = [...mainNavigation.querySelectorAll('[data-tab]')];
+  const widgetSlot = root.querySelector('[data-widget-slot]');
+  const recentList = root.querySelector('[data-recent-list]');
+  const enabledModuleCount = root.querySelector('[data-enabled-module-count]');
+  const overlay = root.querySelector('.overlay');
+  const sheet = root.querySelector('.sheet');
+  const handle = sheet.querySelector('.handle');
+  const closeButton = sheet.querySelector('.close');
+  const sheetBack = sheet.querySelector('[data-sheet-back]');
+  const sheetActions = sheet.querySelector('[data-sheet-record-actions]');
+  const sheetTitle = sheet.querySelector('.sheet-title');
+  const sheetContent = sheet.querySelector('.sheet-content');
+  const notice = root.querySelector('.notice');
+  const status = root.querySelector('.live-status');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mahjongCalculator = globalThis.MahjongCalculator;
+  const mahjongStorageKey = 'm-app-mahjong-v1';
+  const foodStorageKey = 'm-app-food-v1';
+  const sampleFood = { id: 'food-wutong', kind: 'food', title: '梧桐面馆', summary: '葱油拌面 · 小馄饨',
+    time: '昨天', detail: '葱油拌面有很香的葱味。小馄饨汤底清淡，适合一起点。' };
+  const cookingModel = globalThis.CookingGuide;
+  const cookingModule = globalThis.CookingModule;
+  const legacyCookingStorageKey = 'm-app-cooking-v1';
+  const peopleModel = globalThis.PeopleCards;
+  const cloud = document.documentElement.hasAttribute('data-m-app-cloud')
+    ? globalThis.MAppCloud.createStore(applyCloudRecords) : null;
+  const peopleStore = cloud ? null : peopleModel.readStore();
+  const pageLabels = { recent: '最近', modules: '模块', settings: '设置', changelog: '版本内容' };
+  const modules = {
+    cooking: { label: '烹饪指南', item: '菜谱', icon: 'cooking-module' },
+    people: { label: '人物卡片', item: '人物卡片', icon: 'people-module' },
+    food: { label: '美食记录', item: '美食记录', icon: 'utensils', field: '店名', note: '推荐菜和口味' },
+    parking: { label: '停车备忘', icon: 'square-parking' },
+    calculator: { label: '计算器', icon: 'calculator' },
+    mahjong: { label: '麻将胡结算', icon: 'mahjong' }
+  };
+  const persistentKinds = ['cooking', 'people', 'food'];
+  const widgetChoices = [
+    { key: 'parking', name: '当前停车', meta: '显示当前车位，也可快速记录', symbol: 'square-parking', view: parkingWidgetView },
+    { key: 'none', name: '隐藏小组件', symbol: 'circle-minus' }
+  ];
+  const state = {
+    page: 'recent',
+    category: 'permanent',
+    module: null,
+    moduleScreen: 'content',
+    modulePreferences: {},
+    peopleSettings: peopleStore?.settings ?? peopleModel.normalizeSettings(),
+    peopleSort: peopleStore?.sort ?? 'recent',
+    moduleView: 'grid',
+    enabledModules: Object.keys(modules),
+    appearance: 'system',
+    widget: 'parking',
+    mahjong: cloud ? mahjongCalculator.normalizeState() : loadMahjong(),
+    parking: cloud ? null : { place: '环贸广场', area: 'B2 · C 区', number: '128', time: '14:32' },
+    records: cloud ? [] : [
+      ...loadLegacyCooking(),
+      ...(peopleStore?.records ?? [{ id: 'person-lin', kind: 'people', title: '林然', summary: '朋友 · 生日 5 月 18 日', time: '昨天', detail: '朋友。生日 5 月 18 日，喜欢手冲咖啡。',
+        person: peopleModel.normalizePerson({ birthday: '--05-18', relationships: ['朋友'], notes: '喜欢手冲咖啡。' }) }]),
+      ...loadFoodRecords()
+    ]
+  };
+  let cookingStore = cloud ? null : globalThis.CookingStore.createStore(loadLegacyCooking());
+  const cookingUpdates = !cloud && typeof BroadcastChannel === 'function' ? new BroadcastChannel('m-app-cooking-updates') : null;
+  const cookingPanel = root.querySelector('[data-cooking-window]');
+  const drafts = new Map();
+  const scrollPositions = new Map();
+  let nextId = 1;
+  let returnFocus;
+  let noticeTimer;
+  let dragStart;
+  let draggedHandle = false;
+  let recentlyCompleted;
+
+  const icon = (name) => {
+    if (name === 'mahjong') return '<span aria-hidden="true">胡</span>';
+    if (name === 'people-module') return '<svg class="people-module-icon" aria-hidden="true"><use href="#m-app-icon-people"/></svg>';
+    if (name === 'cooking-module') return '<svg class="cooking-module-icon" aria-hidden="true"><use href="#m-app-icon-cooking"/></svg>';
+    return `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  };
+  const findRecord = (key) => state.records.find((record) => record.id === key);
+  const timeNow = () => new Intl.DateTimeFormat('zh-CN', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date());
+  const recordActions = createRecordActions();
+  const cookingWindow = cookingModule.createWindow(cookingPanel, shell, saveRecipe, replacementFocus, recordActions, deleteRecord, saveExperiences);
+  const peopleView = globalThis.PeopleCardView.create({
+    setSheet, sheetContent, sheetBack, closeSheet, showNotice, savePerson, savePeopleSettings, saveExperiences,
+    icon, findRecord, getSettings: () => state.peopleSettings, isOpen: () => overlay.dataset.open === 'true'
+  });
+
+  function loadLegacyCooking() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(legacyCookingStorageKey));
+      if (Array.isArray(saved)) return saved.filter((record) => record?.kind === 'cooking'
+        && typeof record.title === 'string' && typeof record.id === 'string' && record.id);
+    } catch {
+      // The sample remains available if browser storage cannot be read.
+    }
+    return [{ id: 'recipe-scallion', kind: 'cooking', title: '葱油拌面', durationMinutes: 20, summary: '家常快手', time: '12:18',
+      detail: '小火炸香葱段。调入生抽、老抽和一小勺糖，浇在沥干的细面上，拌匀。', recipe: cookingModel.DEMO_RECIPE }];
+  }
+
+  function useCookingRecords(recipes) {
+    const previous = state.records.filter((record) => record.kind === 'cooking');
+    const recipeIds = new Set(recipes.map((record) => record.id));
+    const hasCollision = state.records.some((record) => record.kind !== 'cooking' && recipeIds.has(record.id));
+    if (!hasCollision && JSON.stringify(previous) === JSON.stringify(recipes)) return;
+    const previousIds = new Set(previous.map((record) => record.id));
+    const addedCount = recipes.filter((record) => !previousIds.has(record.id)).length;
+    const merged = recipes.slice(0, addedCount);
+    let index = addedCount;
+    for (const record of state.records) {
+      if (record.kind === 'cooking') {
+        if (index < recipes.length) merged.push(recipes[index++]);
+      } else {
+        merged.push(recipeIds.has(record.id) ? { ...record, id: nextRecordId(recipeIds) } : record);
+      }
+    }
+    state.records = [...merged, ...recipes.slice(index)];
+    render();
+  }
+
+  async function refreshCookingRecords() {
+    useCookingRecords(await cookingStore.read());
+  }
+
+  function replaceRecordKind(kind, records) {
+    const previousIds = new Set(state.records.filter((record) => record.kind === kind).map((record) => record.id));
+    const incoming = new Map(records.map((record) => [record.id, record]));
+    const additions = records.filter((record) => !previousIds.has(record.id));
+    state.records = [...additions, ...state.records.flatMap((record) =>
+      record.kind === kind ? incoming.has(record.id) ? [incoming.get(record.id)] : [] : [record]
+    )];
+  }
+
+  function applyCloudRecords(scopes) {
+    if (scopes.cooking) replaceRecordKind('cooking', scopes.cooking.data);
+    if (scopes.food) replaceRecordKind('food', scopes.food.data);
+    if (scopes.people) {
+      const { records, settings, sort } = scopes.people.data;
+      replaceRecordKind('people', records);
+      state.peopleSettings = settings;
+      state.peopleSort = sort;
+    }
+    if (scopes.parking) {
+      state.parking = scopes.parking.data;
+      recentlyCompleted = undefined;
+    }
+    if (scopes.mahjong) Object.assign(state.mahjong, mahjongCalculator.normalizeState(scopes.mahjong.data));
+    render();
+  }
+
+  function cloudReadyForEdit() {
+    if (!cloud || cloud.loaded) return true;
+    cloud.refresh().catch((error) => showNotice(error.message));
+    showNotice('正在读取云端记录，请稍候再试');
+    return false;
+  }
+
+  function refreshWhenAvailable() {
+    if (!cloud || document.hidden || !overlay.hidden || !cookingPanel.hidden) return;
+    const active = document.activeElement;
+    if (state.module === 'mahjong' && !modulePane.hidden
+      && (modulePane.contains(active) && active.matches('input, select, textarea'))) return;
+    if (state.module === 'people' && state.moduleScreen === 'settings') return;
+    cloud.refresh().catch((error) => { if (!cloud.loaded) showNotice(error.message); });
+  }
+
+  async function replaceCookingRecords(records, expectedRecipes) {
+    await cookingStore.replace(records.filter((record) => record.kind === 'cooking'), expectedRecipes);
+    cookingUpdates?.postMessage('changed');
+  }
+
+  function nextRecordId(reserved) {
+    let id;
+    do { id = `record-${nextId++}`; } while (findRecord(id) || reserved?.has(id));
+    return id;
+  }
+
+  function readFoodRecords() {
+    try {
+      const raw = localStorage.getItem(foodStorageKey);
+      if (raw === null) return null;
+      const records = JSON.parse(raw);
+      if (Array.isArray(records) && records.every((record) => record?.kind === 'food'
+        && ['id', 'title', 'summary', 'time', 'detail'].every((key) => typeof record[key] === 'string'))) return records;
+    } catch {
+      // Keep unreadable storage in place so a subsequent write cannot overwrite it.
+    }
+    throw new Error('无法读取本地美食记录，请检查浏览器存储设置。');
+  }
+
+  function loadFoodRecords() {
+    try {
+      return readFoodRecords() ?? [sampleFood];
+    } catch {
+      return [sampleFood];
+    }
+  }
+
+  function writeFoodRecords(records) {
+    try {
+      localStorage.setItem(foodStorageKey, JSON.stringify(records));
+    } catch {
+      throw new Error('无法保存美食记录到此浏览器。请检查存储设置或可用空间后再试。');
+    }
+  }
+
+  async function changeFood(makeChanges) {
+    const current = () => state.records.filter((record) => record.kind === 'food');
+    if (cloud) {
+      const next = makeChanges(current());
+      await cloud.save('food', next);
+      replaceRecordKind('food', next);
+    } else await peopleModel.withStoreLock(() => {
+      const next = makeChanges(readFoodRecords() ?? current());
+      writeFoodRecords(next);
+      replaceRecordKind('food', next);
+    });
+  }
+
+  function peopleSnapshot() {
+    return { records: state.records.filter((record) => record.kind === 'people'), settings: state.peopleSettings, sort: state.peopleSort };
+  }
+
+  function personSummary(person, settings) {
+    return peopleModel.summary(person, settings) || (settings.fields.includes('notes')
+      ? person.notes.split('\n', 1)[0].slice(0, peopleModel.limits.summary) : '');
+  }
+
+  function updatePeopleRecords({ records, settings, sort }) {
+    const previousIds = new Set(state.records.filter((record) => record.kind === 'people').map((record) => record.id));
+    const incoming = new Map(records.map((record) => [record.id, record]));
+    const additions = records.filter((record) => !previousIds.has(record.id));
+    state.records = [...additions, ...state.records.flatMap((record) => {
+      if (record.kind === 'people') return incoming.has(record.id) ? [incoming.get(record.id)] : [];
+      return [incoming.has(record.id) ? { ...record, id: nextRecordId(incoming) } : record];
+    })];
+    state.peopleSettings = settings;
+    state.peopleSort = sort;
+    renderRecent();
+    if (state.module === 'people' && state.moduleScreen === 'content') renderModules();
+    updateIcons();
+  }
+
+  function writePeopleStore(bundle) {
+    try {
+      peopleModel.writeStore(bundle);
+    } catch {
+      throw new Error('无法保存人物卡片到此浏览器。请检查可用存储空间后再试。');
+    }
+  }
+
+  async function changePeople(makeChanges) {
+    if (cloud) {
+      const next = makeChanges(peopleSnapshot());
+      await cloud.save('people', next);
+      updatePeopleRecords(next);
+      return next;
+    }
+    return peopleModel.withStoreLock(() => {
+      const next = makeChanges(peopleModel.readStore() ?? peopleSnapshot());
+      writePeopleStore(next);
+      updatePeopleRecords(next);
+      return next;
+    });
+  }
+
+  async function savePerson(title, person, previous) {
+    let saved;
+    await changePeople((bundle) => {
+      const current = previous && bundle.records.find((record) => record.id === previous.id);
+      if (previous && (!current || current.title !== previous.title || current.time !== previous.time
+        || JSON.stringify(peopleModel.personFor(current)) !== JSON.stringify(peopleModel.personFor(previous)))) {
+        throw new Error('这张人物卡片已在其他页面更新，请重新打开后再编辑。');
+      }
+      saved = {
+        id: previous?.id ?? `person-${crypto.randomUUID()}`, kind: 'people', title,
+        time: previous?.time ?? timeNow(), person, summary: personSummary(person, bundle.settings),
+        detail: person.notes.slice(0, peopleModel.limits.summary),
+        ...(current?.experiences && { experiences: current.experiences }),
+        ...cloudRecordTime(previous)
+      };
+      const records = previous ? bundle.records.map((record) => record.id === previous.id ? saved : record)
+        : [saved, ...bundle.records];
+      return { ...bundle, records };
+    });
+    return saved;
+  }
+
+  async function savePeopleSettings(settings, previous, renames) {
+    const normalized = peopleModel.normalizeSettings(settings, { strict: true });
+    const updated = await changePeople((bundle) => {
+      if (JSON.stringify(bundle.settings) !== JSON.stringify(previous)) {
+        throw new Error('人物设置已在其他页面更新，请重新打开设置后再修改。');
+      }
+      const records = bundle.records.map((record) => {
+        const person = peopleModel.personFor(record);
+        person.relationships = [...new Set(person.relationships.map((label) => renames.get(label) ?? label))];
+        return { ...record, person, summary: personSummary(person, normalized) };
+      });
+      return { ...bundle, records, settings: normalized };
+    });
+    return updated.settings;
+  }
+
+  async function saveRecipe({ title, summary, durationMinutes, recipe }, previous) {
+    const record = { id: previous?.id ?? `recipe-${crypto.randomUUID()}`, kind: 'cooking', title, summary, durationMinutes,
+      time: previous?.time ?? timeNow(), detail: recipe.steps[0].text.slice(0, 180), recipe,
+      ...(previous?.experiences && { experiences: previous.experiences }), ...cloudRecordTime(previous) };
+    await persistRecipe(record, previous);
+    showNotice('菜谱已保存');
+    return record;
+  }
+
+  async function persistRecipe(record, previous) {
+    if (cloud) {
+      const recipes = state.records.filter((item) => item.kind === 'cooking');
+      const current = previous && recipes.find((item) => item.id === previous.id);
+      if (previous && JSON.stringify(current) !== JSON.stringify(previous)) {
+        throw new Error('这份菜谱已更新。请保留当前输入，重新打开菜谱后再编辑。');
+      }
+      const next = previous ? recipes.map((item) => item.id === previous.id ? record : item) : [record, ...recipes];
+      await cloud.save('cooking', next);
+      useCookingRecords(next);
+    } else {
+      useCookingRecords(await cookingStore.save(record, previous));
+      cookingUpdates?.postMessage('changed');
+    }
+  }
+
+  async function saveExperiences(previous, entries) {
+    const experiences = globalThis.RecordExperiences.normalize(entries, previous.kind);
+    if (previous.kind === 'cooking') {
+      const saved = { ...previous, experiences };
+      await persistRecipe(saved, previous);
+      return saved;
+    }
+    let saved;
+    await changePeople((bundle) => {
+      const current = bundle.records.find((record) => record.id === previous.id);
+      if (!current || JSON.stringify(current.experiences ?? []) !== JSON.stringify(previous.experiences ?? [])) {
+        throw new Error('这张人物卡片的经历已更新，请重新打开后再记录。');
+      }
+      saved = { ...current, experiences };
+      return { ...bundle, records: bundle.records.map((record) => record.id === saved.id ? saved : record) };
+    });
+    return saved;
+  }
+
+  async function deleteRecord(record) {
+    const { id, kind } = record;
+    const stale = () => new Error('这条记录已被修改或删除。请返回列表并查看最新记录。');
+    const withoutRecord = (records) => {
+      if (JSON.stringify(records.find((item) => item.id === id)) !== JSON.stringify(record)) throw stale();
+      return records.filter((item) => item.id !== id);
+    };
+
+    if (kind === 'people') {
+      await changePeople((bundle) => {
+        const current = bundle.records.find((item) => item.id === id);
+        if (!current || current.title !== record.title || current.time !== record.time
+          || JSON.stringify(peopleModel.personFor(current)) !== JSON.stringify(peopleModel.personFor(record))
+          || JSON.stringify(current.experiences ?? []) !== JSON.stringify(record.experiences ?? [])) throw stale();
+        return { ...bundle, records: bundle.records.filter((item) => item.id !== id) };
+      });
+    } else if (kind === 'cooking') {
+      if (cloud) {
+        const next = withoutRecord(state.records.filter((item) => item.kind === 'cooking'));
+        await cloud.save('cooking', next);
+        replaceRecordKind('cooking', next);
+        render();
+      } else {
+        useCookingRecords(await cookingStore.remove(record));
+        cookingUpdates?.postMessage('changed');
+      }
+    } else if (kind === 'food') {
+      await changeFood(withoutRecord);
+      render();
+    }
+  }
+
+  function loadMahjong() {
+    try {
+      const saved = localStorage.getItem(mahjongStorageKey) ?? localStorage.getItem('mahjong_state_v4');
+      return mahjongCalculator.normalizeState(JSON.parse(saved));
+    } catch {
+      return mahjongCalculator.normalizeState();
+    }
+  }
+
+  async function persistMahjong(next = state.mahjong) {
+    try {
+      if (cloud) await cloud.save('mahjong', next);
+      else localStorage.setItem(mahjongStorageKey, JSON.stringify(next));
+      Object.assign(state.mahjong, next);
+      return true;
+    } catch (error) {
+      showNotice(cloud ? error.message : '麻将数据未能保存到此浏览器');
+      return false;
+    }
+  }
+
+  function updateIcons() {
+    globalThis.lucide?.createIcons({ attrs: { width: 18, height: 18 } });
+  }
+
+  function cloudRecordTime(previous) {
+    const createdAt = previous ? previous.createdAt : cloud ? Date.now() : undefined;
+    return createdAt ? { createdAt } : {};
+  }
+
+  function syncHeader() {
+    const hasModuleTabs = state.page === 'modules';
+    const isChangelog = state.page === 'changelog';
+    pageTitle.textContent = pageLabels[state.page];
+    pageTitle.hidden = hasModuleTabs;
+    addButton.hidden = state.page !== 'recent';
+    releaseBack.hidden = !isChangelog;
+    mainNavigation.hidden = isChangelog;
+    moduleTabs.hidden = !hasModuleTabs;
+    syncModuleViewPicker();
+    syncModuleWindow();
+  }
+
+  function applyAppearance() {
+    app.dataset.appearance = state.appearance;
+  }
+
+  function setPage(key) {
+    if (key !== state.page) stopModuleMotion();
+    const previous = pages.find((page) => page.dataset.page === state.page);
+    scrollPositions.set(state.page, previous.scrollTop);
+    state.page = key;
+    syncHeader();
+    for (const page of pages) page.hidden = page.dataset.page !== key;
+    const tabKey = key === 'changelog' ? 'settings' : key;
+    for (const tab of tabs) {
+      if (tab.dataset.tab === tabKey) tab.setAttribute('aria-current', 'page');
+      else tab.removeAttribute('aria-current');
+    }
+    pages.find((page) => page.dataset.page === key).scrollTop = scrollPositions.get(key) || 0;
+  }
+
+  function parkingTitle(parking) {
+    return [parking.area, parking.number].filter(Boolean).join(' · ') || parking.place;
+  }
+
+  function parkingWidgetView() {
+    return state.parking
+      ? { label: '当前停车', title: parkingTitle(state.parking), meta: `${state.parking.place} · ${state.parking.time}`, action: 'record', key: 'parking' }
+      : { label: '停车记录', title: '记录停车', meta: '保存楼层、区域和车位号', action: 'create', key: 'parking' };
+  }
+
+  function renderWidget() {
+    const choice = widgetChoices.find((option) => option.key === state.widget);
+    const item = choice?.view?.();
+    if (!item) {
+      widgetSlot.innerHTML = `<button class="secondary cursor-interaction" type="button" data-action="widget-settings">${icon('plus')}添加小组件</button>`;
+      return;
+    }
+    widgetSlot.innerHTML = `
+      <article class="widget">
+        <span class="widget-decoration" aria-hidden="true"></span>
+        <button class="widget-body cursor-interaction" type="button" data-action="${item.action}" data-key="${item.key}">
+          <span class="widget-label">${icon(choice.symbol)}<span></span></span>
+          <span class="widget-title"></span>
+          <span class="widget-meta"></span>
+        </button>
+        <button class="widget-config cursor-interaction" type="button" data-action="widget-settings" aria-label="编辑小组件"><svg aria-hidden="true"><use href="#m-app-icon-settings"/></svg></button>
+      </article>`;
+    widgetSlot.querySelector('.widget-label span').textContent = item.label;
+    widgetSlot.querySelector('.widget-title').textContent = item.title;
+    widgetSlot.querySelector('.widget-meta').textContent = item.meta;
+  }
+
+  function recordRow(record, moduleCard = false) {
+    const button = document.createElement('button');
+    button.className = `${moduleCard ? 'module-record-card' : 'record'} cursor-interaction`;
+    button.type = 'button';
+    button.dataset.action = 'record';
+    button.dataset.key = record.id;
+    const time = '<span class="record-time"></span>';
+    button.innerHTML = `
+      <span class="${moduleCard ? 'module-record-thumbnail' : 'record-icon'}" data-kind="${record.kind}" aria-hidden="true">${moduleCard ? '' : icon(modules[record.kind].icon)}</span>
+      <span class="record-info"><span class="record-name"></span><span class="record-meta"></span></span>
+      ${moduleCard ? `<span class="module-record-end">${time}${icon('chevron-right')}</span>` : time}`;
+    const badge = button.firstElementChild;
+    let summary = record.kind === 'cooking' ? cookingModel.formatRecipeMeta(record) : record.summary;
+    if (record.kind === 'people') {
+      const person = peopleModel.personFor(record);
+      summary = personSummary(person, state.peopleSettings);
+      badge.classList.add('person-list-avatar');
+      if (person.avatar && state.peopleSettings.fields.includes('avatar')) {
+        const avatar = document.createElement('img');
+        avatar.src = person.avatar;
+        avatar.alt = '';
+        badge.replaceChildren(avatar);
+      } else badge.textContent = peopleModel.initial(record.title);
+    } else if (moduleCard) {
+      badge.textContent = Array.from(record.title.trim())[0] ?? '·';
+    }
+    button.querySelector('.record-name').textContent = record.title;
+    const meta = button.querySelector('.record-meta');
+    meta.textContent = moduleCard ? summary : [modules[record.kind].label, summary].filter(Boolean).join(' · ');
+    if (moduleCard && (!summary || (record.kind === 'food' && modulePreference('food') === 'hide'))) meta.hidden = true;
+    button.querySelector('.record-time').textContent = record.time;
+    return button;
+  }
+
+  function renderRecent() {
+    const records = cloud ? state.records.toSorted((left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0)) : state.records;
+    const rows = records.map((record) => recordRow(record));
+    if (state.parking && state.widget !== 'parking') {
+      rows.unshift(recordRow({ id: 'parking', kind: 'parking', title: parkingTitle(state.parking), summary: state.parking.place, time: state.parking.time }));
+    }
+    if (rows.length) recentList.replaceChildren(...rows);
+    else recentList.innerHTML = '<p class="empty">还没有最近记录</p>';
+  }
+
+  function render() {
+    renderWidget();
+    renderRecent();
+    renderModules();
+    syncHeader();
+    enabledModuleCount.textContent = `${state.enabledModules.length} 个模块`;
+    updateIcons();
+  }
+
+  function toggleManagedModule(key) {
+    const wasEnabled = state.enabledModules.includes(key);
+    state.enabledModules = Object.keys(modules).filter((module) => module === key ? !wasEnabled : state.enabledModules.includes(module));
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    render();
+  }
+
+  function createRecordActions() {
+    const layer = root.querySelector('[data-record-delete]');
+    const panel = layer.querySelector('.record-delete-panel');
+    const title = layer.querySelector('#m-app-record-delete-title');
+    const description = layer.querySelector('#m-app-record-delete-description');
+    const errorMessage = layer.querySelector('[data-record-delete-error]');
+    const cancel = layer.querySelector('[data-record-delete-cancel]');
+    const confirm = layer.querySelector('[data-record-delete-confirm]');
+    let activeMenu;
+    let confirmation;
+    let pending = false;
+
+    const lineIcon = (paths) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths}"/></svg>`;
+    const actionRow = (action, label, paths) => `<button class="record-action-row cursor-interaction" type="button"
+      data-record-action="${action}">${lineIcon(paths)}${label}</button>`;
+
+    function markup(key, editable = true) {
+      const menuId = `m-app-${key}-record-menu`;
+      return `<div class="record-actions">
+        <button class="module-toolbar-button cursor-interaction" type="button" data-record-action="toggle"
+          aria-label="更多操作" aria-expanded="false" aria-controls="${menuId}">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="1.65"/><circle cx="12" cy="12" r="1.65"/><circle cx="19" cy="12" r="1.65"/>
+          </svg>
+        </button>
+        <div class="record-action-menu" id="${menuId}" role="group" aria-label="记录操作" aria-hidden="true" inert>
+          <div class="record-action-menu-inner">
+            ${editable ? actionRow('edit', '编辑', 'M14 5l5 5M4 20l1-5L16 4a2 2 0 0 1 3 0l1 1a2 2 0 0 1 0 3L9 19l-5 1Z') : ''}
+            ${actionRow('delete', '删除记录', 'M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6m4-6v6')}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function closeMenu(restoreFocus = false) {
+      if (!activeMenu) return;
+      const { menu, toggle } = activeMenu;
+      activeMenu = undefined;
+      if (restoreFocus || menu.contains(document.activeElement)) toggle.focus({ preventScroll: true });
+      toggle.setAttribute('aria-expanded', 'false');
+      menu.inert = true;
+      menu.setAttribute('aria-hidden', 'true');
+      menu.removeAttribute('data-open');
+    }
+
+    function dismiss(owner) {
+      if (activeMenu?.owner === owner) closeMenu();
+    }
+
+    function ask(options, toggle) {
+      closeMenu();
+      confirmation = { ...options, toggle };
+      title.textContent = `删除「${options.record.title}」？`;
+      description.textContent = cloud ? '这条记录也会从已同步的设备上移除。' : '删除后，这条记录将从列表和「最近」移除。';
+      errorMessage.hidden = true;
+      options.owner.inert = true;
+      layer.inert = false;
+      layer.removeAttribute('aria-hidden');
+      layer.setAttribute('data-open', '');
+      cancel.focus({ preventScroll: true });
+    }
+
+    function closeConfirmation(restoreFocus) {
+      if (!confirmation || pending) return;
+      const { owner, toggle } = confirmation;
+      confirmation = undefined;
+      owner.inert = false;
+      if (restoreFocus) toggle.focus({ preventScroll: true });
+      else if (layer.contains(document.activeElement)) document.activeElement.blur();
+      layer.inert = true;
+      layer.setAttribute('aria-hidden', 'true');
+      layer.removeAttribute('data-open');
+    }
+
+    function bind(container, options) {
+      const anchor = container.querySelector('.record-actions');
+      const toggle = anchor.querySelector('[data-record-action="toggle"]');
+      const menu = anchor.querySelector('.record-action-menu');
+      toggle.onclick = (event) => {
+        if (activeMenu?.anchor === anchor) {
+          closeMenu(true);
+          return;
+        }
+        closeMenu();
+        activeMenu = { anchor, menu, toggle, owner: options.owner };
+        menu.inert = false;
+        menu.removeAttribute('aria-hidden');
+        menu.setAttribute('data-open', '');
+        toggle.setAttribute('aria-expanded', 'true');
+        if (event.detail === 0) menu.querySelector('button').focus({ preventScroll: true });
+      };
+      const edit = menu.querySelector('[data-record-action="edit"]');
+      if (edit) edit.onclick = () => { closeMenu(); options.onEdit(); };
+      menu.querySelector('[data-record-action="delete"]').onclick = () => ask(options, toggle);
+      anchor.addEventListener('focusout', (event) => {
+        if (activeMenu?.anchor === anchor && !anchor.contains(event.relatedTarget)) closeMenu();
+      });
+    }
+
+    cancel.onclick = () => closeConfirmation(true);
+    layer.addEventListener('click', (event) => { if (event.target === layer) closeConfirmation(true); });
+    confirm.onclick = async () => {
+      if (!confirmation || pending) return;
+      const { onDelete, onDeleted } = confirmation;
+      pending = true;
+      panel.focus({ preventScroll: true });
+      confirm.disabled = cancel.disabled = true;
+      confirm.textContent = '正在删除…';
+      errorMessage.hidden = true;
+      try {
+        await onDelete();
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.hidden = false;
+        cloud?.refresh().catch(() => {});
+        return;
+      } finally {
+        pending = false;
+        confirm.disabled = cancel.disabled = false;
+        confirm.textContent = '删除';
+        if (!errorMessage.hidden) cancel.focus({ preventScroll: true });
+      }
+      closeConfirmation(false);
+      onDeleted();
+      showNotice('记录已删除');
+    };
+
+    document.addEventListener('pointerdown', (event) => {
+      if (activeMenu && !activeMenu.anchor.contains(event.target)) closeMenu();
+    }, true);
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && (confirmation || activeMenu)) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (confirmation) closeConfirmation(true);
+        else closeMenu(true);
+      } else if (event.key === 'Tab' && confirmation) {
+        event.preventDefault();
+        if (!pending) (document.activeElement === cancel ? confirm : cancel).focus();
+      }
+    }, true);
+    return { markup, bind, dismiss };
+  }
+
+  function setSheet(label, html, trigger, { onBack, onEdit, record, backLabel, focusMore } = {}) {
+    if (overlay.dataset.open === 'false' && !overlay.hidden) return false;
+    recordActions.dismiss(overlay);
+    overlay.dataset.mode = record?.kind === 'food' ? 'record' : onBack ? 'people' : '';
+    sheetBack.hidden = !onBack;
+    sheetBack.setAttribute('aria-label', backLabel ?? (state.page === 'modules' ? '返回人物列表' : '返回最近'));
+    sheetBack.onclick = onBack ? () => onBack() : null;
+    sheetActions.hidden = !record;
+    sheetActions.innerHTML = record ? recordActions.markup('sheet', Boolean(onEdit)) : '';
+    if (record) recordActions.bind(sheetActions, { record, owner: overlay, onEdit, onDelete: () => deleteRecord(record), onDeleted: closeSheet });
+    closeButton.hidden = Boolean(onBack);
+    sheetTitle.classList.toggle('live-status', Boolean(onEdit));
+    sheetTitle.textContent = label;
+    sheetContent.innerHTML = html;
+    sheet.scrollTop = 0;
+    if (overlay.hidden) {
+      overlay.dataset.motion = record ? 'horizontal' : '';
+      returnFocus = trigger;
+      overlay.hidden = false;
+      shell.inert = true;
+      notice.inert = true;
+      overlay.getBoundingClientRect();
+      overlay.dataset.open = 'true';
+    }
+    const focus = focusMore ? sheetActions.querySelector('[data-record-action="toggle"]') : onBack ? sheetBack : closeButton;
+    focus.focus({ preventScroll: true });
+    updateIcons();
+    return true;
+  }
+
+  function replacementFocus(trigger) {
+    const replacement = [...root.querySelectorAll('[data-action]')].find((button) => !button.closest('[hidden], [inert]')
+      && button.dataset.action === trigger?.dataset.action && button.dataset.key === trigger?.dataset.key);
+    const widgetButton = trigger?.matches('.widget-body') && widgetSlot.querySelector('.widget-body');
+    const pageControl = state.page === 'modules'
+      ? (state.module ? moduleBack : moduleTabs.querySelector('[aria-selected="true"]'))
+      : tabs.find((tab) => tab.dataset.tab === state.page);
+    return replacement || widgetButton || pageControl;
+  }
+
+  function focusAfterClose() {
+    (returnFocus?.isConnected ? returnFocus : replacementFocus(returnFocus))?.focus({ preventScroll: true });
+  }
+
+  function closeSheet(afterClose) {
+    if (overlay.dataset.open !== 'true') return;
+    recordActions.dismiss(overlay);
+    overlay.dataset.open = 'false';
+    sheet.style.removeProperty('--drag');
+    const finish = () => {
+      overlay.hidden = true;
+      shell.inert = false;
+      notice.inert = false;
+      focusAfterClose();
+      afterClose?.();
+    };
+    if (reducedMotion.matches) finish();
+    else setTimeout(finish, 280);
+  }
+
+  function showNotice(text, canUndo = false) {
+    clearTimeout(noticeTimer);
+    notice.innerHTML = `<span></span>${canUndo ? '<button class="notice-action cursor-interaction" type="button" data-action="undo-parking">撤销</button>' : ''}`;
+    notice.firstElementChild.textContent = text;
+    notice.hidden = false;
+    status.textContent = text;
+    noticeTimer = setTimeout(() => { notice.hidden = true; }, canUndo ? 5200 : 2300);
+  }
+
+  function showSheetError(trigger, error) {
+    const message = sheetContent.querySelector('[data-cloud-error]');
+    if (message && backupSheetIsOpen(trigger)) {
+      message.textContent = error.message;
+      message.hidden = false;
+    } else showNotice(error.message);
+  }
+
+  function optionRow({ action, key, name, meta, symbol, selected }) {
+    const marker = selected === undefined ? icon('chevron-right') : selected ? icon('check') : '';
+    const pressed = selected === undefined ? '' : ` aria-pressed="${selected}"`;
+    return `<button class="option cursor-interaction" type="button" data-action="${action}" data-key="${key}"${pressed}>
+      ${symbol ? `<span class="record-icon">${icon(symbol)}</span>` : ''}
+      <span class="option-text"><span class="option-name">${name}</span>${meta ? `<span class="option-meta">${meta}</span>` : ''}</span>
+      <span class="option-marker">${marker}</span>
+    </button>`;
+  }
+
+  function showWidgetSettings(trigger) {
+    const options = widgetChoices.map((item) => optionRow({ ...item, action: 'set-widget', selected: state.widget === item.key }));
+    setSheet('编辑小组件', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showAdd(trigger) {
+    const options = ['parking', ...persistentKinds].map((kind) => optionRow({
+      action: 'create', key: kind, name: kind === 'parking' ? (state.parking ? '更新车位' : '记录停车') : `新增${modules[kind].item}`, symbol: modules[kind].icon
+    }));
+    setSheet('新增记录', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showCreate(kind, trigger) {
+    if (!cloudReadyForEdit()) return;
+    if (kind === 'people') {
+      peopleView.showEditor(null, trigger);
+      return;
+    }
+    if (kind === 'cooking') {
+      if (overlay.dataset.open === 'true') {
+        const source = returnFocus;
+        closeSheet(() => cookingWindow.open(null, source));
+      } else if (overlay.hidden) cookingWindow.open(null, trigger);
+      return;
+    }
+    const parking = kind === 'parking';
+    const updatingParking = parking && state.parking;
+    const module = modules[kind];
+    const fields = parking
+      ? '<label class="field">停车地点<input name="place" maxlength="28" required placeholder="例如环贸广场"></label><label class="field">楼层和区域<input name="area" maxlength="18" placeholder="例如 B2 · C 区"></label><label class="field">车位号<input name="number" maxlength="12" placeholder="例如 128"></label>'
+      : `<label class="field">${module.field}<input name="title" maxlength="30" required></label><label class="field">${module.note}<textarea name="note" rows="2" maxlength="180"></textarea></label>`;
+    const label = updatingParking ? '更新车位' : parking ? '记录停车' : `新增${module.item}`;
+    setSheet(label, `<form class="form" data-create="${kind}">
+      ${fields}<p class="settings-meta" data-cloud-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="save">${parking ? '保存车位' : '保存记录'}</button></form>`, trigger);
+    const draft = drafts.get(kind) || (updatingParking && Object.entries(updatingParking).filter(([name]) => name !== 'time'));
+    const form = sheetContent.querySelector('form');
+    if (cloud && parking) form.dataset.cloudRevision = String(cloud.revision('parking'));
+    if (draft) for (const [name, value] of draft) form.elements.namedItem(name).value = value;
+  }
+
+  function showRecord(key, trigger) {
+    if (key === 'parking') {
+      if (!state.parking) {
+        showCreate('parking', trigger);
+        return;
+      }
+      setSheet('当前停车', `<div class="detail">
+        <strong class="detail-value"></strong><p></p><p class="settings-meta" data-cloud-error role="alert" hidden></p>
+        <button class="primary cursor-interaction" type="button" data-action="complete-parking">已取车</button></div>`, trigger);
+      sheetContent.querySelector('strong').textContent = parkingTitle(state.parking);
+      sheetContent.querySelector('p').textContent = `今天 ${state.parking.time} · ${state.parking.place}`;
+      if (cloud) sheetContent.querySelector('[data-action="complete-parking"]').dataset.cloudRevision = String(cloud.revision('parking'));
+      return;
+    }
+    const record = findRecord(key);
+    if (!record) return;
+    if (record.kind === 'cooking') {
+      cookingWindow.open(record, trigger);
+      return;
+    }
+    if (record.kind === 'people') {
+      peopleView.showDetails(record, trigger);
+      return;
+    }
+    if (!setSheet(record.title, '<div class="detail"><p></p></div>', trigger, {
+      record, onBack: closeSheet, backLabel: state.page === 'modules' ? '返回美食记录' : '返回最近记录'
+    })) return;
+    sheetContent.querySelector('p').textContent = record.detail || record.summary;
+  }
+
+  async function save(form) {
+    if (!form || overlay.dataset.open !== 'true') return;
+    const button = form.querySelector('[data-action="save"]');
+    if (button.disabled) return;
+    const required = form.querySelector('input[required]');
+    required.value = required.value.trim();
+    if (!form.reportValidity()) return;
+    const values = new FormData(form);
+    const kind = form.dataset.create;
+    button.disabled = true;
+    form.querySelector('[data-cloud-error]').hidden = true;
+    try {
+      if (kind === 'parking') {
+        const next = { place: values.get('place'), area: values.get('area').trim(), number: values.get('number').trim(), time: timeNow() };
+        if (cloud) await cloud.save('parking', next, Number(form.dataset.cloudRevision));
+        state.parking = next;
+        recentlyCompleted = undefined;
+      } else {
+        const detail = values.get('note').trim();
+        const summary = detail ? detail.split('\n', 1)[0] : '刚刚添加';
+        const record = { id: `food-${crypto.randomUUID()}`, kind, title: values.get('title'), summary, detail,
+          time: timeNow(), ...cloudRecordTime() };
+        await changeFood((records) => [record, ...records]);
+      }
+    } catch (error) {
+      showSheetError(form, error);
+      return;
+    } finally {
+      button.disabled = false;
+    }
+    drafts.delete(kind);
+    render();
+    const announce = () => showNotice(kind === 'parking' ? '车位已保存' : '记录已保存');
+    if (backupSheetIsOpen(form)) closeSheet(announce);
+    else announce();
+  }
+
+  const moduleTabs = root.querySelector('[data-module-tabs]');
+  const moduleViewPicker = root.querySelector('[data-module-view-picker]');
+  const moduleViewTrigger = moduleViewPicker.querySelector('[data-action="toggle-module-view-menu"]');
+  const moduleViewMenu = moduleViewPicker.querySelector('[role="menu"]');
+  const moduleViewOptions = [...moduleViewMenu.querySelectorAll('[role="menuitemradio"]')];
+  const moduleViewIcons = [...moduleViewTrigger.querySelectorAll('[data-view-icon]')];
+  const moduleDirectory = root.querySelector('[data-module-pane]');
+  const modulePage = moduleDirectory.closest('.page');
+  const moduleWindow = shell.querySelector('.module-window');
+  const moduleBack = moduleWindow.querySelector('.module-back');
+  const moduleSettingsButton = moduleWindow.querySelector('[data-action="open-module-settings"]');
+  const modulePane = moduleWindow.querySelector('[data-module-detail]');
+  const categoryTabs = [...moduleTabs.querySelectorAll('[role="tab"]')];
+  const moduleCategories = {
+    permanent: ['cooking', 'people', 'food'],
+    temporary: ['parking'],
+    tools: ['calculator', 'mahjong']
+  };
+  const moduleEntryNotes = {
+    cooking: '菜谱、食材和做法',
+    people: '生日、关系和备忘',
+    food: '店铺和到访笔记',
+    parking: '记录当前车位',
+    calculator: '快速计算聚餐分摊',
+    mahjong: '四人轮休，按胡数差结算'
+  };
+  const categoryScrollPositions = new Map();
+  const moduleScrollPositions = new Map();
+  const calculatorDraft = { amount: '128', people: '4' };
+  const moduleMotionTiming = { duration: 380, easing: 'cubic-bezier(.2, .75, .22, 1)', fill: 'both' };
+  const moduleReturnTiming = { duration: 220, easing: 'cubic-bezier(.32, .12, .46, 1)', fill: 'both' };
+  let moduleMotion;
+
+  function renderModuleTabs() {
+    for (const tab of categoryTabs) {
+      const selected = tab.dataset.key === state.category;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected) moduleDirectory.setAttribute('aria-labelledby', tab.id);
+    }
+  }
+
+  function setModuleViewMenu(open, restoreFocus = false) {
+    if (open && moduleViewPicker.hidden) return;
+    moduleViewMenu.hidden = !open;
+    moduleViewTrigger.setAttribute('aria-expanded', String(open));
+    if (open) moduleViewOptions.find((option) => option.dataset.key === state.moduleView).focus({ preventScroll: true });
+    else if (restoreFocus) moduleViewTrigger.focus({ preventScroll: true });
+  }
+
+  function syncModuleViewPicker() {
+    moduleViewPicker.hidden = state.page !== 'modules';
+    if (moduleViewPicker.hidden && !moduleViewMenu.hidden) setModuleViewMenu(false);
+    for (const icon of moduleViewIcons) icon.hidden = icon.dataset.viewIcon !== state.moduleView;
+    for (const option of moduleViewOptions) option.setAttribute('aria-checked', String(option.dataset.key === state.moduleView));
+  }
+
+  function selectModuleView(key) {
+    stopModuleMotion();
+    state.moduleView = key;
+    const entries = moduleDirectory.querySelector('.module-entries');
+    if (entries) entries.dataset.view = key;
+    syncModuleViewPicker();
+    setModuleViewMenu(false, true);
+  }
+
+  function renderCategoryEntries() {
+    const keys = moduleCategories[state.category].filter((key) => state.enabledModules.includes(key));
+    if (!keys.length) {
+      moduleDirectory.innerHTML = `<div class="module-feature">
+        <p class="feature-meta">此分类暂无已启用的模块。</p>
+        <button class="secondary cursor-interaction" type="button" data-action="settings-item" data-key="modules">模块管理</button>
+      </div>`;
+      return;
+    }
+
+    const entries = keys.map((key) => optionRow({
+      action: 'open-module', key, name: modules[key].label, meta: moduleEntryNotes[key], symbol: modules[key].icon
+    }));
+    moduleDirectory.innerHTML = `<div class="rows module-entries" data-view="${state.moduleView}">${entries.join('')}</div>`;
+    if (state.category === 'temporary' && state.parking) {
+      moduleDirectory.querySelector('[data-key="parking"] .option-meta').textContent = parkingTitle(state.parking);
+    }
+  }
+
+  function renderModuleHome(key) {
+    const module = modules[key];
+    const updatingParking = key === 'parking' && Boolean(state.parking);
+    const actionLabel = key === 'parking'
+      ? (updatingParking ? '更新车位' : '记录停车')
+      : (module.item ? `新增${module.item}` : '');
+    const action = actionLabel ? `<button class="primary cursor-interaction" type="button" data-action="create" data-key="${key}">
+      ${updatingParking ? '' : icon('plus')}${actionLabel}</button>` : '';
+    modulePane.innerHTML = `
+      <div class="module-home">
+        <header class="module-home-header">
+          <h1>${module.label}</h1>
+          ${action}
+        </header>
+        <div class="module-home-content"></div>
+      </div>`;
+    const content = modulePane.querySelector('.module-home-content');
+    if (key === 'parking') renderParkingModule(content);
+    else if (key === 'calculator') renderCalculatorModule(content);
+    else if (key === 'mahjong') globalThis.MahjongModule.render(content, state.mahjong, persistMahjong);
+    else renderPersistentModule(content, key);
+  }
+
+  function renderPersistentModule(content, key) {
+    const entries = state.records.filter((record) => record.kind === key);
+    if (modulePreference(key) === 'name') entries.sort((left, right) => left.title.localeCompare(right.title, 'zh-CN'));
+    if (key === 'cooking') {
+      cookingModule.renderList(content, entries, icon);
+      return;
+    }
+    if (entries.length === 0) {
+      content.innerHTML = `<p class="module-record-empty">还没有${modules[key].item}</p>`;
+      return;
+    }
+    const list = document.createElement('div');
+    list.className = 'module-record-list';
+    for (const record of entries) list.append(recordRow(record, true));
+    content.append(list);
+  }
+
+  function renderParkingModule(content) {
+    content.innerHTML = `
+      <section class="module-feature">
+        <div>
+          <p class="feature-value"></p>
+          <p class="feature-meta"></p>
+        </div>
+        ${state.parking ? '<button class="secondary cursor-interaction" type="button" data-action="complete-parking">已取车</button>' : ''}
+      </section>`;
+    content.querySelector('.feature-value').textContent = state.parking ? parkingTitle(state.parking) : '当前没有停车记录';
+    content.querySelector('.feature-meta').textContent = state.parking
+      ? [state.parking.place, ...(modulePreference('parking') === 'show' ? [state.parking.time] : [])].join(' · ')
+      : '保存地点和车位，取车后结束。';
+  }
+
+  function updateCalculatorResult(form) {
+    const amount = form.elements.amount.valueAsNumber;
+    const people = form.elements.people.valueAsNumber;
+    const digits = modulePreference('calculator') === 'whole' ? 0 : 2;
+    form.querySelector('output').textContent = form.checkValidity()
+      ? `每人 ¥${(amount / people).toFixed(digits)}`
+      : '请输入金额和人数';
+  }
+
+  function renderCalculatorModule(content) {
+    content.innerHTML = `
+      <section class="module-feature">
+        <h2>聚餐分摊</h2>
+        <form class="form" data-calculator>
+          <label class="field">总金额<input name="amount" type="number" min="0" step="any" inputmode="decimal" required></label>
+          <label class="field">人数<input name="people" type="number" min="1" inputmode="numeric" required></label>
+          <output class="feature-value" aria-live="polite"></output>
+        </form>
+      </section>`;
+    const form = content.querySelector('[data-calculator]');
+    form.elements.amount.value = calculatorDraft.amount;
+    form.elements.people.value = calculatorDraft.people;
+    updateCalculatorResult(form);
+  }
+
+  function syncModuleWindow() {
+    const open = state.page === 'modules' && Boolean(state.module);
+    shell.classList.toggle('module-open', open);
+    topbar.inert = mainNavigation.inert = modulePage.inert = open;
+    moduleWindow.inert = !open;
+    moduleWindow.hidden = !open && !moduleMotion;
+  }
+
+  function stopModuleMotion() {
+    if (!moduleMotion) return;
+    moduleMotion.cancel();
+    moduleMotion = null;
+    shell.classList.remove('module-moving');
+    syncModuleWindow();
+  }
+
+  function playModuleMotion(iconBounds, closing = false) {
+    const paintedBounds = moduleWindow.getBoundingClientRect();
+    const style = getComputedStyle(moduleWindow);
+    const opacity = Number(style.opacity);
+    const borderRadius = style.borderRadius;
+    stopModuleMotion();
+    if (!iconBounds?.width || reducedMotion.matches || typeof moduleWindow.animate !== 'function') return;
+    const bounds = moduleWindow.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return;
+    const pageBounds = modulePage.getBoundingClientRect();
+    const scale = Math.min(iconBounds.width / bounds.width, iconBounds.height / bounds.height);
+    const iconCenterX = iconBounds.left + iconBounds.width / 2;
+    const iconCenterY = Math.max(pageBounds.top, Math.min(pageBounds.bottom, iconBounds.top + iconBounds.height / 2));
+    const x = iconCenterX - bounds.left;
+    const y = iconCenterY - bounds.top;
+    const atIcon = (size) => `translate(${x - bounds.width * size / 2}px, ${y - bounds.height * size / 2}px) scale(${size})`;
+    const current = {
+      transform: `translate(${paintedBounds.left - bounds.left}px, ${paintedBounds.top - bounds.top}px) scale(${paintedBounds.width / bounds.width})`,
+      opacity,
+      borderRadius
+    };
+    const frames = closing
+      ? [current, { transform: atIcon(0), opacity: 0, borderRadius: '32px' }]
+      : [{ transform: atIcon(scale), opacity: .45, borderRadius: '32px' }, { transform: 'none', opacity: 1, borderRadius: '0px' }];
+    shell.classList.add('module-moving');
+    const animation = moduleWindow.animate(frames, closing ? moduleReturnTiming : moduleMotionTiming);
+    moduleMotion = animation;
+    animation.onfinish = () => { if (moduleMotion === animation) stopModuleMotion(); };
+  }
+
+  function renderModules() {
+    stopModuleMotion();
+    const calculator = modulePane.querySelector('[data-calculator]');
+    if (calculator) {
+      calculatorDraft.amount = calculator.elements.amount.value;
+      calculatorDraft.people = calculator.elements.people.value;
+    }
+
+    if (!state.enabledModules.includes(state.module)) state.module = null;
+    renderModuleTabs();
+    renderCategoryEntries();
+    syncModuleWindow();
+    if (!state.module) {
+      state.moduleScreen = 'content';
+      modulePane.replaceChildren();
+      return;
+    }
+
+    if (state.moduleScreen === 'settings') renderModuleSettings(state.module);
+    else if (state.moduleScreen === 'releases') renderModuleReleases(state.module);
+    else renderModuleHome(state.module);
+    const categoryLabel = categoryTabs.find((tab) => tab.dataset.key === state.category).textContent;
+    const moduleLabel = modules[state.module].label;
+    const backLabel = state.moduleScreen === 'releases' ? '模块设置'
+      : state.moduleScreen === 'settings' ? moduleLabel : categoryLabel;
+    moduleWindow.setAttribute('aria-label', moduleLabel);
+    moduleBack.setAttribute('aria-label', `返回${backLabel}`);
+    moduleBack.dataset.action = state.moduleScreen === 'content' ? 'back-to-category' : 'back-in-module';
+    moduleSettingsButton.hidden = state.moduleScreen !== 'content';
+    moduleSettingsButton.setAttribute('aria-label', `${moduleLabel}设置`);
+  }
+
+  function selectCategory(key) {
+    if (key === state.category) return;
+    stopModuleMotion();
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.category = key;
+    renderModuleTabs();
+    renderCategoryEntries();
+    updateIcons();
+    modulePage.scrollTop = categoryScrollPositions.get(key) || 0;
+  }
+
+  function openModule(key, button) {
+    if (!state.enabledModules.includes(key) || !moduleCategories[state.category].includes(key)) return;
+    const iconBounds = button.querySelector('.record-icon').getBoundingClientRect();
+    categoryScrollPositions.set(state.category, modulePage.scrollTop);
+    state.module = key;
+    state.moduleScreen = 'content';
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = 0;
+    playModuleMotion(iconBounds);
+    moduleBack.focus({ preventScroll: true });
+  }
+
+  function backToModuleCategory() {
+    const module = state.module;
+    if (!module) return;
+    modulePage.scrollTop = categoryScrollPositions.get(state.category) || 0;
+    const entry = moduleDirectory.querySelector(`[data-action="open-module"][data-key="${module}"]`);
+    playModuleMotion(entry?.querySelector('.record-icon').getBoundingClientRect(), true);
+    state.module = null;
+    state.moduleScreen = 'content';
+    syncModuleWindow();
+    entry?.focus({ preventScroll: true });
+  }
+
+  function setModuleScreen(screen, focusTarget) {
+    moduleScrollPositions.set(`${state.module}:${state.moduleScreen}`, modulePane.scrollTop);
+    state.moduleScreen = screen;
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = moduleScrollPositions.get(`${state.module}:${screen}`) || 0;
+    const target = focusTarget ? moduleWindow.querySelector(focusTarget) : moduleBack;
+    target?.focus({ preventScroll: true });
+  }
+
+  function backInModule() {
+    if (state.moduleScreen === 'releases') setModuleScreen('settings', '[data-action="open-module-releases"]');
+    else setModuleScreen('content', '[data-action="open-module-settings"]');
+  }
+
+  async function setModulePreference(key) {
+    if (!moduleSettings[state.module].options.some((option) => option.key === key)) return;
+    const module = state.module;
+    if (state.module === 'mahjong') {
+      if (!await persistMahjong({ ...state.mahjong, colorMode: key })) return;
+    } else if (module === 'people') {
+      try {
+        await changePeople((bundle) => ({ ...bundle, sort: key }));
+      } catch (error) {
+        showNotice(error.message);
+        return;
+      }
+      if (state.module !== module || state.moduleScreen !== 'settings') return;
+      for (const button of modulePane.querySelectorAll('[data-action="module-preference"]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.key === key));
+        const marker = button.querySelector('.option-marker');
+        marker.innerHTML = button.dataset.key === key ? icon('check') : '';
+      }
+      updateIcons();
+      return;
+    } else state.modulePreferences[module] = key;
+    const scrollTop = modulePane.scrollTop;
+    renderModules();
+    updateIcons();
+    modulePane.scrollTop = scrollTop;
+    modulePane.querySelector(`[data-action="module-preference"][data-key="${key}"]`)?.focus({ preventScroll: true });
+  }
+
+  const moduleSettings = {
+    cooking: {
+      preferenceLabel: '菜谱排序',
+      defaultPreference: 'recent',
+      options: [
+        { key: 'recent', label: '最近添加优先', symbol: 'clock-3' },
+        { key: 'name', label: '按菜名排序', symbol: 'book-open' }
+      ],
+      releases: [{
+        version: '0.4.0',
+        date: '2026-11-24',
+        groups: [['新增', [
+          '菜谱详情新增「我的烹饪」。可一键记录烹饪次数、撤回快速记录，也可补写重要烹饪的日期和心得。',
+          '详情可以通过「⋯」编辑或删除菜谱。烹饪经历随菜谱同步和备份。'
+        ]]]
+      }, {
+        version: '0.3.0',
+        date: '2026-11-24',
+        groups: [['变更', [
+          '烹饪时间和简介分开编辑，可直接输入分钟数或用加减按钮调整。',
+          '用料和步骤可以分别折叠，从列表底部添加新项。',
+          '烹饪指南换用炒锅图标，模块首页统一采用标题和独立记录卡的布局。'
+        ]]]
+      }, {
+        version: '0.2.0',
+        date: '2026-11-23',
+        groups: [
+          ['新增', ['用料按份数换算，菜谱支持填写分步做法、火候、图片链接和小贴士。', '烹饪模式可连续滑动查看步骤，随时打开用料或小贴士。']],
+          ['修复', ['各标签页保存的菜谱独立保留。编辑同一份菜谱发生冲突时会提示并保留当前表单。']]
+        ]
+      }, {
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持新建、查看菜谱，记录食材和做法。', '可设置菜谱列表的排序方式。']]]
+      }]
+    },
+    people: {
+      preferenceLabel: '人物排序',
+      defaultPreference: 'recent',
+      options: [
+        { key: 'recent', label: '最近添加优先', symbol: 'clock-3' },
+        { key: 'name', label: '按姓名排序', symbol: 'user-round' }
+      ],
+      releases: [{
+        version: '0.3.0',
+        date: '2026-11-24',
+        groups: [['新增', [
+          '详情新增「我们的交集」。可快速记见面、撤回快速记录，或记录初识、纪念日等经历，支持大概日期。',
+          '详情可以通过「⋯」编辑或删除人物卡片。交集随人物卡片同步和备份。'
+        ]]]
+      }, {
+        version: '0.2.0',
+        date: '2026-11-23',
+        groups: [
+          ['新增', ['人物卡片支持头像、昵称、生日和自动计算年龄、所在地及多条联系方式。', '可以在设置中配置多选关系、调整显示属性并添加自定义属性。', '人物卡片和属性设置保存在当前浏览器，可通过 JSON 备份恢复。']],
+          ['变更', ['人物卡片模块采用蓝紫色圆底人像图标。', '人物列表显示头像或姓名首字。详情从右侧滑入，左上角返回，右上角编辑。', '自定义属性可从设置中移除，恢复时会找回已填内容。', '没有完整生日时，可以单独填写年龄。']]
+        ]
+      }, {
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持新建、查看人物卡片，记录关系和备注。', '可设置人物卡片的排序方式。']]]
+      }]
+    },
+    food: {
+      preferenceLabel: '列表中的到访备注',
+      defaultPreference: 'show',
+      options: [
+        { key: 'show', label: '显示备注', symbol: 'list' },
+        { key: 'hide', label: '隐藏备注', symbol: 'eye-off' }
+      ],
+      releases: [{
+        version: '0.2.0',
+        date: '2026-11-24',
+        groups: [
+          ['新增', ['详情右上角「⋯」可以删除记录，确认后同步更新列表和「最近」。']],
+          ['修复', ['本地新增和删除在浏览器刷新后仍然生效。']]
+        ]
+      }, {
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持记录到访店铺、推荐菜和口味。', '可选择在美食记录列表中显示或隐藏到访备注。']]]
+      }]
+    },
+    parking: {
+      preferenceLabel: '车位的记录时间',
+      defaultPreference: 'show',
+      options: [
+        { key: 'show', label: '显示记录时间', symbol: 'clock-3' },
+        { key: 'hide', label: '隐藏记录时间', symbol: 'eye-off' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['支持记录、更新和结束当前车位。', '可选择在停车备忘里显示或隐藏记录时间。']]]
+      }]
+    },
+    calculator: {
+      preferenceLabel: '分摊结果精度',
+      defaultPreference: 'decimals',
+      options: [
+        { key: 'decimals', label: '保留两位小数', symbol: 'sliders-horizontal' },
+        { key: 'whole', label: '四舍五入到元', symbol: 'sliders-horizontal' }
+      ],
+      releases: [{
+        version: '0.1.0',
+        date: '2026-11-22',
+        groups: [['新增', ['根据总金额和人数计算每人分摊金额。', '结果可保留两位小数或四舍五入到元。']]]
+      }]
+    },
+    mahjong: {
+      preferenceLabel: '输赢颜色',
+      defaultPreference: 'default',
+      options: [
+        { key: 'default', label: '绿赢、红输' },
+        { key: 'chinese', label: '红赢、绿输' }
+      ],
+      releases: [{
+        version: '0.2.0',
+        date: '2026-11-24',
+        groups: [['变更', ['对局、玩家名称与设置可随站点数据同步。记录对局时会等待保存完成。']]]
+      }, {
+        version: '0.1.0',
+        date: '2026-11-23',
+        groups: [['新增', ['记录四人轮休对局，按三位参赛玩家的胡数差计算单局与累计输赢。', '可设置每胡金额及输赢颜色，历史记录保存在本地浏览器。']]]
+      }]
+    }
+  };
+
+  function modulePreference(key) {
+    const settings = moduleSettings[key];
+    const selected = key === 'mahjong' ? state.mahjong.colorMode : key === 'people' ? state.peopleSort : state.modulePreferences[key];
+    return settings.options.some((option) => option.key === selected) ? selected : settings.defaultPreference;
+  }
+
+  function renderModuleSettings(key) {
+    const module = modules[key];
+    const settings = moduleSettings[key];
+    const selected = modulePreference(key);
+    const choices = settings.options.map((option) => optionRow({
+      action: 'module-preference', key: option.key, name: option.label,
+      symbol: option.symbol, selected: option.key === selected
+    }));
+    const versionLink = optionRow({
+      action: 'open-module-releases', key, name: '模块更新日志',
+      meta: `当前版本 v${settings.releases[0].version}`, symbol: 'history'
+    });
+    modulePane.innerHTML = `<section class="module-settings-view">
+      <h2 class="module-settings-heading">${module.label}设置</h2>
+      ${key === 'mahjong' ? `<form class="form module-settings-group" data-mahjong-rate>
+        <label class="field">每胡金额（元）<input name="rate" type="number" min="0.01" step="0.01" inputmode="decimal" required aria-describedby="m-app-mahjong-rate-note"></label>
+        <p class="settings-meta" id="m-app-mahjong-rate-note">修改金额会重新计算所有对局的输赢。</p>
+        <button class="primary cursor-interaction" type="submit">保存每胡金额</button>
+      </form>` : ''}
+      <section class="module-settings-group" aria-labelledby="m-app-module-preference-${key}">
+        <h3 id="m-app-module-preference-${key}">${settings.preferenceLabel}</h3>
+        <div class="rows">${choices.join('')}</div>
+      </section>
+      ${key === 'people' ? '<div class="module-settings-group" data-people-settings></div>' : ''}
+      <section class="module-settings-group" aria-labelledby="m-app-module-version-${key}">
+        <h3 id="m-app-module-version-${key}">版本</h3>
+        <div class="rows">${versionLink}</div>
+      </section>
+    </section>`;
+    if (key === 'people') peopleView.mountSettings(modulePane.querySelector('[data-people-settings]'));
+    if (key === 'mahjong') {
+      const form = modulePane.querySelector('[data-mahjong-rate]');
+      const input = form.elements.rate;
+      input.value = state.mahjong.rate;
+      input.addEventListener('input', () => input.setCustomValidity(''));
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const rate = mahjongCalculator.parseRate(input.value);
+        if (rate === null) {
+          input.setCustomValidity('请输入大于零、精确到分的金额。');
+          input.reportValidity();
+          return;
+        }
+        if (await persistMahjong({ ...state.mahjong, rate })) {
+          input.value = rate;
+          showNotice('已保存每胡金额');
+        }
+      });
+    }
+  }
+
+  function renderModuleReleases(key) {
+    const releases = moduleSettings[key].releases;
+    modulePane.innerHTML = `<section class="module-settings-view">
+      <h2 class="module-settings-heading">${modules[key].label}更新日志</h2>
+      <div class="release-list">${renderReleaseCards(releases, releases[0].version, `m-app-module-release-${key}`)}</div>
+    </section>`;
+  }
+
+  const moduleActions = {
+    'select-category': selectCategory,
+    'open-module': openModule,
+    'back-to-category': backToModuleCategory,
+    'open-module-settings': () => setModuleScreen('settings'),
+    'open-module-releases': () => setModuleScreen('releases'),
+    'back-in-module': backInModule,
+    'module-preference': setModulePreference,
+    'toggle-module-view-menu': () => setModuleViewMenu(moduleViewMenu.hidden, true),
+    'set-module-view': selectModuleView
+  };
+
+  moduleViewPicker.addEventListener('keydown', (event) => {
+    const backTab = event.key === 'Tab' && event.shiftKey && moduleViewMenu.contains(event.target);
+    if (!moduleViewMenu.hidden && (event.key === 'Escape' || backTab)) {
+      event.preventDefault();
+      setModuleViewMenu(false, true);
+      return;
+    }
+    const order = moduleViewOptions.indexOf(event.target);
+    const isArrowKey = event.key === 'ArrowDown' || event.key === 'ArrowUp';
+    if (isArrowKey && event.target === moduleViewTrigger) {
+      event.preventDefault();
+      setModuleViewMenu(true);
+      return;
+    }
+    if (order < 0 || !(isArrowKey || event.key === 'Home' || event.key === 'End')) return;
+    event.preventDefault();
+    const last = moduleViewOptions.length - 1;
+    const next = isArrowKey ? last - order : event.key === 'Home' ? 0 : last;
+    moduleViewOptions[next].focus({ preventScroll: true });
+  });
+  moduleViewPicker.addEventListener('focusout', (event) => {
+    if (event.relatedTarget && !moduleViewPicker.contains(event.relatedTarget)) setModuleViewMenu(false);
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (!moduleViewMenu.hidden && !moduleViewPicker.contains(event.target)) setModuleViewMenu(false);
+  });
+
+  moduleTabs.addEventListener('keydown', (event) => {
+    const tab = event.target.closest('[role="tab"]');
+    if (!tab) return;
+    const current = categoryTabs.indexOf(tab);
+    const last = categoryTabs.length - 1;
+    let next;
+    if (event.key === 'ArrowRight') next = current === last ? 0 : current + 1;
+    else if (event.key === 'ArrowLeft') next = current === 0 ? last : current - 1;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = last;
+    else return;
+
+    event.preventDefault();
+    const target = categoryTabs[next];
+    selectCategory(target.dataset.key);
+    target.focus({ preventScroll: true });
+  });
+
+  const settingsVersion = '0.9.0';
+  const releaseNotes = [
+    {
+      version: '0.9.0',
+      date: '2026-11-24',
+      groups: [
+        ['新增', [
+          '烹饪指南 v0.4.0 新增「我的烹饪」，支持快速加次数、记录重要烹饪和心得，以及撤回快速记录。',
+          '人物卡片 v0.3.0 新增「我们的交集」，支持快记见面、撤回、记录初识和纪念日，并支持大概日期。',
+          '菜谱、人物卡片和美食记录的详情新增「⋯」菜单，删除前显示记录名称并二次确认。'
+        ]],
+        ['修复', ['美食记录 v0.2.0 将本地新增和删除保存在浏览器中，刷新后仍然生效。']],
+        ['维护', ['冻结 v0.9.0 源码和独立入口，经历记录随菜谱和人物卡片同步及备份。']]
+      ]
+    },
+    {
+      version: '0.8.0',
+      date: '2026-11-24',
+      groups: [
+        ['新增', [
+          '网站支持自选访问密码，连续输错时会限制后续尝试。',
+          '登录后，菜谱、人物卡片、美食记录、停车备忘和麻将记录可在不同设备间同步。',
+          '可以导出当前浏览器的旧记录，并用 JSON 备份导入云端。'
+        ]],
+        ['变更', ['麻将胡结算 v0.2.0 将对局、玩家名称和设置纳入云端同步。']]
+      ]
+    },
+    {
+      version: '0.7.0',
+      date: '2026-11-24',
+      groups: [
+        ['新增', ['人物卡片 v0.2.0 支持头像、昵称、年龄、多选关系、多条联系方式和自定义属性，可随备份导入导出。']],
+        ['变更', [
+          '六个模块首页统一采用标题和内容卡片布局，移除大标题旁的模块 Logo。',
+          '底部导航统一线框图标，模块视图菜单更新图标和选中状态。可返回的页面统一使用圆形左箭头。',
+          '烹饪指南 v0.3.0 分开编辑时长和简介，用料与步骤可以折叠，并可从各自列表底部添加项目。'
+        ]]
+      ]
+    },
+    {
+      version: '0.6.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['烹饪指南 v0.2.0 支持份数换算、分步做法和可连续滑动的烹饪模式。']],
+        ['优化', ['最近页的小组件只提供当前停车和隐藏两个选项。']],
+        ['修复', ['多个标签页保存菜谱时可保留各自的记录，编辑同一菜谱会检测冲突。', '导入支持应用保存并导出的大批量备份。']]
+      ]
+    },
+    {
+      version: '0.5.0',
+      date: '2026-11-23',
+      groups: [
+        ['新增', ['工具新增麻将胡结算 v0.1.0，支持四人轮休、单局和累计输赢、自定义每胡金额，并将历史记录纳入数据备份。']],
+        ['优化', [
+          '模块详情占满应用区域，左上角为圆形返回键，右上角为独立设置入口。',
+          '模块从入口图标展开，返回时缩回图标中心，并恢复目录的滚动位置。'
+        ]],
+        ['修复', ['模块入口按压和进出时保持背景色稳定，退出动画完全淡出以消除图标上的残影。']]
+      ]
+    },
+    {
+      version: '0.4.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', [
+          '模块页可在双列网格和列表之间切换，所选视图在各分类间通用。',
+          '烹饪指南、人物卡片、美食记录、停车备忘和计算器各自提供设置与更新日志，模块版本从 v0.1.0 起记。',
+          '可分别设置菜谱与人物排序、到访备注、停车时间和分摊结果精度。'
+        ]],
+        ['优化', [
+          '模块管理按永久记录、临时记录和工具分组。',
+          '版本日志改为独立的版本卡片页面，补录 v0.1.0 和 v0.2.0 的日期。'
+        ]]
+      ]
+    },
+    {
+      version: '0.3.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', [
+          '设置加入账号、模块管理、偏好设置、数据导入与导出、关于我们和版本日志。',
+          '偏好设置支持选择界面外观和最近页小组件。',
+          '通过 JSON 备份和恢复长期记录与当前车位。'
+        ]],
+        ['优化', ['模块按永久记录、临时记录和工具分类，功能入口放在所属分类内。', '可独立启停模块入口，并保留该模块的已有记录。']]
+      ]
+    },
+    {
+      version: '0.2.0',
+      date: '2026-11-22',
+      groups: [
+        ['新增', ['最近页的小组件支持更换内容或隐藏。', '停车备忘支持结束当前车位，并可撤销。']],
+        ['优化', ['界面采用深蓝和冰蓝灰，底部导航设为「最近」「模块」「设置」。']]
+      ]
+    },
+    {
+      version: '0.1.0',
+      date: '2026-11-22',
+      groups: [['新增', ['完成最近记录、当前车位和底部弹层的初版交互原型。']]]
+    }
+  ];
+  const appearanceLabels = { system: '跟随系统', light: '浅色', dark: '深色' };
+  const backupFormat = 'm-app-preview';
+  const backupIdPattern = /^[A-Za-z0-9_-]{1,64}$/;
+  let pendingBackup;
+  let importingBackup = false;
+
+  function showManagedModules(trigger) {
+    const groups = categoryTabs.map((tab) => {
+      const category = tab.dataset.key;
+      const headingId = `m-app-managed-${category}`;
+      const options = moduleCategories[category].map((key) => {
+        const module = modules[key];
+        const enabled = state.enabledModules.includes(key);
+        return optionRow({
+          action: 'toggle-managed-module', key, name: module.label, symbol: module.icon,
+          meta: enabled ? '已添加' : '未添加', selected: enabled
+        });
+      });
+      return `<section class="managed-group" aria-labelledby="${headingId}">
+        <h3 id="${headingId}">${tab.textContent}</h3><div class="rows">${options.join('')}</div>
+      </section>`;
+    });
+    setSheet('模块管理', `<p class="settings-meta">选择在各分类内显示的功能入口。移除入口后，原有记录仍会保留。</p>
+      <div class="managed-groups">${groups.join('')}</div>`, trigger);
+  }
+
+  function renderReleaseCards(notes, currentVersion, prefix) {
+    return notes.map(({ version, date, groups }) => {
+      const headingId = `${prefix}-${version}`;
+      const currentBadge = version === currentVersion ? '<span class="release-current">当前版本</span>' : '';
+      const releaseDate = date
+        ? `<time class="release-date" datetime="${date}">${date}</time>`
+        : '<span class="release-date">日期未记录</span>';
+      const revisions = groups.map(([label, items]) => `<section class="release-group">
+        <h3>${label}</h3><ul>${items.map((item) => `<li>${item}</li>`).join('')}</ul>
+      </section>`);
+      return `<article class="release-card" aria-labelledby="${headingId}">
+        <header class="release-header">
+          <div class="release-heading"><h2 id="${headingId}">v${version}</h2>${currentBadge}</div>
+          ${releaseDate}
+        </header>
+        <div class="release-revisions">${revisions.join('')}</div>
+      </article>`;
+    }).join('');
+  }
+
+  function renderChangelog() {
+    root.querySelector('[data-release-list]').innerHTML = renderReleaseCards(releaseNotes, settingsVersion, 'm-app-release');
+  }
+
+  function showChangelog() {
+    setPage('changelog');
+    releaseBack.focus({ preventScroll: true });
+  }
+
+  function backFromChangelog() {
+    setPage('settings');
+    root.querySelector('.settings-row[data-key="changelog"]').focus({ preventScroll: true });
+  }
+
+  function showPreferences(trigger) {
+    const widgetOption = optionRow({
+      action: 'widget-settings', key: 'recent-widget', name: '最近页小组件',
+      meta: '选择固定在上方的内容', symbol: 'layout-grid'
+    });
+    const appearanceOptions = Object.entries(appearanceLabels).map(([key, name]) => optionRow({
+      action: 'settings-appearance', key, name, symbol: { system: 'monitor', light: 'sun', dark: 'moon' }[key],
+      selected: state.appearance === key
+    }));
+    setSheet('偏好设置', `<div class="rows">${widgetOption}</div>
+      <h3 class="settings-meta">界面外观</h3><div class="rows">${appearanceOptions.join('')}</div>`, trigger);
+  }
+
+  function showDataSettings(trigger) {
+    pendingBackup = undefined;
+    const options = [
+      optionRow({ action: 'settings-backup-view', key: 'import', name: '导入数据', meta: '从 JSON 备份恢复记录', symbol: 'upload' }),
+      optionRow({ action: 'settings-backup-view', key: 'export', name: '导出数据', meta: '生成可复制的 JSON 备份', symbol: 'download' })
+    ];
+    if (cloud) options.push(optionRow({ action: 'settings-backup-view', key: 'local', name: '导出此浏览器的旧记录',
+      meta: '迁移启用云端前保存的菜谱、人物卡片和麻将记录', symbol: 'monitor-down' }));
+    setSheet('数据导入／导出', `<div class="rows">${options.join('')}</div>`, trigger);
+  }
+
+  function showBackupImport(trigger, source = '') {
+    pendingBackup = undefined;
+    setSheet('导入数据', `<label class="field">粘贴 M_APP 的 JSON 备份
+      <textarea class="data-text" data-backup-input rows="7" spellcheck="false"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="review-settings-import">检查备份</button>`, trigger);
+    sheetContent.querySelector('[data-backup-input]').value = source;
+  }
+
+  function backupSheetIsOpen(element) {
+    return overlay.dataset.open === 'true' && sheetContent.contains(element);
+  }
+
+  async function showBackupExport(trigger, local = false) {
+    const description = local ? '备份包含这个浏览器已保存的菜谱、人物卡片、美食和麻将记录。'
+      : '备份包含长期记录、人物属性设置、车位和麻将结算数据。';
+    setSheet(local ? '导出旧记录' : '导出数据', `<p class="settings-meta">${description}选中后可复制到本地文件。</p>
+      <label class="field">JSON 备份<textarea class="data-text" data-backup-output rows="7" readonly spellcheck="false" placeholder="正在读取记录…"></textarea></label>
+      <p class="settings-meta" data-backup-error role="alert" hidden></p>
+      <button class="primary cursor-interaction" type="button" data-action="select-settings-backup" disabled>选中全部 JSON</button>`, trigger);
+    const output = sheetContent.querySelector('[data-backup-output]');
+    const copy = sheetContent.querySelector('[data-action="select-settings-backup"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    try {
+      if (importingBackup) throw new Error('正在导入数据，请完成后再导出备份。');
+      let data;
+      if (local) {
+        cookingStore ??= globalThis.CookingStore.createStore(loadLegacyCooking());
+        const recipes = await cookingStore.read();
+        const people = peopleModel.readStore();
+        data = {
+          records: [...recipes, ...(people?.records ?? []), ...(readFoodRecords() ?? [])],
+          peopleSettings: people?.settings, peopleSort: people?.sort,
+          parking: null, mahjong: loadMahjong()
+        };
+      } else {
+        if (cloud) await cloud.refresh();
+        else {
+          await refreshCookingRecords();
+          await peopleModel.withStoreLock(() => {
+            const bundle = peopleModel.readStore();
+            if (bundle) updatePeopleRecords(bundle);
+            replaceRecordKind('food', readFoodRecords() ?? [sampleFood]);
+          });
+        }
+        data = {
+          records: state.records, peopleSettings: state.peopleSettings, peopleSort: state.peopleSort,
+          parking: state.parking, mahjong: state.mahjong
+        };
+      }
+      if (!backupSheetIsOpen(output)) return;
+      output.value = JSON.stringify({ format: backupFormat, schema: 1, ...data }, null, 2);
+      copy.disabled = false;
+    } catch (error) {
+      if (!backupSheetIsOpen(output)) return;
+      message.hidden = false;
+      message.textContent = error.message;
+    } finally {
+      if (backupSheetIsOpen(output)) output.removeAttribute('placeholder');
+    }
+  }
+
+  function backupString(value, field, maxLength, required = false) {
+    if (typeof value !== 'string' || value.length > maxLength || (required && !value.trim())) {
+      throw new Error(`备份中的${field}格式不正确。`);
+    }
+    return value;
+  }
+
+  function parseSettingsBackup(source) {
+    if (!source.trim()) throw new Error('请先粘贴 JSON 备份。');
+    let json;
+    try {
+      json = JSON.parse(source);
+    } catch {
+      throw new Error('没有读到有效的 JSON，请检查备份是否完整。');
+    }
+    if (json?.format !== backupFormat || json.schema !== 1 || !Array.isArray(json.records)) {
+      throw new Error('请选择由这个预览导出的 M_APP 备份。');
+    }
+    const recordIds = new Set();
+    const records = json.records.map((record) => {
+      if (!record || !persistentKinds.includes(record.kind) || typeof record.id !== 'string'
+        || !backupIdPattern.test(record.id) || ['parking', 'none'].includes(record.id) || recordIds.has(record.id)) {
+        throw new Error('备份中的记录类型或编号无效。');
+      }
+      recordIds.add(record.id);
+      const recipe = record.kind === 'cooking' && Object.hasOwn(record, 'recipe')
+        ? cookingModel.normalizeRecipe(record.recipe, { strict: true }) : undefined;
+      const duration = record.kind === 'cooking' && Object.hasOwn(record, 'durationMinutes')
+        ? { durationMinutes: cookingModel.normalizeDuration(record.durationMinutes) } : {};
+      const person = record.kind === 'people'
+        ? (Object.hasOwn(record, 'person') ? peopleModel.normalizePerson(record.person, { strict: true }) : peopleModel.personFor(record))
+        : undefined;
+      const experiences = Object.hasOwn(record, 'experiences')
+        ? globalThis.RecordExperiences.normalize(record.experiences, record.kind) : undefined;
+      return {
+        id: record.id,
+        kind: record.kind,
+        title: backupString(record.title, '标题', 30, true),
+        summary: backupString(record.summary, '摘要', 180),
+        time: backupString(record.time, '时间', 32, true),
+        detail: backupString(record.detail, '内容', 180),
+        ...duration,
+        ...(recipe && { recipe }),
+        ...(person && { person }),
+        ...(experiences && { experiences }),
+        ...(Number.isSafeInteger(record.createdAt) && record.createdAt > 0 && { createdAt: record.createdAt })
+      };
+    });
+    let parking = null;
+    if (json.parking !== null) {
+      if (!json.parking || typeof json.parking !== 'object' || Array.isArray(json.parking)) {
+        throw new Error('备份中的停车记录格式不正确。');
+      }
+      parking = {
+        place: backupString(json.parking.place, '停车地点', 28, true),
+        area: backupString(json.parking.area, '楼层和区域', 18),
+        number: backupString(json.parking.number, '车位号', 12),
+        time: backupString(json.parking.time, '停车时间', 32, true)
+      };
+    }
+    const mahjong = Object.hasOwn(json, 'mahjong')
+      ? mahjongCalculator.normalizeState(json.mahjong, { strict: true })
+      : undefined;
+    const peopleSettings = Object.hasOwn(json, 'peopleSettings')
+      ? peopleModel.normalizeSettings(json.peopleSettings, { strict: true }) : undefined;
+    if (Object.hasOwn(json, 'peopleSort') && !['recent', 'name'].includes(json.peopleSort)) {
+      throw new Error('备份中的人物排序格式不正确。');
+    }
+    return { records, parking, mahjong, peopleSettings, peopleSort: json.peopleSort, source };
+  }
+
+  async function reviewSettingsImport(trigger) {
+    const input = sheetContent.querySelector('[data-backup-input]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    trigger.disabled = true;
+    input.readOnly = true;
+    message.hidden = true;
+    try {
+      if (importingBackup) throw new Error('上一份备份仍在导入，请稍后检查。');
+      const backup = parseSettingsBackup(input.value);
+      if (cloud) {
+        await cloud.refresh();
+        backup.cloudRevisions = cloud.revisions();
+      } else {
+        await refreshCookingRecords();
+        backup.cookingBase = state.records.filter((record) => record.kind === 'cooking');
+        backup.peopleBase = peopleModel.readStore() ?? peopleSnapshot();
+        backup.foodBase = readFoodRecords();
+      }
+      if (!backupSheetIsOpen(input)) return;
+      pendingBackup = backup;
+      const { records, parking, mahjong } = backup;
+      setSheet('确认导入', `<div class="detail settings-detail">
+        <strong>${records.length} 条长期记录 · ${parking ? '1 条车位记录' : '无车位记录'}${mahjong ? ` · ${mahjong.rounds.length} 局麻将` : ''}</strong>
+        <p>确认后，备份将替换${cloud ? '云端' : '当前预览中'}的记录和车位${mahjong ? '，以及麻将结算数据' : ''}。</p></div>
+        <p class="settings-meta" data-backup-error role="alert" hidden></p>
+        <button class="primary cursor-interaction" type="button" data-action="apply-settings-import">确认导入</button>
+        <button class="secondary cursor-interaction" type="button" data-action="edit-settings-import">返回修改</button>`, trigger);
+    } catch (error) {
+      if (!backupSheetIsOpen(input)) return;
+      message.hidden = false;
+      message.textContent = error.message;
+    } finally {
+      if (backupSheetIsOpen(input)) {
+        input.readOnly = false;
+        trigger.disabled = false;
+      }
+    }
+  }
+
+  async function applySettingsImport(_, trigger) {
+    if (!pendingBackup || importingBackup) return;
+    const backup = pendingBackup;
+    const { records, parking, mahjong, cookingBase, peopleSettings, peopleSort, peopleBase } = backup;
+    const edit = sheetContent.querySelector('[data-action="edit-settings-import"]');
+    const message = sheetContent.querySelector('[data-backup-error]');
+    importingBackup = true;
+    trigger.disabled = true;
+    trigger.textContent = '正在导入…';
+    edit.disabled = true;
+    message.hidden = true;
+    try {
+      if (cloud) {
+        const people = { records: records.filter((record) => record.kind === 'people'),
+          settings: peopleSettings ?? state.peopleSettings, sort: peopleSort ?? state.peopleSort };
+        await cloud.replace({
+          people, parking, cooking: records.filter((record) => record.kind === 'cooking'),
+          food: records.filter((record) => record.kind === 'food'), ...(mahjong && { mahjong })
+        }, backup.cloudRevisions);
+        state.peopleSettings = people.settings;
+        state.peopleSort = people.sort;
+      } else await peopleModel.withStoreLock(async () => {
+        const stored = peopleModel.readStore();
+        const previous = stored ?? peopleSnapshot();
+        if (JSON.stringify(previous) !== JSON.stringify(peopleBase)) {
+          throw new Error('其他页面更新了人物卡片。请重新检查备份后再确认导入。');
+        }
+        const previousFood = readFoodRecords();
+        if (JSON.stringify(previousFood) !== JSON.stringify(backup.foodBase)) {
+          throw new Error('其他页面更新了美食记录。请重新检查备份后再确认导入。');
+        }
+        const imported = {
+          records: records.filter((record) => record.kind === 'people'),
+          settings: peopleSettings ?? previous.settings,
+          sort: peopleSort ?? previous.sort
+        };
+        writePeopleStore(imported);
+        try {
+          writeFoodRecords(records.filter((record) => record.kind === 'food'));
+          try {
+            await replaceCookingRecords(records, cookingBase);
+          } catch (error) {
+            if (previousFood) writeFoodRecords(previousFood);
+            else localStorage.removeItem(foodStorageKey);
+            throw error;
+          }
+        } catch (error) {
+          if (stored) writePeopleStore(stored);
+          else localStorage.removeItem(peopleModel.storageKey);
+          throw error;
+        }
+        state.peopleSettings = imported.settings;
+        state.peopleSort = imported.sort;
+      });
+    } catch (error) {
+      if (backupSheetIsOpen(trigger)) {
+        trigger.disabled = false;
+        trigger.textContent = '确认导入';
+        edit.disabled = false;
+        message.hidden = false;
+        message.textContent = error.message;
+        trigger.focus({ preventScroll: true });
+      } else showNotice(error.message);
+      return;
+    } finally {
+      importingBackup = false;
+    }
+    if (pendingBackup === backup) pendingBackup = undefined;
+    state.records = records;
+    state.parking = parking;
+    recentlyCompleted = undefined;
+    drafts.clear();
+    cookingWindow.clearDraft();
+    peopleView.clearDrafts();
+    notice.hidden = true;
+    if (cloud && mahjong) Object.assign(state.mahjong, mahjong);
+    const saved = !mahjong || cloud || await persistMahjong(mahjong);
+    render();
+    const announce = () => showNotice(saved ? '已导入数据' : '记录和车位已导入，麻将数据未保存');
+    if (backupSheetIsOpen(trigger)) closeSheet(announce);
+    else announce();
+  }
+
+  function showSettingsItem(key, trigger) {
+    switch (key) {
+      case 'account':
+        if (cloud) {
+          setSheet('访问与同步', `<div class="rows">
+            ${optionRow({ action: 'sync-cloud', name: '立即同步', meta: '读取其他设备在云端保存的记录', symbol: 'refresh-cw' })}
+            ${optionRow({ action: 'logout', name: '退出登录', symbol: 'log-out' })}
+            <p class="settings-meta" data-cloud-error role="alert" hidden></p></div>`, trigger);
+        } else {
+          setSheet('我的账号', `<div class="detail settings-detail">
+            <h3>M_APP 预览用户</h3><p>本地示例账号</p></div>`, trigger);
+        }
+        break;
+      case 'modules':
+        showManagedModules(trigger);
+        break;
+      case 'preferences':
+        showPreferences(trigger);
+        break;
+      case 'data':
+        showDataSettings(trigger);
+        break;
+      case 'about':
+        setSheet('关于我们', `<div class="detail settings-detail">
+          <h3>M_APP</h3><p>在一处整理菜谱、人物、美食和临时停车记录。</p><p>当前原型版本 v${settingsVersion}</p></div>`, trigger);
+        break;
+      case 'changelog':
+        showChangelog();
+        break;
+    }
+  }
+
+  const settingsActions = {
+    'settings-item': showSettingsItem,
+    'back-from-changelog': backFromChangelog,
+    'toggle-managed-module': (key, button) => {
+      const scrollTop = sheet.scrollTop;
+      toggleManagedModule(key);
+      showManagedModules(button);
+      sheet.scrollTop = scrollTop;
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-appearance': (key, button) => {
+      state.appearance = key;
+      applyAppearance();
+      showPreferences(button);
+      sheetContent.querySelector(`[data-key="${key}"]`).focus({ preventScroll: true });
+    },
+    'settings-backup-view': (key, button) => {
+      if (key === 'import') showBackupImport(button);
+      else showBackupExport(button, key === 'local');
+    },
+    'sync-cloud': async (_, button) => {
+      try {
+        await cloud.refresh();
+        closeSheet(() => showNotice('已读取最新云端记录'));
+      } catch (error) { showSheetError(button, error); }
+    },
+    logout: async (_, button) => {
+      try {
+        await cloud.logout();
+        location.reload();
+      } catch (error) { showSheetError(button, error); }
+    },
+    'select-settings-backup': () => {
+      const output = sheetContent.querySelector('[data-backup-output]');
+      output.focus();
+      output.select();
+    },
+    'review-settings-import': (_, button) => reviewSettingsImport(button),
+    'edit-settings-import': (_, button) => showBackupImport(button, pendingBackup?.source),
+    'apply-settings-import': applySettingsImport
+  };
+
+  const actions = {
+    ...moduleActions,
+    ...settingsActions,
+    'widget-settings': (_, button) => showWidgetSettings(button),
+    'set-widget': (key) => {
+      if (!widgetChoices.some((option) => option.key === key)) return;
+      state.widget = key;
+      render();
+      closeSheet(() => showNotice(key === 'none' ? '小组件已隐藏' : '小组件已更新'));
+    },
+    add: (_, button) => showAdd(button),
+    create: showCreate,
+    record: showRecord,
+    save: (_, button) => save(button.closest('[data-create]')),
+    'complete-parking': async (_, button) => {
+      if (!state.parking) return;
+      const current = state.parking;
+      try {
+        if (cloud) await cloud.save('parking', null, Number(button.dataset.cloudRevision ?? cloud.revision('parking')));
+      } catch (error) {
+        showSheetError(button, error);
+        return;
+      }
+      recentlyCompleted = current;
+      state.parking = null;
+      drafts.delete('parking');
+      render();
+      if (backupSheetIsOpen(button)) closeSheet(() => showNotice('停车记录已结束', true));
+      else {
+        modulePane.querySelector('[data-action="create"][data-key="parking"]')?.focus({ preventScroll: true });
+        showNotice('停车记录已结束', true);
+      }
+    },
+    'undo-parking': async () => {
+      if (state.parking || !recentlyCompleted) return;
+      const previous = recentlyCompleted;
+      try {
+        if (cloud) await cloud.save('parking', previous);
+      } catch (error) {
+        showNotice(error.message);
+        return;
+      }
+      state.parking = previous;
+      recentlyCompleted = undefined;
+      render();
+      const pageControl = state.page === 'changelog' ? releaseBack
+        : state.page === 'modules' && state.module ? moduleBack : tabs.find((tab) => tab.dataset.tab === state.page);
+      pageControl.focus({ preventScroll: true });
+      showNotice('停车记录已恢复');
+    }
+  };
+
+  root.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (button?.dataset.tab) setPage(button.dataset.tab);
+    if (button === handle && draggedHandle && event.detail !== 0) return;
+    if (button?.hasAttribute('data-close-sheet') || event.target === overlay) closeSheet();
+    if (button?.dataset.action) actions[button.dataset.action]?.(button.dataset.key, button);
+  });
+
+  root.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !overlay.hidden || event.defaultPrevented) return;
+    if (state.page === 'changelog') {
+      event.preventDefault();
+      backFromChangelog();
+    } else if (state.page === 'modules' && state.module) {
+      event.preventDefault();
+      if (state.moduleScreen === 'content') backToModuleCategory();
+      else backInModule();
+    }
+  });
+
+  root.addEventListener('input', (event) => {
+    const form = event.target.closest('form');
+    if (!form) return;
+    if (form.dataset.create) drafts.set(form.dataset.create, new FormData(form));
+    if (form.hasAttribute('data-calculator')) updateCalculatorResult(form);
+  });
+  root.addEventListener('submit', (event) => event.preventDefault());
+
+  overlay.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      if (sheetBack.hidden) closeSheet();
+      else sheetBack.click();
+    }
+    if (event.key === 'Enter' && event.target.tagName === 'INPUT' && !event.isComposing) {
+      const form = event.target.closest('[data-create]');
+      if (form) {
+        event.preventDefault();
+        save(form);
+      }
+    }
+    if (event.key !== 'Tab') return;
+    const controls = [...sheet.querySelectorAll('button, input, textarea, select, a[href], summary')]
+      .filter((element) => !element.matches(':disabled')
+        && !element.closest('[inert], [hidden], details:not([open]) > :not(summary)') && element.getClientRects().length);
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  handle.addEventListener('pointerdown', (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    draggedHandle = false;
+    dragStart = event.clientY;
+    sheet.dataset.dragging = 'true';
+    handle.setPointerCapture(event.pointerId);
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    if (Math.abs(distance) > 6) draggedHandle = true;
+    if (!reducedMotion.matches) sheet.style.setProperty('--drag', `${Math.max(0, distance)}px`);
+  });
+  function finishDrag(event) {
+    if (dragStart === undefined || !event.isPrimary) return;
+    const distance = event.clientY - dragStart;
+    dragStart = undefined;
+    sheet.dataset.dragging = 'false';
+    if (event.type === 'pointerup' && distance > 54) closeSheet();
+    else sheet.style.removeProperty('--drag');
+  }
+  handle.addEventListener('pointerup', finishDrag);
+  handle.addEventListener('pointercancel', finishDrag);
+
+  setPage(state.page);
+  applyAppearance();
+  root.querySelector('[data-app-version]').textContent = `v${settingsVersion}`;
+  renderChangelog();
+  render();
+  if (cloud) {
+    window.addEventListener('focus', refreshWhenAvailable);
+    window.addEventListener('pageshow', refreshWhenAvailable);
+    document.addEventListener('visibilitychange', refreshWhenAvailable);
+    refreshWhenAvailable();
+    root.querySelector('[data-key="account"] .record-name').textContent = '访问与同步';
+  } else {
+    const syncCookingRecords = () => refreshCookingRecords().catch(() => {});
+    cookingUpdates?.addEventListener('message', syncCookingRecords);
+    window.addEventListener('focus', syncCookingRecords);
+    window.addEventListener('storage', (event) => {
+      if (event.key === foodStorageKey) {
+        peopleModel.withStoreLock(() => {
+          replaceRecordKind('food', readFoodRecords() ?? [sampleFood]);
+          render();
+        }).catch(() => {});
+        return;
+      }
+      if (event.key !== peopleModel.storageKey) return;
+      peopleModel.withStoreLock(() => {
+        const bundle = peopleModel.readStore();
+        if (bundle) updatePeopleRecords(bundle);
+      }).catch(() => {});
+    });
+    syncCookingRecords();
+  }
+})();
+</script>
