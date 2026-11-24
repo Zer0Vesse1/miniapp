@@ -1,0 +1,5 @@
+# Local project notes
+/APP_CONTEXT.md
+/dist/
+/.dev.vars*
+/.wrangler/
